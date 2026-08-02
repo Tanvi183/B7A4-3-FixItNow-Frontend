@@ -9,7 +9,7 @@ const navLinksData = [
   { label: "Home",         href: "/"                             },
   { label: "Services",     href: "/services",     hasDropdown: true },
   { label: "Technicians",  href: "/technicians"                  },
-  { label: "How It Works", href: "/#how-it-works"                 },
+  { label: "How It Works", href: "/how-it-works"                  },
   { label: "About Us",     href: "/about"                        },
   { label: "Contact",      href: "/contact"                      },
 ];
