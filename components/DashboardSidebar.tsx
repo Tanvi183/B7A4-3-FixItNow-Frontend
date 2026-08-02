@@ -109,10 +109,25 @@ export default function DashboardSidebar() {
       <div className="p-4 mt-auto">
         <button
           onClick={() => {
-            logout();
-            window.location.href = "/login";
+            import('sweetalert2').then((module) => {
+              const Swal = module.default;
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be logged out of your account.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0ea5e9',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Yes, log me out!'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  logout();
+                  window.location.href = "/login";
+                }
+              });
+            });
           }}
-          className="flex items-center gap-3 px-3 py-[10px] rounded-[6px] text-[15px] font-normal text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 w-full transition-colors group"
+          className="cursor-pointer flex items-center gap-3 px-3 py-[10px] rounded-[6px] text-[15px] font-normal text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 w-full transition-colors group"
         >
           <LogOut size={20} strokeWidth={1.5} className="text-slate-400 group-hover:text-rose-400 transition-colors" />
           Sign Out

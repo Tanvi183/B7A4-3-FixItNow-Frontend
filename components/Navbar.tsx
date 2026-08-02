@@ -361,11 +361,26 @@ export function Navbar() {
                   <div className="border-t border-slate-100 mt-2 pt-2">
                     <button
                       onClick={() => {
-                        logout();
-                        setDropdownOpen(false);
-                        window.location.href = "/login";
+                        import('sweetalert2').then((module) => {
+                          const Swal = module.default;
+                          setDropdownOpen(false);
+                          Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You will be logged out of your account.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#0ea5e9',
+                            cancelButtonColor: '#ef4444',
+                            confirmButtonText: 'Yes, log me out!'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              logout();
+                              window.location.href = "/login";
+                            }
+                          });
+                        });
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
+                      className="cursor-pointer w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                     >
                       <LogOut size={16} /> Sign Out
                     </button>
@@ -499,8 +514,27 @@ export function Navbar() {
                 )}
 
                 <button 
-                  onClick={() => { logout(); setMobileOpen(false); window.location.href = "/login"; }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 mt-2 text-sm font-bold text-red-600 bg-red-50 rounded-full"
+                  onClick={() => { 
+                    import('sweetalert2').then((module) => {
+                      const Swal = module.default;
+                      setMobileOpen(false);
+                      Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You will be logged out of your account.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0ea5e9',
+                        cancelButtonColor: '#ef4444',
+                        confirmButtonText: 'Yes, log me out!'
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          logout();
+                          window.location.href = "/login";
+                        }
+                      });
+                    });
+                  }}
+                  className="cursor-pointer w-full flex items-center justify-center gap-2 px-4 py-2.5 mt-2 text-sm font-bold text-red-600 bg-red-50 rounded-full"
                 >
                   <LogOut size={16} /> Log Out
                 </button>
