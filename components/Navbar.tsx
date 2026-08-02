@@ -31,11 +31,6 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { isAuthenticated, user, logout, setUser } = useAuthStore();
 
-  // Temporary mock role setter for debugging/testing
-  const handleMockLogin = (role: string) => {
-    setUser({ id: "123", name: "Test User", email: "test@example.com", role });
-    setDropdownOpen(false);
-  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -384,15 +379,6 @@ export function Navbar() {
                 <ArrowRight style={{ width: 14, height: 14 }} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </>
-          )}
-
-          {/* Temporary Mock Login Buttons for Dev */}
-          {!isAuthenticated && (
-            <div className="hidden lg:flex items-center gap-2 right-controls-container border-l border-slate-200 pl-3 ml-1">
-              <button onClick={() => handleMockLogin("CUSTOMER")} className="text-[10px] bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded text-slate-600 font-bold">MOCK CUSTOMER</button>
-              <button onClick={() => handleMockLogin("TECHNICIAN")} className="text-[10px] bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded text-slate-600 font-bold">MOCK TECH</button>
-              <button onClick={() => handleMockLogin("ADMIN")} className="text-[10px] bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded text-slate-600 font-bold">MOCK ADMIN</button>
-            </div>
           )}
 
           {/* Mobile toggle */}

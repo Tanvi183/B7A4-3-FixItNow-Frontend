@@ -1117,8 +1117,8 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   .about-hero-section { padding: 40px 0 32px; }
   .about-hero-heading { font-size: 36px; }
-  .about-stats-bar { flex-direction: column; align-items: stretch; gap: 24px; padding: 32px 24px; }
-  .about-stat-item { flex-direction: column; gap: 12px; }
+  .about-stats-bar { flex-direction: column; align-items: center; gap: 32px; padding: 32px 24px; }
+  .about-stat-item { flex-direction: column; gap: 12px; text-align: center; width: 100%; }
   .about-stat-divider { display: none; }
   .about-mission-card { flex-direction: column; align-items: center; text-align: center; padding: 32px 24px; gap: 16px; }
   .about-values-container { flex-direction: column; gap: 40px; padding: 40px 24px; }
@@ -2028,4 +2028,10 @@ h1, h2, h3, h4, h5, h6 {
   .services-cta-img-wrap { display: none; }
   .services-cta-content { padding: 0 0 40px; align-items: center; }
   .services-cta-features { border-left: none; border-top: 1px solid rgba(255,255,255,0.1); padding: 40px 0 0; width: 100%; align-items: center; }
+  .services-cta-feature { width: 100%; max-width: 240px; justify-content: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .services-cta-banner { padding: 32px 20px; }
+  .services-cta-features { padding: 32px 0 0; }
 }
