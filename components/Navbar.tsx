@@ -219,15 +219,12 @@ export function Navbar() {
                 )}
               </Link>
               {link.hasDropdown && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="bg-white border border-slate-100 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] relative">
-                    {/* Little upward pointing triangle */}
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-l border-t border-slate-100 rotate-45 rounded-tl-sm"></div>
-                    <div className="p-2 relative z-10 flex flex-col">
-                      <Link href="/all-services" className="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                        All Services
-                      </Link>
-                    </div>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-max min-w-[140px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="bg-white border border-slate-100 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] relative p-1.5 flex flex-col">
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-l border-t border-slate-100 rotate-45 rounded-tl-sm z-0"></div>
+                    <Link href="/all-services" className="relative z-10 px-4 py-2 text-[13px] font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors text-center w-full block">
+                      All Services
+                    </Link>
                   </div>
                 </div>
               )}

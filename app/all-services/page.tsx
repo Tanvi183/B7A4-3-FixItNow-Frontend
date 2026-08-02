@@ -1,4 +1,3 @@
-import ServicesHero from "@/components/ServicesHero";
 import Image from "next/image";
 import { Search, Star, X } from "lucide-react";
 
@@ -40,8 +39,6 @@ const prices = [
 export default function AllServicesPage() {
   return (
     <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
-      <ServicesHero />
-
       <div className="all-services-layout">
         
         {/* SIDEBAR */}
