@@ -95,7 +95,7 @@ export default function ContactPage() {
       {/* ══ CONTACT FORM ═══════════════════════════════════════════════════════ */}
       <section style={{ paddingBottom: 100 }}>
         <div className="container" style={{ maxWidth: 800 }}>
-          <div style={{ background: "#fff", padding: "48px 56px", borderRadius: 32, boxShadow: "0 20px 60px rgba(15,23,42,0.06)", border: "1px solid #F1F5F9" }}>
+          <div className="contact-form-card" style={{ background: "#fff", borderRadius: 32, boxShadow: "0 20px 60px rgba(15,23,42,0.06)", border: "1px solid #F1F5F9" }}>
             
             <div style={{ textAlign: "center", marginBottom: 40 }}>
               <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 32, fontWeight: 800, color: "#0F172A", marginBottom: 12, letterSpacing: "-0.01em" }}>
@@ -115,7 +115,7 @@ export default function ContactPage() {
 
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div className="contact-form-row">
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <label style={{ fontSize: 14, fontWeight: 700, color: "#334155" }}>Full Name</label>
                   <input 

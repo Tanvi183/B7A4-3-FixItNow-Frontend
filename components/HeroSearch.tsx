@@ -29,20 +29,9 @@ export function HeroSearch() {
   }, []);
 
   return (
-    <div style={{
-      background: "#fff",
-      borderRadius: 999,
-      boxShadow: "0 12px 40px rgba(15,23,42,.08)",
-      padding: "8px 8px 8px 24px",
-      display: "flex",
-      alignItems: "center",
-      gap: 16,
-      maxWidth: 680,
-      border: "1px solid #F1F5F9",
-      marginBottom: 32,
-    }}>
+    <div className="hero-search-wrapper">
       {/* Search Service */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1.2 }}>
+      <div className="hero-search-input-group">
         <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Search style={{ width: 18, height: 18, color: "#0F172A" }} />
         </div>
@@ -51,7 +40,7 @@ export function HeroSearch() {
         </div>
       </div>
       
-      <div style={{ width: 1, height: 40, background: "#E2E8F0" }} />
+      <div className="hero-search-divider" />
       
       {/* Location Dropdown */}
       <div style={{ position: "relative", flex: 1 }} ref={dropdownRef}>
@@ -124,19 +113,7 @@ export function HeroSearch() {
         )}
       </div>
 
-      <button style={{
-        background: "#2563EB",
-        color: "#fff",
-        border: "none",
-        padding: "14px 28px",
-        borderRadius: 999,
-        fontWeight: 600,
-        fontSize: 15,
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        cursor: "pointer",
-      }}>
+      <button className="hero-search-btn">
         Find Professionals
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7"/>

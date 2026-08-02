@@ -127,11 +127,11 @@ export default function HomePage() {
           zIndex: 0,
         }} />
 
-        <div style={{ maxWidth: 1440, margin: "0 auto", padding: "0 64px", position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 60 }}>
+        <div className="hero-container" style={{ maxWidth: 1440, margin: "0 auto", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 40, alignItems: "center" }}>
+          <div className="hero-grid">
             {/* ── Left Content ── */}
-            <div>
+            <div style={{ position: "relative", zIndex: 10 }}>
               {/* Trust Badge */}
               <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#EEF2FF", padding: "6px 16px", borderRadius: 999, marginBottom: 24 }}>
                 <ShieldCheck style={{ width: 16, height: 16, color: "#2563EB" }} />
@@ -139,9 +139,8 @@ export default function HomePage() {
               </div>
 
               {/* Headline */}
-              <h1 style={{
+              <h1 className="hero-title" style={{
                 fontFamily: "var(--font-heading)",
-                fontSize: "clamp(42px, 4.5vw, 62px)",
                 fontWeight: 800,
                 color: "#0F172A",
                 lineHeight: 1.15,
@@ -163,7 +162,7 @@ export default function HomePage() {
               <HeroSearch />
 
               {/* Popular Searches */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <div className="popular-searches" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Popular searches:</span>
                 {popularSearches.map((s, i) => {
                   const icons = [FaBolt, GiVacuumCleaner, FaFaucet, FaSnowflake, FaPaintRoller, GiWoodBeam];
@@ -192,39 +191,19 @@ export default function HomePage() {
             </div>
 
             {/* ── Right Images ── */}
-            <div style={{ position: "relative", height: 600, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+            <div className="hero-image-container">
               {/* House Background */}
-              <div style={{
-                position: "absolute",
-                bottom: -60,
-                right: 20,
-                width: 600,
-                height: 550,
-                overflow: "hidden",
-                zIndex: 1,
-        
-              }}>
+              <div className="hero-image-house">
                 <Image src="/house02.webp" alt="Modern House" fill sizes="600px" priority style={{ objectFit: "cover", objectPosition: "center" }} />
               </div>
               
               {/* Person Foreground */}
-              <div style={{
-                position: "absolute",
-                bottom: -60,
-                right: -50,
-                width: 480,
-                height: 640,
-                zIndex: 2,
-              }}>
+              <div className="hero-image-person">
                 <Image src="/person.png" alt="Professional Technician" fill sizes="480px" style={{ objectFit: "contain", objectPosition: "bottom center" }} />
               </div>
 
               {/* Review Badge */}
-              <div style={{
-                position: "absolute",
-                bottom: -50, // Moved even further down
-                right: 50, // Moved even further to the right
-                zIndex: 4,
+              <div className="hero-review-badge" style={{
                 background: "#fff",
                 borderRadius: 16,
                 padding: "14px 20px",
@@ -233,7 +212,7 @@ export default function HomePage() {
                 alignItems: "center",
                 gap: 16,
               }}>
-                <div style={{ display: "flex", marginLeft: 12 }}>
+                <div className="avatar-group" style={{ display: "flex", marginLeft: 12 }}>
                   {[1,2,3].map((i) => (
                     <div key={i} style={{
                       width: 40, height: 40, borderRadius: "50%", background: "#E2E8F0",
@@ -257,31 +236,23 @@ export default function HomePage() {
           </div>
 
           {/* ── Bottom Dark Bar ── */}
-          <div style={{
-            background: "#0B1120",
-            borderRadius: 24,
-            padding: "32px 48px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            boxShadow: "0 20px 40px rgba(15,23,42,.2)",
-          }}>
+          <div className="hero-features-bar">
             {[
               { icon: ShieldCheck, title: "Verified Professionals", desc: "Background checked" },
               { icon: CalendarCheck, title: "Instant Booking", desc: "Book in just a few taps" },
               { icon: Lock, title: "Secure Payments", desc: "100% secure & protected" },
               { icon: CheckCircle2, title: "Satisfaction Guarantee", desc: "We make it right" },
             ].map((feature, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <feature.icon style={{ width: 24, height: 24, color: "#93C5FD" }} />
+              <div key={i} className="hero-feature-item">
+                <div className="hero-feature-icon">
+                  <feature.icon className="icon" />
                 </div>
-                <div>
-                  <h4 style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "#fff", margin: "0 0 4px" }}>{feature.title}</h4>
-                  <p style={{ fontSize: 13, color: "#94A3B8", margin: 0 }}>{feature.desc}</p>
+                <div className="hero-feature-text">
+                  <h4>{feature.title}</h4>
+                  <p>{feature.desc}</p>
                 </div>
                 {/* Vertical Divider for all but last */}
-                {i < 3 && <div style={{ width: 1, height: 40, background: "rgba(255,255,255,.1)", marginLeft: 32 }} />}
+                {i < 3 && <div className="hero-feature-divider" />}
               </div>
             ))}
           </div>
@@ -301,7 +272,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16 }}>
+          <div className="services-grid">
             {services.map((svc) => (
               <Link
                 key={svc.title}
@@ -346,7 +317,7 @@ export default function HomePage() {
 
       {/* ══ HOW IT WORKS ══════════════════════════════════════════════════════ */}
       <section id="how-it-works" style={{ background: "#F8FAFC", padding: "120px 0" }}>
-        <div className="container" style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr", gap: 60, alignItems: "center" }}>
+        <div className="container how-it-works-grid">
           
           {/* Left Column */}
           <div>
@@ -365,9 +336,9 @@ export default function HomePage() {
           </div>
 
           {/* Right Column - Cards */}
-          <div style={{ display: "flex", alignItems: "center", gap: 16, width: "100%" }}>
+          <div className="how-it-works-steps">
             {steps.map((step, i) => (
-              <div key={step.n} style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
+              <div key={step.n} className="how-it-works-step">
                 
                 {/* Step Card */}
                 <div style={{ 
@@ -446,18 +417,9 @@ export default function HomePage() {
           }} />
 
           {/* Content */}
-          <div style={{
-            position: "relative",
-            zIndex: 1,
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            alignItems: "center"
-          }}>
+          <div className="stats-grid">
             {stats.map((stat, i) => (
-              <div key={stat.label} style={{
-                textAlign: "center",
-                borderRight: i < stats.length - 1 ? "1px solid rgba(255, 255, 255, 0.15)" : "none",
-              }}>
+              <div key={stat.label} className="stat-item">
                 <div style={{
                   width: 64, height: 64,
                   borderRadius: "50%",
@@ -480,7 +442,7 @@ export default function HomePage() {
       {/* ══ TECHNICIANS ══════════════════════════════════════════════════════ */}
       <section style={{ background: "var(--color-bg)", padding: "96px 0", position: "relative" }}>
         <div className="container" style={{ position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 48 }}>
+          <div className="section-header-flex">
             <div>
               <div className="section-label" style={{ color: "#2563EB", letterSpacing: "0.05em", fontWeight: 800 }}>TOP RATED TECHNICIANS</div>
               <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 36, fontWeight: 800, color: "#0F172A", marginBottom: 8 }}>
@@ -494,14 +456,14 @@ export default function HomePage() {
           </div>
 
           {/* Carousel Arrows */}
-          <div style={{ position: "absolute", left: -24, top: "45%", transform: "translateY(-50%)", width: 48, height: 48, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", cursor: "pointer", zIndex: 10 }}>
+          <div className="carousel-arrow carousel-arrow-left">
             <ChevronLeft style={{ width: 20, height: 20, color: "#0F172A" }} />
           </div>
-          <div style={{ position: "absolute", right: -24, top: "45%", transform: "translateY(-50%)", width: 48, height: 48, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", cursor: "pointer", zIndex: 10 }}>
+          <div className="carousel-arrow carousel-arrow-right">
             <ChevronRight style={{ width: 20, height: 20, color: "#0F172A" }} />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 20 }}>
+          <div className="technicians-grid">
             {technicians.map((tech) => (
               <Link
                 key={tech.name}
@@ -536,9 +498,9 @@ export default function HomePage() {
           </div>
 
           {/* Trust Badges */}
-          <div style={{ background: "#fff", borderRadius: 24, padding: "32px 40px", marginTop: 48, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24, boxShadow: "0 4px 24px rgba(15,23,42,0.03)" }}>
+          <div className="trust-badges-grid">
             {trustBadges.map((badge, i) => (
-              <div key={badge.title} style={{ display: "flex", alignItems: "flex-start", gap: 16, borderRight: i < 3 ? "1px solid #F1F5F9" : "none", paddingRight: i < 3 ? 24 : 0 }}>
+              <div key={badge.title} className="trust-badge-item">
                 <div style={{ background: "#EFF6FF", width: 48, height: 48, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <badge.icon style={{ width: 24, height: 24, color: "#2563EB" }} />
                 </div>
@@ -566,14 +528,14 @@ export default function HomePage() {
           </div>
 
           {/* Carousel Arrows */}
-          <div style={{ position: "absolute", left: -24, top: "58%", transform: "translateY(-50%)", width: 48, height: 48, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", cursor: "pointer", zIndex: 10 }}>
+          <div className="carousel-arrow carousel-arrow-left" style={{ top: "58%" }}>
             <ChevronLeft style={{ width: 20, height: 20, color: "#0F172A" }} />
           </div>
-          <div style={{ position: "absolute", right: -24, top: "58%", transform: "translateY(-50%)", width: 48, height: 48, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", cursor: "pointer", zIndex: 10 }}>
+          <div className="carousel-arrow carousel-arrow-right" style={{ top: "58%" }}>
             <ChevronRight style={{ width: 20, height: 20, color: "#0F172A" }} />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, marginBottom: 40 }}>
+          <div className="reviews-grid">
             {reviews.map((rev) => (
               <div key={rev.name} style={{ background: "#fff", borderRadius: 20, padding: 32, boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>

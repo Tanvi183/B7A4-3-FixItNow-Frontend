@@ -68,16 +68,10 @@ export function Footer() {
         .social-link:hover svg {
           stroke: #fff !important;
         }
-        .brand-col {
-          grid-column: 1 / -1;
-        }
-        @media (min-width: 1024px) {
-          .brand-col { grid-column: span 2; }
-        }
       `}</style>
       
       <div className="container" style={{ paddingTop: 80, paddingBottom: 64, position: "relative", zIndex: 1 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 60 }}>
+        <div className="footer-grid">
           
           {/* Brand & Description (Takes up more space on large screens) */}
           <div className="brand-col">
@@ -128,7 +122,7 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div style={{ borderTop: "1px solid #1E293B", background: "#080B13" }}>
-        <div className="container" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", padding: "24px 0", gap: 16 }}>
+        <div className="container footer-bottom">
           <p style={{ color: "#64748B", fontSize: 14, margin: 0 }}>© {new Date().getFullYear()} FixItNow. All rights reserved.</p>
           <div style={{ display: "flex", gap: 32 }}>
             <Link href="#" style={{ color: "#64748B", fontSize: 14, textDecoration: "none", transition: "color 0.2s ease" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={(e) => (e.currentTarget.style.color = "#64748B")}>Privacy Policy</Link>
