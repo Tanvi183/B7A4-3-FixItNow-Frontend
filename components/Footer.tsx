@@ -6,7 +6,6 @@ const footerLinks = {
   "Quick Links": [
     { label: "Home",         href: "/" },
     { label: "Services",     href: "/services" },
-    { label: "Technicians",  href: "/technicians" },
     { label: "How It Works", href: "/how-it-works" },
     { label: "About Us",     href: "/about" },
   ],

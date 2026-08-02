@@ -7,8 +7,7 @@ import { ChevronDown, Search, User, ArrowRight, Menu, X, Wrench } from "lucide-r
 
 const navLinksData = [
   { label: "Home",         href: "/"                             },
-  { label: "Services",     href: "/services",     hasDropdown: true },
-  { label: "Technicians",  href: "/technicians"                  },
+  { label: "Services",     href: "/services"                     },
   { label: "How It Works", href: "/how-it-works"                  },
   { label: "About Us",     href: "/about"                        },
   { label: "Contact",      href: "/contact"                      },
