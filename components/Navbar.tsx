@@ -14,7 +14,7 @@ type NavLink = {
 
 const navLinksData: NavLink[] = [
   { label: "Home",         href: "/"                             },
-  { label: "Services",     href: "/services"                     },
+  { label: "Services",     href: "/services", hasDropdown: true  },
   { label: "How It Works", href: "/how-it-works"                  },
   { label: "About Us",     href: "/about"                        },
   { label: "Contact",      href: "/contact"                      },
@@ -178,46 +178,60 @@ export function Navbar() {
         {/* ── Nav Links ── */}
         <div className="nav-links-container" style={{ display: "flex", alignItems: "center", flex: 1, gap: 2 }}>
           {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className={`group flex items-center gap-1.5 ${link.active ? "text-white" : "text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"}`}
-              style={{
-                padding: link.active ? "9px 20px" : "9px 16px",
-                fontSize: 14,
-                fontFamily: "var(--font-body)",
-                fontWeight: link.active ? 600 : 500,
-                textDecoration: "none",
-                whiteSpace: "nowrap",
-                borderRadius: 999,
-                background: link.active
-                  ? "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)"
-                  : "transparent",
-                boxShadow: link.active ? "0 4px 14px rgba(37,99,235,.28)" : "none",
-                position: "relative",
-                transition: "all 250ms ease",
-              }}
-            >
-              {link.label}
+            <div key={link.label} className="relative group">
+              <Link
+                href={link.href}
+                className={`flex items-center gap-1.5 ${link.active ? "text-white" : "text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"}`}
+                style={{
+                  padding: link.active ? "9px 20px" : "9px 16px",
+                  fontSize: 14,
+                  fontFamily: "var(--font-body)",
+                  fontWeight: link.active ? 600 : 500,
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                  borderRadius: 999,
+                  background: link.active
+                    ? "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)"
+                    : "transparent",
+                  boxShadow: link.active ? "0 4px 14px rgba(37,99,235,.28)" : "none",
+                  position: "relative",
+                  transition: "all 250ms ease",
+                }}
+              >
+                {link.label}
+                {link.hasDropdown && (
+                  <ChevronDown style={{ width: 14, height: 14, opacity: link.active ? 1 : 0.55 }} className="group-hover:translate-y-[1px] transition-transform" />
+                )}
+                {/* Blue dot under active item when floating */}
+                {link.active && scrolled && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      bottom: -9,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      width: 5,
+                      height: 5,
+                      background: "#2563EB",
+                      borderRadius: "50%",
+                    }}
+                  />
+                )}
+              </Link>
               {link.hasDropdown && (
-                <ChevronDown style={{ width: 14, height: 14, opacity: link.active ? 1 : 0.55 }} className="group-hover:translate-y-[1px] transition-transform" />
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="bg-white border border-slate-100 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] relative">
+                    {/* Little upward pointing triangle */}
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-l border-t border-slate-100 rotate-45 rounded-tl-sm"></div>
+                    <div className="p-2 relative z-10 flex flex-col">
+                      <Link href="/all-services" className="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                        All Services
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               )}
-              {/* Blue dot under active item when floating */}
-              {link.active && scrolled && (
-                <span
-                  style={{
-                    position: "absolute",
-                    bottom: -9,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: 5,
-                    height: 5,
-                    background: "#2563EB",
-                    borderRadius: "50%",
-                  }}
-                />
-              )}
-            </Link>
+            </div>
           ))}
         </div>
 
