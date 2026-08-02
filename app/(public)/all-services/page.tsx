@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Search, Star, X } from "lucide-react";
 
 export const metadata = {
@@ -6,26 +7,12 @@ export const metadata = {
   description: "Browse all reliable home repair and maintenance services.",
 };
 
-const mockServices = [
-  { img: "/cleaning.png", title: "Home Complete Cleaning Solutions", rating: "4.9", count: 156, price: 35 },
-  { img: "/light_install.png", title: "Setup Kitchen Appliances Easily", rating: "4.9", count: 156, price: 35 },
-  { img: "/painting.png", title: "Sparkle Ease Cleaning Solutions", rating: "4.9", count: 156, price: 35 },
-  { img: "/cleaning.png", title: "Setup Kitchen Appliances Easily", rating: "4.9", count: 156, price: 35 },
-  { img: "/light_install.png", title: "Home Complete Cleaning Solutions", rating: "4.9", count: 156, price: 35 },
-  { img: "/painting.png", title: "Sparkle Ease Cleaning Solutions", rating: "4.9", count: 156, price: 35 },
-];
+const getFallbackImage = (idx: number) => {
+  const fallbacks = ["/cleaning.png", "/light_install.png", "/painting.png"];
+  return fallbacks[idx % fallbacks.length];
+};
 
-const categories = [
-  "House section",
-  "Carpentry",
-  "Electrical works",
-  "Plumbing",
-  "Furniture works",
-  "Painting",
-  "Assembling",
-  "Landscaping",
-  "General Maintenance"
-];
+
 
 const prices = [
   "All Prices",
@@ -36,7 +23,32 @@ const prices = [
   "$51 and above"
 ];
 
-export default function AllServicesPage() {
+export default async function AllServicesPage({ searchParams }: { searchParams?: Promise<{ category?: string }> }) {
+  let services: any[] = [];
+  let categories: any[] = [];
+  const resolvedParams = await searchParams;
+  let selectedCategory = resolvedParams?.category || "";
+  
+  try {
+    const [svcRes, catRes] = await Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { next: { revalidate: 60 } }),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, { next: { revalidate: 60 } })
+    ]);
+    
+    const svcData = await svcRes.json();
+    const catData = await catRes.json();
+    
+    if (svcData.success) services = svcData.data;
+    if (catData.success) {
+      // Only show categories that have at least one service
+      categories = catData.data.filter((cat: any) => services.some((svc: any) => svc.categoryId === cat.id));
+    }
+  } catch (error) {
+    console.error("Failed to fetch data", error);
+  }
+
+  const activeServices = selectedCategory ? services.filter((svc: any) => svc.categoryId === selectedCategory) : services;
+
   return (
     <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
       <div className="all-services-layout">
@@ -58,11 +70,19 @@ export default function AllServicesPage() {
           <div className="filter-section">
             <h3 className="filter-title">All Categories</h3>
             <div className="filter-list">
-              {categories.map((cat, i) => (
-                <label key={i} className="filter-label">
-                  <input type="radio" name="category" defaultChecked={i === 0} />
-                  <span>{cat}</span>
+              <Link href="/all-services" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <label className="filter-label" style={{ cursor: "pointer" }}>
+                  <input type="radio" name="category" readOnly checked={!selectedCategory} />
+                  <span>All Categories</span>
                 </label>
+              </Link>
+              {categories.map((cat: any, i: number) => (
+                <Link key={cat.id || i} href={`/all-services?category=${cat.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <label className="filter-label" style={{ cursor: "pointer" }}>
+                    <input type="radio" name="category" readOnly checked={selectedCategory === cat.id} />
+                    <span>{cat.name}</span>
+                  </label>
+                </Link>
               ))}
             </div>
           </div>
@@ -123,29 +143,32 @@ export default function AllServicesPage() {
           <h2 className="as-main-title">Reliable home repair and maintenance services</h2>
 
           <div className="as-grid">
-            {mockServices.map((svc, idx) => (
-              <div key={idx} className="as-card">
+            {activeServices.length > 0 ? activeServices.map((svc: any, idx: number) => (
+              <div key={svc.id || idx} className="as-card">
                 <div className="as-card-img">
                   <Image 
-                    src={svc.img} 
-                    alt={svc.title}
+                    src={getFallbackImage(idx)} 
+                    alt={svc.name}
                     fill
+                    priority={idx < 4}
                     sizes="(max-width: 768px) 100vw, 300px"
                     style={{ objectFit: "cover" }}
                   />
                 </div>
                 <div className="as-card-content">
-                  <h3 className="as-card-title">{svc.title}</h3>
+                  <h3 className="as-card-title">{svc.name}</h3>
                   <div className="as-card-rating">
                     <Star style={{ width: 14, height: 14 }} className="as-card-rating-star" fill="currentColor" />
-                    <span>{svc.rating}</span>
-                    <span className="as-card-rating-count">({svc.count} reviews)</span>
+                    <span>5.0</span>
+                    <span className="as-card-rating-count">(0 reviews)</span>
                   </div>
-                  <p className="as-card-price">${svc.price}</p>
+                  <p className="as-card-price">${svc.basePrice}</p>
                   <button className="as-card-btn">View details</button>
                 </div>
               </div>
-            ))}
+            )) : (
+              <p style={{ color: "#64748B", fontSize: 16 }}>No services available for this category.</p>
+            )}
           </div>
 
         </main>

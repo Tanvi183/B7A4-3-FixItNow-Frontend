@@ -23,8 +23,8 @@ export default function TechnicianProfilePage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+  } = useForm<z.infer<typeof profileSchema>>({
+    resolver: zodResolver(profileSchema) as any,
     defaultValues: {
       bio: "I am a professional electrician with over 5 years of experience in residential and commercial wiring.",
       specialization: "Electrical",

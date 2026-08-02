@@ -34,8 +34,8 @@ export default function AdminServicesPage() {
   const [modalMode, setModalMode] = useState<"CREATE" | "EDIT">("CREATE");
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ServiceFormValues>({
-    resolver: zodResolver(serviceSchema)
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<z.infer<typeof serviceSchema>>({
+    resolver: zodResolver(serviceSchema) as any
   });
 
   const openCreateModal = () => {
