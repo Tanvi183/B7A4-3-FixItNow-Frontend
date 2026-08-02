@@ -111,7 +111,6 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  color: var(--color-heading);
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
@@ -2465,7 +2464,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
 }
 input:checked + .slider {
-  background-color: #a97c64;
+  background-color: #2563EB;
 }
 input:checked + .slider:before {
   transform: translateX(20px);
@@ -2491,7 +2490,7 @@ input:checked + .slider:before {
 }
 .filter-label input[type="radio"],
 .filter-label input[type="checkbox"] {
-  accent-color: #a97c64;
+  accent-color: #2563EB;
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -2513,12 +2512,22 @@ input:checked + .slider:before {
   padding: 8px 16px;
   background: #fff;
   width: 400px;
+  transition: all 0.2s;
+}
+.as-search-container:focus-within {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .as-search-input {
   border: none;
   outline: none;
   flex: 1;
   font-size: 14px;
+  background: transparent;
+}
+.as-search-input:focus {
+  outline: none;
+  box-shadow: none;
 }
 .as-sort {
   display: flex;
@@ -2617,13 +2626,13 @@ input:checked + .slider:before {
 .as-card-price {
   font-weight: 700;
   font-size: 16px;
-  color: #a97c64;
+  color: #2563EB;
   margin-bottom: 16px;
 }
 .as-card-btn {
   display: block;
   width: fit-content;
-  background: #a97c64;
+  background: #2563EB;
   color: #fff;
   padding: 8px 16px;
   border-radius: 6px;

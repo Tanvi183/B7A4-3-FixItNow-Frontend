@@ -71,69 +71,58 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 relative">
+    <div className="p-6 md:p-8 space-y-8 relative">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-heading">Category Management</h1>
-          <p className="text-slate-500 mt-1 text-sm">Create, edit, and organize service categories.</p>
+          <h1 className="text-2xl font-bold text-white font-heading">Categories</h1>
+          <p className="text-slate-400 mt-1 text-sm">Manage service categories and track their usage.</p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-[#008cff] text-white px-5 py-2.5 rounded-xl font-medium hover:bg-[#0070cc] transition-colors shadow-lg shadow-[#008cff]/20"
         >
           <Plus size={18} /> New Category
         </button>
       </div>
 
       {/* List */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-[#0f1535] border border-white/10 rounded-xl shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold">
-                <th className="px-6 py-4">Category Name</th>
-                <th className="px-6 py-4">Description</th>
-                <th className="px-6 py-4">Services Count</th>
+              <tr className="bg-[#070c29] border-b border-white/10 text-slate-400 text-xs uppercase tracking-wider font-semibold">
+                <th className="px-6 py-4">Category Details</th>
+                <th className="px-6 py-4 text-center">Active Services</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/5">
               {categories.map((category) => (
-                <tr key={category.id} className="hover:bg-slate-50/50 transition-colors group">
+                <tr key={category.id} className="hover:bg-white/[0.02] transition-colors group">
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                        <Tags size={18} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-900">{category.name}</p>
-                        <p className="text-xs text-slate-400">ID: {category.id}</p>
-                      </div>
-                    </div>
+                    <div className="font-semibold text-white">{category.name}</div>
+                    <div className="text-sm text-slate-400 mt-0.5">{category.description}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">
-                    {category.description}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                      {category.serviceCount} Services
+                  <td className="px-6 py-4 text-center">
+                    <span className="inline-flex items-center justify-center min-w-[2.5rem] px-2.5 py-1 rounded-full text-xs font-bold bg-[#181f4a] text-[#008cff] border border-[#008cff]/20">
+                      {category.serviceCount}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
+                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
                         onClick={() => openEditModal(category)}
-                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Edit"
+                        className="p-2 text-slate-400 hover:text-[#008cff] hover:bg-[#008cff]/10 rounded-lg transition-colors"
+                        title="Edit Category"
                       >
                         <Edit2 size={18} />
                       </button>
-                      <button
+                      <button 
                         onClick={() => handleDelete(category.id)}
-                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Delete"
+                        className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                        title="Delete Category"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -141,10 +130,15 @@ export default function AdminCategoriesPage() {
                   </td>
                 </tr>
               ))}
+              
               {categories.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
-                    No categories found. Create one to get started.
+                  <td colSpan={3} className="px-6 py-12 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 mb-4 border border-white/10">
+                      <Tags className="text-slate-400" size={24} />
+                    </div>
+                    <h3 className="text-lg font-medium text-white">No categories found</h3>
+                    <p className="text-slate-400 mt-1">Get started by creating a new category.</p>
                   </td>
                 </tr>
               )}
@@ -153,59 +147,62 @@ export default function AdminCategoriesPage() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal Overlay */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-900 font-heading">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070c29]/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#0f1535] border border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+              <h2 className="text-xl font-bold text-white font-heading">
                 {modalMode === "CREATE" ? "Create Category" : "Edit Category"}
-              </h3>
+              </h2>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-lg transition-colors"
+                className="p-2 text-slate-400 hover:bg-white/5 rounded-full transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Category Name</label>
-                <input
-                  {...register("name")}
-                  placeholder="e.g. Plumbing"
-                  className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                    errors.name ? "border-rose-300 bg-rose-50/30" : "border-slate-200"
-                  }`}
-                />
-                {errors.name && <p className="text-rose-500 text-xs font-medium">{errors.name.message}</p>}
+            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
+              
+              <div className="space-y-4">
+                {/* Category Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Category Name</label>
+                  <input
+                    type="text"
+                    {...register("name")}
+                    placeholder="e.g. Plumbing"
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/10 focus:outline-none focus:ring-1 focus:ring-[#008cff] focus:border-[#008cff] transition-all text-white bg-[#181f4a] placeholder:text-slate-500"
+                  />
+                  {errors.name && <p className="text-rose-400 text-xs mt-1.5 ml-1">{errors.name.message}</p>}
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1.5">Description</label>
+                  <textarea
+                    {...register("description")}
+                    rows={3}
+                    placeholder="Briefly describe this category..."
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/10 focus:outline-none focus:ring-1 focus:ring-[#008cff] focus:border-[#008cff] transition-all text-white bg-[#181f4a] placeholder:text-slate-500 resize-none"
+                  />
+                  {errors.description && <p className="text-rose-400 text-xs mt-1.5 ml-1">{errors.description.message}</p>}
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Description</label>
-                <textarea
-                  {...register("description")}
-                  rows={3}
-                  placeholder="Briefly describe this category..."
-                  className={`w-full p-4 bg-slate-50 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none ${
-                    errors.description ? "border-rose-300 bg-rose-50/30" : "border-slate-200"
-                  }`}
-                />
-                {errors.description && <p className="text-rose-500 text-xs font-medium">{errors.description.message}</p>}
-              </div>
-
-              <div className="pt-4 flex gap-3">
+              {/* Actions */}
+              <div className="flex gap-3 pt-4 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-white border border-slate-200 text-slate-700 font-medium py-2.5 rounded-xl hover:bg-slate-50 transition-colors"
+                  className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-slate-300 bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-600 text-white font-medium py-2.5 rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+                  className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-white bg-[#008cff] hover:bg-[#0070cc] transition-colors shadow-lg shadow-[#008cff]/20"
                 >
                   {modalMode === "CREATE" ? "Create" : "Save Changes"}
                 </button>

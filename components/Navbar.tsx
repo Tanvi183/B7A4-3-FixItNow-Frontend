@@ -15,6 +15,7 @@ type NavLink = {
 const navLinksData: NavLink[] = [
   { label: "Home",         href: "/"                             },
   { label: "Services",     href: "/services", hasDropdown: true  },
+  { label: "Technicians",  href: "/technicians"                  },
   { label: "How It Works", href: "/how-it-works"                  },
   { label: "About Us",     href: "/about"                        },
   { label: "Contact",      href: "/contact"                      },
@@ -30,9 +31,11 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { isAuthenticated, user, logout, setUser } = useAuthStore();
+  const [isMounted, setIsMounted] = useState(false);
 
 
   useEffect(() => {
+    setIsMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -283,7 +286,9 @@ export function Navbar() {
             <Search style={{ width: 16, height: 16, color: "#64748B" }} />
           </button>
 
-          {isAuthenticated ? (
+          {!isMounted ? (
+            <div style={{ width: 180, height: 40, background: "#F1F5F9", borderRadius: 999 }} className="animate-pulse" />
+          ) : isAuthenticated ? (
             <div className="relative right-controls-container">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -325,10 +330,10 @@ export function Navbar() {
                   
                   {user?.role === "CUSTOMER" && (
                     <>
-                      <Link href="/dashboard/user" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                      <Link href="/dashboard/customer" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                         <LayoutDashboard size={16} /> Dashboard
                       </Link>
-                      <Link href="/dashboard/user/bookings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                      <Link href="/dashboard/customer" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                         <Briefcase size={16} /> My Bookings
                       </Link>
                     </>
@@ -339,7 +344,7 @@ export function Navbar() {
                       <Link href="/dashboard/technician" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                         <LayoutDashboard size={16} /> Provider Dashboard
                       </Link>
-                      <Link href="/dashboard/technician/jobs" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                      <Link href="/dashboard/technician/bookings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                         <Wrench size={16} /> My Jobs
                       </Link>
                     </>
@@ -348,27 +353,27 @@ export function Navbar() {
                   {user?.role === "ADMIN" && (
                     <>
                       <Link href="/dashboard/admin" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
-                        <LayoutDashboard size={16} /> Admin Panel
-                      </Link>
-                      <Link href="/dashboard/admin/manage" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
-                        <Settings size={16} /> Manage Platform
+                        <Settings size={16} /> Admin Panel
                       </Link>
                     </>
                   )}
 
                   <div className="border-t border-slate-100 mt-2 pt-2">
-                    <button 
-                      onClick={() => { logout(); setDropdownOpen(false); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    <button
+                      onClick={() => {
+                        logout();
+                        setDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                     >
-                      <LogOut size={16} /> Log Out
+                      <LogOut size={16} /> Sign Out
                     </button>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <Link
                 href="/login"
                 className="right-controls-container hover:bg-slate-50 hover:border-slate-300 hover:text-blue-600 group"
@@ -394,7 +399,6 @@ export function Navbar() {
                 Log In
               </Link>
 
-
               <Link
                 href="/register"
                 className="right-controls-container hover:scale-[1.02] hover:shadow-xl group"
@@ -419,7 +423,7 @@ export function Navbar() {
                 Get Started
                 <ArrowRight style={{ width: 14, height: 14 }} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-            </>
+            </div>
           )}
 
           {/* Mobile toggle */}

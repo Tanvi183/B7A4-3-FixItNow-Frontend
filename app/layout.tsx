@@ -36,9 +36,7 @@ export default function RootLayout({
     <html lang="en" data-scroll-behavior="smooth" className={`${plusJakarta.variable} ${inter.variable}`} suppressHydrationWarning>
       <body style={{ fontFamily: "var(--font-body)" }} suppressHydrationWarning>
         <Providers>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          {children}
           <Toaster
             position="top-right"
             toastOptions={{
