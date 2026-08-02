@@ -23,6 +23,7 @@ import {
 import { FaBolt, FaFaucet, FaPaintRoller, FaSnowflake } from "react-icons/fa";
 import { GiVacuumCleaner, GiWoodBeam } from "react-icons/gi";
 import { HeroSearch } from "@/components/HeroSearch";
+import { ReviewsCarousel } from "@/components/ReviewsCarousel";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -72,25 +73,48 @@ const reviews = [
 ];
 
 // ─── STAR RATING ─────────────────────────────────────────────────────────────
-function Stars({ count }: { count: number }) {
-  return (
-    <div style={{ display: "flex", gap: "2px" }}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          style={{
-            width: 13, height: 13,
-            fill: i < count ? "var(--color-star)" : "#E2E8F0",
-            color: i < count ? "var(--color-star)" : "#E2E8F0",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+// (Moved to ReviewsCarousel.tsx)
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
-export default function HomePage() {
+export default async function HomePage() {
+  let apiTechnicians = [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/technicians`, { next: { revalidate: 60 } });
+    const data = await res.json();
+    if (data.success) {
+      apiTechnicians = data.data;
+    }
+  } catch (error) {
+    console.error("Failed to fetch technicians", error);
+  }
+
+  let apiReviews = [];
+  try {
+    const revRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/public`, { next: { revalidate: 60 } });
+    const revData = await revRes.json();
+    if (revData.success) {
+      apiReviews = revData.data;
+    }
+  } catch (error) {
+    console.error("Failed to fetch public reviews", error);
+  }
+
+  // Fallback to mock data if API fails or returns empty
+  const displayTechnicians = apiTechnicians.length > 0 ? apiTechnicians.slice(0, 5) : [];
+  const displayReviews = apiReviews.length > 0 ? apiReviews : reviews;
+
+  const getCategoryIcon = (categoryName: string) => {
+    switch (categoryName?.toLowerCase()) {
+      case "electrical works": return { icon: FaBolt, color: "#2563EB" };
+      case "plumbing": return { icon: FaFaucet, color: "#2563EB" };
+      case "hvac": return { icon: FaSnowflake, color: "#2563EB" };
+      case "cleaning": return { icon: GiVacuumCleaner, color: "#16A34A" };
+      case "painting": return { icon: FaPaintRoller, color: "#9333EA" };
+      case "carpentry": return { icon: GiWoodBeam, color: "#B45309" };
+      default: return { icon: HardHat, color: "#64748B" };
+    }
+  };
+
   return (
     <div style={{ overflowX: "hidden" }}>
 
@@ -308,7 +332,7 @@ export default function HomePage() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: 56 }}>
-            <Link href="/services" className="btn-outline" style={{ gap: 8, borderRadius: 12, padding: "14px 28px", color: "#2563EB", borderColor: "#BFDBFE" }}>
+            <Link href="/all-services" className="btn-outline" style={{ gap: 8, borderRadius: 12, padding: "14px 28px", color: "#2563EB", borderColor: "#BFDBFE" }}>
               Explore All Services <ArrowRight style={{ width: 16, height: 16 }} />
             </Link>
           </div>
@@ -455,16 +479,43 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Carousel Arrows */}
-          <div className="carousel-arrow carousel-arrow-left">
-            <ChevronLeft style={{ width: 20, height: 20, color: "#0F172A" }} />
-          </div>
-          <div className="carousel-arrow carousel-arrow-right">
-            <ChevronRight style={{ width: 20, height: 20, color: "#0F172A" }} />
-          </div>
+          {/* Carousel Arrows Removed */}
 
           <div className="technicians-grid">
-            {technicians.map((tech) => (
+            {displayTechnicians.length > 0 ? displayTechnicians.map((tech: any, index: number) => {
+              const catData = getCategoryIcon(tech.services?.[0]?.category?.name);
+              const TechIcon = catData.icon;
+              return (
+              <Link
+                key={tech.id}
+                href={`/technicians/${tech.id}`}
+                style={{ background: "#fff", borderRadius: 20, padding: 16, textDecoration: "none", boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}
+              >
+                <div style={{ position: "relative", width: "100%", height: 160, background: "#F3F4F6", borderRadius: 16, marginBottom: 16, overflow: "hidden" }}>
+                  <Image src={tech.user?.image || "https://ui-avatars.com/api/?name=" + encodeURIComponent(tech.user?.name || "Professional") + "&background=2563EB&color=fff&size=400"} alt={tech.user?.name} fill sizes="200px" style={{ objectFit: "cover", objectPosition: "top" }} />
+                  <div style={{ position: "absolute", top: 10, right: 10, background: "#fff", padding: "4px 8px", borderRadius: 12, display: "flex", alignItems: "center", gap: 4, boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
+                    <ShieldCheck style={{ width: 12, height: 12, color: "#10B981" }} />
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#10B981" }}>Verified</span>
+                  </div>
+                </div>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#0F172A", marginBottom: 4 }}>{tech.user?.name}</h3>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
+                  <TechIcon style={{ width: 14, height: 14, color: catData.color }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: catData.color }}>{tech.services?.[0]?.category?.name || "Professional"}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
+                  <Star style={{ width: 14, height: 14, fill: "#FBBF24", color: "#FBBF24" }} />
+                  <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{Number(tech.averageRating || 5.0).toFixed(1)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "#94A3B8" }}>({tech.reviewCount || 0} reviews)</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>From ${Number(tech.pricingRate).toFixed(0)}</span>
+                  <div style={{ background: "#EFF6FF", color: "#2563EB", padding: "8px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
+                    View Profile
+                  </div>
+                </div>
+              </Link>
+            )}) : technicians.map((tech) => (
               <Link
                 key={tech.name}
                 href="/technicians"
@@ -527,46 +578,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Carousel Arrows */}
-          <div className="carousel-arrow carousel-arrow-left" style={{ top: "58%" }}>
-            <ChevronLeft style={{ width: 20, height: 20, color: "#0F172A" }} />
-          </div>
-          <div className="carousel-arrow carousel-arrow-right" style={{ top: "58%" }}>
-            <ChevronRight style={{ width: 20, height: 20, color: "#0F172A" }} />
-          </div>
-
-          <div className="reviews-grid">
-            {reviews.map((rev) => (
-              <div key={rev.name} style={{ background: "#fff", borderRadius: 20, padding: 32, boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-                  <div style={{ position: "relative", width: 64, height: 64, borderRadius: "50%", overflow: "hidden", background: "#F3F4F6", flexShrink: 0 }}>
-                    <Image src={rev.image} alt={rev.name} fill sizes="100px" style={{ objectFit: "cover", objectPosition: "top" }} />
-                  </div>
-                  <div>
-                    <p style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#0F172A", marginBottom: 6 }}>{rev.name}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Stars count={rev.rating} />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>{rev.rating.toFixed(1)}</span>
-                    </div>
-                  </div>
-                </div>
-                <p style={{ color: "#334155", fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
-                  {rev.text}
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#94A3B8" }}>
-                  <MapPin style={{ width: 16, height: 16 }} />
-                  <span style={{ fontSize: 13, fontWeight: 600 }}>{rev.location}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Pagination Dots */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CBD5E1" }} />
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2563EB" }} />
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CBD5E1" }} />
-          </div>
+          <ReviewsCarousel reviews={displayReviews} />
         </div>
       </section>
 

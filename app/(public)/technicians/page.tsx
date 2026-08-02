@@ -1,61 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Search, Star, MapPin, X } from "lucide-react";
+import { Search, Star, MapPin, X, Loader2 } from "lucide-react";
 import Link from "next/link";
-
-// Mock Technicians Data
-const mockTechnicians = [
-  {
-    id: "TECH-001",
-    name: "Michael Chen",
-    role: "Master Electrician",
-    rating: "4.9",
-    reviews: 124,
-    hourlyRate: 65,
-    location: "Downtown",
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&auto=format&fit=crop",
-    skills: ["Wiring", "Smart Home"],
-    availability: "Available Today"
-  },
-  {
-    id: "TECH-002",
-    name: "Sarah Jenkins",
-    role: "Senior Plumber",
-    rating: "4.8",
-    reviews: 89,
-    hourlyRate: 55,
-    location: "North Suburbs",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop",
-    skills: ["Pipe Repair", "Heaters"],
-    availability: "Tomorrow"
-  },
-  {
-    id: "TECH-003",
-    name: "David Wilson",
-    role: "HVAC Specialist",
-    rating: "4.7",
-    reviews: 156,
-    hourlyRate: 75,
-    location: "All Areas",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
-    skills: ["AC Repair", "Heating"],
-    availability: "Available Today"
-  },
-  {
-    id: "TECH-004",
-    name: "Emily Davis",
-    role: "Professional Cleaner",
-    rating: "5.0",
-    reviews: 210,
-    hourlyRate: 35,
-    location: "Eastside",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop",
-    skills: ["Deep Cleaning", "Move-in/out"],
-    availability: "Available Today"
-  }
-];
+import { toast } from "react-hot-toast";
 
 const categories = [
   "Electrical works",
@@ -74,15 +23,66 @@ const rates = [
   "$80+ /hr"
 ];
 
+// Helper to get a realistic fallback image based on name
+const getFallbackImage = (name: string) => {
+  if (name.includes("Michael")) return "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&auto=format&fit=crop";
+  if (name.includes("Sarah")) return "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop";
+  if (name.includes("David")) return "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop";
+  if (name.includes("Emily")) return "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop";
+  // Default fallback
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2563EB&color=fff&size=400`;
+};
+
 export default function TechniciansPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [technicians, setTechnicians] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Custom Dropdown states
   const [sortOpen, setSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Highest Rated");
   const [areaOpen, setAreaOpen] = useState(false);
   const [serviceArea, setServiceArea] = useState("Select location");
+
+  useEffect(() => {
+    const fetchTechnicians = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/technicians`);
+        const data = await res.json();
+        
+        if (data.success) {
+          setTechnicians(data.data);
+        } else {
+          toast.error("Failed to load professionals.");
+        }
+      } catch (error) {
+        console.error("Error fetching technicians:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTechnicians();
+  }, []);
+
+  // Extract unique locations from backend data
+  const uniqueLocations = Array.from(new Set(technicians.map(t => t.location).filter(Boolean)));
+  const locationOptions = ["Select location", "All Areas", ...uniqueLocations];
+
+  // Compute filtered list
+  const filteredTechnicians = technicians.filter(tech => {
+    const matchesSearch = tech.user?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // For categories, checking if the technician has any service in this category or if their bio mentions it
+    const matchesCategory = selectedCategory === "All" || 
+      tech.services?.some((s: any) => s.category?.name === selectedCategory) ||
+      tech.bio?.includes(selectedCategory);
+      
+    const matchesArea = serviceArea === "Select location" || serviceArea === "All Areas" || tech.location === serviceArea;
+
+    return matchesSearch && matchesCategory && matchesArea;
+  });
 
   return (
     <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
@@ -178,9 +178,9 @@ export default function TechniciansPage() {
                   zIndex: 20,
                   overflow: "hidden"
                 }}>
-                  {["Select location", "Downtown", "North Suburbs", "Eastside", "All Areas"].map(area => (
+                  {locationOptions.map(area => (
                     <div
-                      key={area}
+                      key={area as string}
                       onClick={() => {
                         setServiceArea(area);
                         setAreaOpen(false);
@@ -292,40 +292,46 @@ export default function TechniciansPage() {
             </div>
           </div>
 
-          <h2 className="as-main-title">All Professionals <span style={{ color: "#94a3b8", fontSize: 16, fontWeight: 500 }}>({mockTechnicians.length})</span></h2>
+          <h2 className="as-main-title">All Professionals <span style={{ color: "#94a3b8", fontSize: 16, fontWeight: 500 }}>({filteredTechnicians.length})</span></h2>
 
-          <div className="as-grid">
-            {mockTechnicians.map((tech) => (
-              <div className="as-card" key={tech.id}>
+          {isLoading ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "100px 0" }}>
+              <Loader2 className="animate-spin text-blue-600 mb-4" size={40} />
+              <p className="text-slate-500 font-medium">Loading professionals...</p>
+            </div>
+          ) : filteredTechnicians.length > 0 ? (
+            <div className="as-grid">
+              {filteredTechnicians.map((tech) => (
+                <div className="as-card" key={tech.id}>
                 <div className="as-card-img">
                   <Image 
-                    src={tech.image} 
-                    alt={tech.name} 
+                    src={getFallbackImage(tech.user?.name || "")} 
+                    alt={tech.user?.name || "Professional"} 
                     fill 
                     className="object-cover" 
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(255,255,255,0.9)", padding: "4px 8px", borderRadius: 4, fontSize: 12, fontWeight: 600, color: "#1E293B" }}>
-                    {tech.availability}
+                    {tech.availabilitySlots?.[0] || "Available"}
                   </div>
                 </div>
                 <div className="as-card-content">
-                  <h3 className="as-card-title">{tech.name}</h3>
-                  <p style={{ fontSize: 13, color: "#64748b", marginBottom: 10 }}>{tech.role}</p>
+                  <h3 className="as-card-title">{tech.user?.name}</h3>
+                  <p style={{ fontSize: 13, color: "#64748b", marginBottom: 10 }}>{tech.bio}</p>
                   
                   <div className="as-card-rating">
                     <Star className="as-card-rating-star" size={16} fill="currentColor" />
-                    <span style={{ fontWeight: 600, color: "#1E293B" }}>{tech.rating}</span>
-                    <span className="as-card-rating-count">({tech.reviews})</span>
+                    <span style={{ fontWeight: 600, color: "#1E293B" }}>{Number(tech.averageRating || 5.0).toFixed(1)}</span>
+                    <span className="as-card-rating-count">({tech.reviewCount || 0} reviews)</span>
                   </div>
 
                   <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748b", marginBottom: 16 }}>
-                    <MapPin size={14} /> {tech.location}
+                    <MapPin size={14} /> {tech.location || "City Wide"}
                   </div>
 
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div className="as-card-price">
-                      ${tech.hourlyRate}<span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>/hr</span>
+                      ${Number(tech.pricingRate).toFixed(2)}<span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>/hr</span>
                     </div>
                     <Link href={`/technicians/${tech.id}`} style={{ textDecoration: "none" }}>
                       <button className="as-card-btn">View Profile</button>
@@ -335,6 +341,17 @@ export default function TechniciansPage() {
               </div>
             ))}
           </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: "100px 0", color: "#64748b" }}>
+              <p>No professionals found matching your filters.</p>
+              <button 
+                onClick={() => { setSearchTerm(""); setSelectedCategory("All"); setServiceArea("Select location"); }}
+                style={{ marginTop: 16, padding: "8px 16px", background: "#2563EB", color: "#fff", borderRadius: 8, cursor: "pointer", border: "none" }}
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
 
         </main>
 

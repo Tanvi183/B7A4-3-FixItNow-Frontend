@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
+import { X } from "lucide-react";
 
 // Helper to get cookies manually
 const getCookie = (name: string) => {
@@ -67,6 +68,13 @@ export default function CustomerDashboardPage() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Review Modal State
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -94,6 +102,46 @@ export default function CustomerDashboardPage() {
 
     fetchData();
   }, []);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBookingId) return;
+
+    setIsSubmittingReview(true);
+    try {
+      const token = getCookie("accessToken");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          bookingId: selectedBookingId,
+          rating: reviewRating,
+          comment: reviewComment,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Review submitted successfully!");
+        // Add new review to state
+        setReviews([data.data, ...reviews]);
+        // Close modal and reset state
+        setIsReviewModalOpen(false);
+        setReviewRating(5);
+        setReviewComment("");
+        setSelectedBookingId(null);
+      } else {
+        toast.error(data.message || "Failed to submit review");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const filteredBookings = bookings.filter(booking => 
     booking.service?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -199,9 +247,19 @@ export default function CustomerDashboardPage() {
                               </button>
                             )}
                             {booking.status === "COMPLETED" && (
-                              <button className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-[11px] uppercase tracking-wider font-bold rounded-md hover:bg-slate-50 transition-colors">
-                                Leave Review
-                              </button>
+                              reviews.some(r => r.bookingId === booking.id) ? (
+                                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">Reviewed</span>
+                              ) : (
+                                <button 
+                                  onClick={() => {
+                                    setSelectedBookingId(booking.id);
+                                    setIsReviewModalOpen(true);
+                                  }}
+                                  className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-[11px] uppercase tracking-wider font-bold rounded-md hover:bg-slate-50 transition-colors"
+                                >
+                                  Leave Review
+                                </button>
+                              )
                             )}
                           </div>
                         </td>
@@ -252,15 +310,81 @@ export default function CustomerDashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center flex flex-col items-center justify-center text-slate-400">
-              <Star size={32} className="mb-2 opacity-30" />
-              <p className="text-sm font-medium text-slate-600">No reviews yet</p>
-              <p className="text-xs mt-1">Complete a booking to leave a review.</p>
+            <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center flex flex-col items-center justify-center">
+              <Star className="text-slate-300 mb-3" size={32} />
+              <p className="text-slate-500 font-medium text-sm">You haven't left any reviews yet.</p>
             </div>
           )}
         </div>
-
       </div>
+
+      {/* Review Modal */}
+      {isReviewModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100">
+              <h3 className="font-bold text-lg text-slate-800">Leave a Review</h3>
+              <button 
+                onClick={() => setIsReviewModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100 p-1"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleReviewSubmit} className="p-6 space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-700">Rating</label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      className="focus:outline-none transition-transform hover:scale-110"
+                    >
+                      <Star 
+                        size={32} 
+                        className={`transition-colors ${star <= reviewRating ? 'fill-amber-400 text-amber-400' : 'fill-slate-100 text-slate-200 hover:text-amber-200'}`} 
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Comment</label>
+                <textarea
+                  required
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Share your experience with this service..."
+                  rows={4}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsReviewModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingReview}
+                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm shadow-blue-600/20"
+                >
+                  {isSubmittingReview && <Loader2 size={16} className="animate-spin" />}
+                  {isSubmittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
