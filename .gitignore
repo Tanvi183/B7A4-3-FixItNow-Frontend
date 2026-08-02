@@ -44,3 +44,5 @@ next-env.d.ts
 implementation_plan.md
 AGENTS.md
 CLAUDE.md
+prompts.md
+test-credentials.txt

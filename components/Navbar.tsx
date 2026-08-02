@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Search, User, ArrowRight, Menu, X, Wrench } from "lucide-react";
+import { ChevronDown, Search, User, ArrowRight, Menu, X, Wrench, LayoutDashboard, LogOut, Briefcase, Settings } from "lucide-react";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 type NavLink = {
   label: string;
@@ -27,6 +28,14 @@ export function Navbar() {
   }));
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { isAuthenticated, user, logout, setUser } = useAuthStore();
+
+  // Temporary mock role setter for debugging/testing
+  const handleMockLogin = (role: string) => {
+    setUser({ id: "123", name: "Test User", email: "test@example.com", role });
+    setDropdownOpen(false);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -238,55 +247,153 @@ export function Navbar() {
             <Search style={{ width: 16, height: 16, color: "#64748B" }} />
           </button>
 
-          <Link
-            href="/login"
-            className="right-controls-container hover:bg-slate-50 hover:border-slate-300 hover:text-blue-600 group"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "9px 18px",
-              fontSize: 14,
-              fontFamily: "var(--font-body)",
-              fontWeight: 500,
-              color: "#475569",
-              textDecoration: "none",
-              borderRadius: 999,
-              border: "1.5px solid #E2E8F0",
-              background: "#fff",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-              transition: "all 250ms ease",
-            }}
-          >
-            <User style={{ width: 16, height: 16 }} className="text-slate-500 group-hover:text-blue-600 transition-colors" />
-            Log In
-          </Link>
+          {isAuthenticated ? (
+            <div className="relative right-controls-container">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="hover:scale-[1.02] hover:shadow-xl group"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "9px 18px",
+                  fontSize: 14,
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 600,
+                  color: "#475569",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                  border: "1.5px solid #E2E8F0",
+                  background: "#fff",
+                  whiteSpace: "nowrap",
+                  transition: "all 250ms ease",
+                }}
+              >
+                <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">
+                  {user?.name.charAt(0) || "U"}
+                </div>
+                <span>{user?.name || "Account"}</span>
+                <ChevronDown size={14} className={`transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+              </button>
 
-          <Link
-            href="/register"
-            className="right-controls-container hover:scale-[1.02] hover:shadow-xl group"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 7,
-              padding: "11px 24px",
-              fontSize: 14,
-              fontFamily: "var(--font-body)",
-              fontWeight: 600,
-              color: "#fff",
-              textDecoration: "none",
-              borderRadius: 999,
-              background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
-              boxShadow: "0 4px 16px rgba(37,99,235,.35)",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-              transition: "all 250ms cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
-          >
-            Get Started
-            <ArrowRight style={{ width: 16, height: 16 }} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-2 border-b border-slate-100 mb-2">
+                    <p className="text-sm font-bold text-slate-800 truncate">{user?.name}</p>
+                    <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                    <div className="mt-1 inline-block px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                      {user?.role}
+                    </div>
+                  </div>
+                  
+                  {user?.role === "CUSTOMER" && (
+                    <>
+                      <Link href="/dashboard/user" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                        <LayoutDashboard size={16} /> Dashboard
+                      </Link>
+                      <Link href="/dashboard/user/bookings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                        <Briefcase size={16} /> My Bookings
+                      </Link>
+                    </>
+                  )}
+
+                  {user?.role === "TECHNICIAN" && (
+                    <>
+                      <Link href="/dashboard/technician" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                        <LayoutDashboard size={16} /> Provider Dashboard
+                      </Link>
+                      <Link href="/dashboard/technician/jobs" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                        <Wrench size={16} /> My Jobs
+                      </Link>
+                    </>
+                  )}
+
+                  {user?.role === "ADMIN" && (
+                    <>
+                      <Link href="/dashboard/admin" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                        <LayoutDashboard size={16} /> Admin Panel
+                      </Link>
+                      <Link href="/dashboard/admin/manage" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                        <Settings size={16} /> Manage Platform
+                      </Link>
+                    </>
+                  )}
+
+                  <div className="border-t border-slate-100 mt-2 pt-2">
+                    <button 
+                      onClick={() => { logout(); setDropdownOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut size={16} /> Log Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="right-controls-container hover:bg-slate-50 hover:border-slate-300 hover:text-blue-600 group"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "9px 18px",
+                  fontSize: 14,
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 500,
+                  color: "#475569",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                  border: "1.5px solid #E2E8F0",
+                  background: "#fff",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                  transition: "all 250ms ease",
+                }}
+              >
+                <User style={{ width: 16, height: 16 }} className="text-slate-500 group-hover:text-blue-600 transition-colors" />
+                Log In
+              </Link>
+
+
+              <Link
+                href="/register"
+                className="right-controls-container hover:scale-[1.02] hover:shadow-xl group"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "11px 24px",
+                  fontSize: 14,
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 600,
+                  color: "#fff",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                  background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
+                  boxShadow: "0 8px 24px rgba(37,99,235,.28)",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                  transition: "all 250ms ease",
+                }}
+              >
+                Get Started
+                <ArrowRight style={{ width: 14, height: 14 }} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </>
+          )}
+
+          {/* Temporary Mock Login Buttons for Dev */}
+          {!isAuthenticated && (
+            <div className="hidden lg:flex items-center gap-2 right-controls-container border-l border-slate-200 pl-3 ml-1">
+              <button onClick={() => handleMockLogin("CUSTOMER")} className="text-[10px] bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded text-slate-600 font-bold">MOCK CUSTOMER</button>
+              <button onClick={() => handleMockLogin("TECHNICIAN")} className="text-[10px] bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded text-slate-600 font-bold">MOCK TECH</button>
+              <button onClick={() => handleMockLogin("ADMIN")} className="text-[10px] bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded text-slate-600 font-bold">MOCK ADMIN</button>
+            </div>
+          )}
 
           {/* Mobile toggle */}
           <button
@@ -314,10 +421,64 @@ export function Navbar() {
                 {link.hasDropdown && <ChevronDown style={{ width: 14, height: 14 }} />}
               </Link>
             ))}
-            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-              <Link href="/login" style={{ flex: 1, textAlign: "center", padding: "11px 0", fontSize: 13, fontWeight: 600, color: "#475569", border: "1.5px solid #E2E8F0", borderRadius: 999, textDecoration: "none" }}>Log In</Link>
-              <Link href="/register" style={{ flex: 1, textAlign: "center", padding: "11px 0", fontSize: 13, fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)", borderRadius: 999, textDecoration: "none" }}>Get Started</Link>
-            </div>
+            {isAuthenticated ? (
+              <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2">
+                <div className="flex items-center gap-3 px-2 py-1 mb-2">
+                  <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm">
+                    {user?.name.charAt(0) || "U"}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">{user?.name}</p>
+                    <p className="text-xs text-slate-500">{user?.email}</p>
+                  </div>
+                </div>
+                
+                {user?.role === "CUSTOMER" && (
+                  <>
+                    <Link href="/dashboard/user" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                      <LayoutDashboard size={16} /> Dashboard
+                    </Link>
+                    <Link href="/dashboard/user/bookings" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                      <Briefcase size={16} /> My Bookings
+                    </Link>
+                  </>
+                )}
+
+                {user?.role === "TECHNICIAN" && (
+                  <>
+                    <Link href="/dashboard/technician" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                      <LayoutDashboard size={16} /> Provider Dashboard
+                    </Link>
+                    <Link href="/dashboard/technician/jobs" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                      <Wrench size={16} /> My Jobs
+                    </Link>
+                  </>
+                )}
+
+                {user?.role === "ADMIN" && (
+                  <>
+                    <Link href="/dashboard/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                      <LayoutDashboard size={16} /> Admin Panel
+                    </Link>
+                    <Link href="/dashboard/admin/manage" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                      <Settings size={16} /> Manage Platform
+                    </Link>
+                  </>
+                )}
+
+                <button 
+                  onClick={() => { logout(); setMobileOpen(false); }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 mt-2 text-sm font-bold text-red-600 bg-red-50 rounded-full"
+                >
+                  <LogOut size={16} /> Log Out
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+                <Link href="/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: "center", padding: "11px 0", fontSize: 13, fontWeight: 600, color: "#475569", border: "1.5px solid #E2E8F0", borderRadius: 999, textDecoration: "none" }}>Log In</Link>
+                <Link href="/register" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: "center", padding: "11px 0", fontSize: 13, fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)", borderRadius: 999, textDecoration: "none" }}>Get Started</Link>
+              </div>
+            )}
           </div>
         </div>
       )}
