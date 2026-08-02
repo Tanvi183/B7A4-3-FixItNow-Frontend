@@ -21,7 +21,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FixItNow — Your Trusted Home Service Platform",
+  title: "FixItNow | Home Services, Done Right",
   description:
     "Find skilled professionals for any home service. Fast booking, secure payments, and happy homes.",
   keywords: "home services, plumbing, electrical, cleaning, AC repair, carpentry, painting",
