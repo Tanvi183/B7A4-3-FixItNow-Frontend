@@ -14,7 +14,7 @@ const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(6, "Password must be at least 6 characters."),
   role: z.enum(["CUSTOMER", "TECHNICIAN"], {
-    required_error: "Please select an account type.",
+    message: "Please select an account type.",
   }),
 });
 
