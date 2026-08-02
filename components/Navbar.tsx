@@ -5,7 +5,13 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Search, User, ArrowRight, Menu, X, Wrench } from "lucide-react";
 
-const navLinksData = [
+type NavLink = {
+  label: string;
+  href: string;
+  hasDropdown?: boolean;
+};
+
+const navLinksData: NavLink[] = [
   { label: "Home",         href: "/"                             },
   { label: "Services",     href: "/services"                     },
   { label: "How It Works", href: "/how-it-works"                  },

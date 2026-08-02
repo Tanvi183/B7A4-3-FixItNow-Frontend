@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
+import Providers from "./providers";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -34,30 +35,32 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${plusJakarta.variable} ${inter.variable}`} suppressHydrationWarning>
       <body style={{ fontFamily: "var(--font-body)" }} suppressHydrationWarning>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              borderRadius: "14px",
-              background: "#0F172A",
-              color: "#F8FAFC",
-              fontSize: "14px",
-              fontFamily: "var(--font-body)",
-              padding: "14px 18px",
-              boxShadow: "0 8px 30px rgba(15,23,42,.2)",
-            },
-            success: {
-              iconTheme: { primary: "#10B981", secondary: "#fff" },
-            },
-            error: {
-              iconTheme: { primary: "#EF4444", secondary: "#fff" },
-            },
-          }}
-        />
+        <Providers>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                borderRadius: "14px",
+                background: "#0F172A",
+                color: "#F8FAFC",
+                fontSize: "14px",
+                fontFamily: "var(--font-body)",
+                padding: "14px 18px",
+                boxShadow: "0 8px 30px rgba(15,23,42,.2)",
+              },
+              success: {
+                iconTheme: { primary: "#10B981", secondary: "#fff" },
+              },
+              error: {
+                iconTheme: { primary: "#EF4444", secondary: "#fff" },
+              },
+            }}
+          />
+        </Providers>
       </body>
     </html>
   );
