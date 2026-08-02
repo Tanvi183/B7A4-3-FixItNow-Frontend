@@ -108,7 +108,10 @@ export default function DashboardSidebar() {
       {/* Logout */}
       <div className="p-4 mt-auto">
         <button
-          onClick={logout}
+          onClick={() => {
+            logout();
+            window.location.href = "/login";
+          }}
           className="flex items-center gap-3 px-3 py-[10px] rounded-[6px] text-[15px] font-normal text-slate-400 hover:bg-rose-500/10 hover:text-rose-400 w-full transition-colors group"
         >
           <LogOut size={20} strokeWidth={1.5} className="text-slate-400 group-hover:text-rose-400 transition-colors" />

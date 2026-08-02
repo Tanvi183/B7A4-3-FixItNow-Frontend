@@ -363,6 +363,7 @@ export function Navbar() {
                       onClick={() => {
                         logout();
                         setDropdownOpen(false);
+                        window.location.href = "/login";
                       }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                     >
@@ -498,7 +499,7 @@ export function Navbar() {
                 )}
 
                 <button 
-                  onClick={() => { logout(); setMobileOpen(false); }}
+                  onClick={() => { logout(); setMobileOpen(false); window.location.href = "/login"; }}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 mt-2 text-sm font-bold text-red-600 bg-red-50 rounded-full"
                 >
                   <LogOut size={16} /> Log Out
