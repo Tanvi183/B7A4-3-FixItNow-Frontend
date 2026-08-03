@@ -82,9 +82,9 @@ export default function TechniciansPage() {
   const filteredTechs = useMemo(() => {
     return technicians.filter(tech => {
       const matchesSearch = 
-        tech.user?.name.toLowerCase().includes(search.toLowerCase()) ||
-        tech.user?.email.toLowerCase().includes(search.toLowerCase()) ||
-        tech.skills.some(s => s.toLowerCase().includes(search.toLowerCase()));
+        (tech.user?.name || "").toLowerCase().includes(search.toLowerCase()) ||
+        (tech.user?.email || "").toLowerCase().includes(search.toLowerCase()) ||
+        (tech.skills || []).some(s => (s || "").toLowerCase().includes(search.toLowerCase()));
 
       const matchesStatus = 
         statusFilter === "all" ||

@@ -178,7 +178,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, sidebarExpanded, s
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5
-                hover:bg-gray-100 dark:hover:bg-white/8 transition-colors duration-150"
+                hover:bg-gray-100 dark:hover:bg-white/8 transition-colors duration-150 cursor-pointer"
             >
               {/* Avatar */}
               <div className="relative">
@@ -260,7 +260,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, sidebarExpanded, s
                   <button
                     onClick={handleLogout}
                     className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400
-                      hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                      hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors cursor-pointer"
                   >
                     <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/15 text-rose-500">
                       <FiLogOut className="w-4 h-4" />

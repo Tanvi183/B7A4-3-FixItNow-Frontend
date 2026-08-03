@@ -186,8 +186,8 @@ export default function UsersPage() {
   const filtered = useMemo(() => {
     return users.filter((u) => {
       const matchesSearch =
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.email.toLowerCase().includes(search.toLowerCase());
+        (u.name || "").toLowerCase().includes(search.toLowerCase()) ||
+        (u.email || "").toLowerCase().includes(search.toLowerCase());
       const matchesRole = roleFilter === "ALL" || u.role === roleFilter;
       const matchesStatus = statusFilter === "ALL" || u.status === statusFilter;
       return matchesSearch && matchesRole && matchesStatus;
