@@ -1,7 +1,8 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-type FetchOptions = RequestInit & {
+type FetchOptions = Omit<RequestInit, 'body'> & {
   params?: Record<string, string | number | boolean>;
+  body?: any;
 };
 
 export const apiClient = async <T>(

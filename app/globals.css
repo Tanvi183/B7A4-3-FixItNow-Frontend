@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-admin-primary: #3C50E0;
+  --color-admin-secondary: #3C50E0;
+}
+
 /* ─── DESIGN TOKENS ──────────────────────────────────────────────────────── */
 :root {
   /* Brand Colors */
@@ -11,6 +16,10 @@
   --color-accent:         #10B981; /* Emerald */
   --color-warning:        #F59E0B; /* Amber */
   --color-error:          #EF4444; /* Red */
+  
+  /* Admin Template Colors */
+  --color-admin-primary:  #3C50E0;
+  --color-admin-secondary:#3C50E0;
 
   /* Backgrounds */
   --color-bg:             #FFFFFF;
@@ -90,10 +99,9 @@
 }
 
 /* ─── BASE ────────────────────────────────────────────────────────────────── */
+/* Removed unlayered margin/padding reset that was breaking Tailwind v4 utilities */
 *, *::before, *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
