@@ -6,20 +6,25 @@ import { usePathname } from "next/navigation";
 import { 
   FiGrid, FiSmile, FiShoppingCart, FiCalendar, FiUser, 
   FiCopy, FiFileText, FiLayout, FiMessageCircle, FiHeadphones, FiMail,
-  FiChevronDown, FiChevronUp, FiList, FiMoreHorizontal
+  FiChevronDown, FiChevronUp, FiList, FiMoreHorizontal,
+  FiTool, FiBriefcase, FiDollarSign, FiClock, FiStar
 } from "react-icons/fi";
 import { MdOutlineTableChart } from "react-icons/md";
+import { useAuthStore } from "@/stores/useAuthStore";
 
-interface AdminSidebarProps {
+interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
   sidebarExpanded: boolean;
   setSidebarExpanded: (arg: boolean) => void;
 }
 
-export default function AdminSidebar({ sidebarOpen, setSidebarOpen, sidebarExpanded, setSidebarExpanded }: AdminSidebarProps) {
+export default function Sidebar({ sidebarOpen, setSidebarOpen, sidebarExpanded, setSidebarExpanded }: SidebarProps) {
   const pathname = usePathname();
   const [openDropdown, setOpenDropdown] = useState<string | null>("Task");
+  const { user } = useAuthStore();
+  
+  const role = user?.role || "CUSTOMER";
 
   const toggleDropdown = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name);
@@ -34,7 +39,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen, sidebarExpan
     route: string = "#"
   ) => {
     const isOpen = openDropdown === label;
-    const isTaskActive = label === "Task"; 
+    const isActive = pathname === route || label === "Task"; // keep Task active for demo visual
     
     return (
       <li key={label}>
@@ -51,13 +56,13 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen, sidebarExpan
           className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
             !sidebarExpanded ? "justify-center" : "justify-between"
           } ${
-            isTaskActive 
+            isActive 
               ? "bg-[#F3F4F6] text-[#3C50E0] dark:bg-meta-4 dark:text-white" 
               : "text-[#1C2434] hover:bg-gray-2 hover:text-[#3C50E0] dark:text-bodydark1 dark:hover:bg-meta-4"
           }`}
         >
           <div className="flex items-center gap-3">
-            <span className={isTaskActive ? "text-[#3C50E0] dark:text-white" : "text-[#64748B] dark:text-bodydark2 group-hover:text-[#3C50E0]"}>
+            <span className={isActive ? "text-[#3C50E0] dark:text-white" : "text-[#64748B] dark:text-bodydark2 group-hover:text-[#3C50E0]"}>
               {icon}
             </span>
             {sidebarExpanded && label}
@@ -135,16 +140,32 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen, sidebarExpan
               {sidebarExpanded ? "MENU" : <FiMoreHorizontal className="inline-block w-5 h-5" />}
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
-              {navItem("Dashboard", <FiGrid className="w-5 h-5" />, false, true, [], "/dashboard/admin")}
-              {navItem("AI Assistant", <FiSmile className="w-5 h-5" />, true, true, [])}
-              {navItem("E-commerce", <FiShoppingCart className="w-5 h-5" />, false, true, [])}
-              {navItem("Calendar", <FiCalendar className="w-5 h-5" />, false, false, [])}
-              {navItem("User Profile", <FiUser className="w-5 h-5" />, false, false, [])}
-              {navItem("Task", <FiCopy className="w-5 h-5" />, false, true, ["List", "Kanban"])}
-              {navItem("Forms", <FiList className="w-5 h-5" />, false, true, [])}
-              {navItem("Tables", <MdOutlineTableChart className="w-5 h-5" />, false, true, [])}
-              {navItem("Pages", <FiFileText className="w-5 h-5" />, false, true, [])}
-              {navItem("Layouts", <FiLayout className="w-5 h-5" />, true, true, [])}
+              {role === "ADMIN" && (
+                <>
+                  {navItem("Dashboard", <FiGrid className="w-5 h-5" />, false, false, [], "/dashboard/admin")}
+                  {navItem("Manage Users", <FiUser className="w-5 h-5" />, false, false, [], "/dashboard/admin/users")}
+                  {navItem("Manage Providers", <FiBriefcase className="w-5 h-5" />, false, false, [], "/dashboard/admin/providers")}
+                  {navItem("Manage Services", <FiTool className="w-5 h-5" />, false, false, [], "/dashboard/admin/services")}
+                  {navItem("Task", <FiCopy className="w-5 h-5" />, false, true, ["List", "Kanban"])}
+                </>
+              )}
+
+              {role === "TECHNICIAN" && (
+                <>
+                  {navItem("Dashboard", <FiGrid className="w-5 h-5" />, false, false, [], "/dashboard/technician")}
+                  {navItem("My Jobs", <FiBriefcase className="w-5 h-5" />, true, false, [], "/dashboard/technician/jobs")}
+                  {navItem("Earnings", <FiDollarSign className="w-5 h-5" />, false, false, [], "/dashboard/technician/earnings")}
+                  {navItem("Schedule", <FiCalendar className="w-5 h-5" />, false, false, [], "/dashboard/technician/schedule")}
+                </>
+              )}
+
+              {role === "CUSTOMER" && (
+                <>
+                  {navItem("Dashboard", <FiGrid className="w-5 h-5" />, false, false, [], "/dashboard/customer")}
+                  {navItem("My Bookings", <FiClock className="w-5 h-5" />, false, false, [], "/dashboard/customer/bookings")}
+                  {navItem("My Reviews", <FiStar className="w-5 h-5" />, false, false, [], "/dashboard/customer/reviews")}
+                </>
+              )}
             </ul>
           </div>
 
@@ -155,17 +176,8 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen, sidebarExpan
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               {navItem("Chat", <FiMessageCircle className="w-5 h-5" />, false, false, [])}
-              {navItem("Support", <FiHeadphones className="w-5 h-5" />, true, true, [])}
-              {navItem("Email", <FiMail className="w-5 h-5" />, false, true, [])}
-            </ul>
-          </div>
-
-          {/* OTHERS GROUP */}
-          <div>
-            <h3 className={`mb-4 mt-6 text-xs font-semibold text-[#8A99AF] uppercase ${sidebarExpanded ? 'ml-4' : 'text-center'}`}>
-              {sidebarExpanded ? "OTHERS" : <FiMoreHorizontal className="inline-block w-5 h-5" />}
-            </h3>
-            <ul className="mb-6 flex flex-col gap-1.5">
+              {navItem("Support", <FiHeadphones className="w-5 h-5" />, true, false, [])}
+              {navItem("Email", <FiMail className="w-5 h-5" />, false, false, [])}
             </ul>
           </div>
 

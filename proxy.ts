@@ -70,10 +70,10 @@ function redirectToRoleDashboard(role: string, baseUrl: string) {
   if (role === 'ADMIN') {
     return NextResponse.redirect(new URL('/dashboard/admin', baseUrl));
   } else if (role === 'TECHNICIAN') {
-    return NextResponse.redirect(new URL('/dashboard/provider', baseUrl));
+    return NextResponse.redirect(new URL('/dashboard/technician', baseUrl));
   } else {
     // Default to CUSTOMER
-    return NextResponse.redirect(new URL('/dashboard/user', baseUrl));
+    return NextResponse.redirect(new URL('/dashboard/customer', baseUrl));
   }
 }
 

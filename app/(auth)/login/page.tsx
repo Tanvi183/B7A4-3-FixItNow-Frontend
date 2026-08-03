@@ -57,8 +57,8 @@ export default function LoginPage() {
         toast.success(`Welcome back, ${profileData.data.name}!`);
         const role = profileData.data.role;
         if (role === "ADMIN") router.push("/dashboard/admin");
-        else if (role === "TECHNICIAN") router.push("/dashboard/provider");
-        else router.push("/dashboard/user");
+        else if (role === "TECHNICIAN") router.push("/dashboard/technician");
+        else router.push("/dashboard/customer");
       }
     } catch (error: any) {
       toast.error(error.message);

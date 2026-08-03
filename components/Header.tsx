@@ -9,14 +9,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
-interface AdminHeaderProps {
+interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (arg: boolean) => void;
   sidebarExpanded: boolean;
   setSidebarExpanded: (arg: boolean) => void;
 }
 
-export default function AdminHeader({ sidebarOpen, setSidebarOpen, sidebarExpanded, setSidebarExpanded }: AdminHeaderProps) {
+export default function Header({ sidebarOpen, setSidebarOpen, sidebarExpanded, setSidebarExpanded }: HeaderProps) {
   const { user, logout } = useAuthStore();
   const { theme, setTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
