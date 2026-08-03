@@ -6,6 +6,22 @@
 @theme {
   --color-admin-primary: #3C50E0;
   --color-admin-secondary: #3C50E0;
+  --color-boxdark: #24303F;
+  --color-boxdark-2: #1A222C;
+  --color-bodydark: #AEB7C0;
+  --color-bodydark1: #DEE4EE;
+  --color-bodydark2: #8A99AF;
+  --color-stroke: #E2E8F0;
+  --color-strokedark: #2E3A47;
+  --color-graydark: #333A48;
+  --color-whiten: #F1F5F9;
+  --color-whiter: #F5F7FD;
+  --color-meta-1: #DC3545;
+  --color-meta-2: #EFF2F7;
+  --color-meta-3: #10B981;
+  --color-meta-4: #313D4A;
+  --color-meta-5: #259AE6;
+  --color-meta-6: #FFBA00;
 }
 
 /* ─── DESIGN TOKENS ──────────────────────────────────────────────────────── */
