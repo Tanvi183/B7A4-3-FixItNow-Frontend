@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-04-10' as any, // fallback for TS typing
-});
+// Stripe is instantiated inside the handler to prevent build-time crashes if keys are missing.
 
 export async function POST(req: Request) {
   try {
@@ -16,6 +14,10 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock', {
+      apiVersion: '2024-04-10' as any,
+    });
 
     // Determine base URL dynamically (or from env)
     const origin = req.headers.get('origin') || 'http://localhost:3000';

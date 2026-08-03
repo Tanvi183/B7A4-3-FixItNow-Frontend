@@ -35,7 +35,12 @@ const serviceSchema = z.object({
   basePrice: z.coerce.number().min(1, "Base price must be greater than 0"),
   categoryId: z.string().uuid("Please select a valid category"),
 });
-type ServiceFormValues = z.infer<typeof serviceSchema>;
+interface ServiceFormValues {
+  name: string;
+  description: string;
+  basePrice: number;
+  categoryId: string;
+}
 
 export default function AdminServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -53,7 +58,7 @@ export default function AdminServicesPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ServiceFormValues>({
-    resolver: zodResolver(serviceSchema)
+    resolver: zodResolver(serviceSchema) as any
   });
 
   const fetchData = async () => {
