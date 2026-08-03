@@ -7,7 +7,8 @@ import {
   FiGrid, FiSmile, FiShoppingCart, FiCalendar, FiUser, 
   FiCopy, FiFileText, FiLayout, FiMessageCircle, FiHeadphones, FiMail,
   FiChevronDown, FiChevronUp, FiList, FiMoreHorizontal,
-  FiTool, FiBriefcase, FiDollarSign, FiClock, FiStar
+  FiTool, FiBriefcase, FiDollarSign, FiClock, FiStar,
+  FiTag, FiCheckSquare, FiCreditCard
 } from "react-icons/fi";
 import { MdOutlineTableChart } from "react-icons/md";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -137,33 +138,38 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, sidebarExpanded, 
           {/* MENU GROUP */}
           <div>
             <h3 className={`mb-4 text-xs font-semibold text-[#8A99AF] uppercase ${sidebarExpanded ? 'ml-4' : 'text-center'}`}>
-              {sidebarExpanded ? "MENU" : <FiMoreHorizontal className="inline-block w-5 h-5" />}
+              {sidebarExpanded ? "MAIN MENU" : <FiMoreHorizontal className="inline-block w-5 h-5" />}
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               {role === "ADMIN" && (
                 <>
                   {navItem("Dashboard", <FiGrid className="w-5 h-5" />, false, false, [], "/dashboard/admin")}
-                  {navItem("Manage Users", <FiUser className="w-5 h-5" />, false, false, [], "/dashboard/admin/users")}
-                  {navItem("Manage Providers", <FiBriefcase className="w-5 h-5" />, false, false, [], "/dashboard/admin/providers")}
-                  {navItem("Manage Services", <FiTool className="w-5 h-5" />, false, false, [], "/dashboard/admin/services")}
-                  {navItem("Task", <FiCopy className="w-5 h-5" />, false, true, ["List", "Kanban"])}
+                  {navItem("Users", <FiUser className="w-5 h-5" />, false, false, [], "/dashboard/admin/users")}
+                  {navItem("Technicians", <FiTool className="w-5 h-5" />, false, true, ["All Technicians", "Pending Approvals"], "/dashboard/admin/technicians")}
+                  {navItem("Categories", <FiTag className="w-5 h-5" />, false, false, [], "/dashboard/admin/categories")}
+                  {navItem("Services", <FiList className="w-5 h-5" />, false, false, [], "/dashboard/admin/services")}
+                  {navItem("Bookings", <FiCheckSquare className="w-5 h-5" />, false, false, [], "/dashboard/admin/bookings")}
+                  {navItem("Payments", <FiCreditCard className="w-5 h-5" />, false, false, [], "/dashboard/admin/payments")}
+                  {navItem("Reviews", <FiStar className="w-5 h-5" />, false, false, [], "/dashboard/admin/reviews")}
                 </>
               )}
 
               {role === "TECHNICIAN" && (
                 <>
                   {navItem("Dashboard", <FiGrid className="w-5 h-5" />, false, false, [], "/dashboard/technician")}
-                  {navItem("My Jobs", <FiBriefcase className="w-5 h-5" />, true, false, [], "/dashboard/technician/jobs")}
-                  {navItem("Earnings", <FiDollarSign className="w-5 h-5" />, false, false, [], "/dashboard/technician/earnings")}
-                  {navItem("Schedule", <FiCalendar className="w-5 h-5" />, false, false, [], "/dashboard/technician/schedule")}
+                  {navItem("My Bookings", <FiCheckSquare className="w-5 h-5" />, false, true, ["All Jobs", "Pending", "Completed"], "/dashboard/technician/bookings")}
+                  {navItem("My Profile", <FiUser className="w-5 h-5" />, false, false, [], "/dashboard/technician/profile")}
                 </>
               )}
 
               {role === "CUSTOMER" && (
                 <>
                   {navItem("Dashboard", <FiGrid className="w-5 h-5" />, false, false, [], "/dashboard/customer")}
-                  {navItem("My Bookings", <FiClock className="w-5 h-5" />, false, false, [], "/dashboard/customer/bookings")}
+                  {navItem("Book a Service", <FiShoppingCart className="w-5 h-5" />, false, false, [], "/dashboard/customer/book")}
+                  {navItem("My Bookings", <FiCheckSquare className="w-5 h-5" />, false, false, [], "/dashboard/customer/bookings")}
+                  {navItem("Payments", <FiCreditCard className="w-5 h-5" />, false, false, [], "/dashboard/customer/payments")}
                   {navItem("My Reviews", <FiStar className="w-5 h-5" />, false, false, [], "/dashboard/customer/reviews")}
+                  {navItem("Apply as Technician", <FiTool className="w-5 h-5" />, true, false, [], "/dashboard/customer/apply-technician")}
                 </>
               )}
             </ul>
