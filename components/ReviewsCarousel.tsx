@@ -101,25 +101,26 @@ export function ReviewsCarousel({ reviews }: { reviews: any[] }) {
           const rLocation = rev.location || "Verified Customer";
           
           return (
-            <div key={rev.id || index} style={{ background: "#fff", borderRadius: 20, padding: 32, boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}>
+            <div key={rev.id || index} className="premium-review-card">
+              <div className="premium-review-quote-icon">"</div>
               <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-                <div style={{ position: "relative", width: 64, height: 64, borderRadius: "50%", overflow: "hidden", background: "#F3F4F6", flexShrink: 0 }}>
+                <div style={{ position: "relative", width: 64, height: 64, borderRadius: "50%", overflow: "hidden", background: "#F8FAFC", flexShrink: 0, border: "2px solid #fff", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
                   <Image src={rImage} alt={rName} fill sizes="100px" style={{ objectFit: "cover", objectPosition: "top" }} />
                 </div>
                 <div>
-                  <p style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#0F172A", marginBottom: 6 }}>{rName}</p>
+                  <p style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#1E293B", marginBottom: 6 }}>{rName}</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <Stars count={rRating} />
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>{Number(rRating).toFixed(1)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1E293B" }}>{Number(rRating).toFixed(1)}</span>
                   </div>
                 </div>
               </div>
-              <p style={{ color: "#334155", fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
+              <p style={{ color: "#475569", fontSize: 15, lineHeight: 1.6, marginBottom: 28, position: "relative", zIndex: 1 }}>
                 {rText}
               </p>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#94A3B8" }}>
-                <MapPin style={{ width: 16, height: 16 }} />
-                <span style={{ fontSize: 13, fontWeight: 600 }}>{rLocation}</span>
+              <div className="premium-verified-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                {rLocation}
               </div>
             </div>
           );

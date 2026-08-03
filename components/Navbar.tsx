@@ -458,15 +458,52 @@ export function Navbar() {
         <div style={{ maxWidth: 1280, margin: "8px auto 0", padding: "0 20px" }}>
           <div style={{ background: "#fff", borderRadius: 24, boxShadow: "0 8px 32px rgba(15,23,42,.12)", border: "1px solid #F1F5F9", padding: "16px 20px 20px" }}>
             {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", fontSize: 14, fontWeight: link.active ? 600 : 500, color: link.active ? "#2563EB" : "#475569", textDecoration: "none", borderBottom: "1px solid #F8FAFC" }}
-              >
-                {link.label}
-                {link.hasDropdown && <ChevronDown style={{ width: 14, height: 14 }} />}
-              </Link>
+              <div key={link.label}>
+                {link.hasDropdown ? (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #F8FAFC" }}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      style={{ padding: "12px 0", flex: 1, fontSize: 14, fontWeight: link.active ? 600 : 500, color: link.active ? "#2563EB" : "#475569", textDecoration: "none" }}
+                    >
+                      {link.label}
+                    </Link>
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const dropdownContent = document.getElementById(`mobile-dropdown-${link.label}`);
+                        if (dropdownContent) {
+                          dropdownContent.style.display = dropdownContent.style.display === "none" ? "block" : "none";
+                        }
+                      }}
+                      style={{ padding: "12px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: link.active ? "#2563EB" : "#475569" }}
+                    >
+                      <ChevronDown style={{ width: 14, height: 14 }} />
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", fontSize: 14, fontWeight: link.active ? 600 : 500, color: link.active ? "#2563EB" : "#475569", textDecoration: "none", borderBottom: "1px solid #F8FAFC" }}
+                  >
+                    {link.label}
+                  </Link>
+                )}
+                
+                {/* Mobile Dropdown Sub-menu */}
+                {link.hasDropdown && (
+                  <div id={`mobile-dropdown-${link.label}`} style={{ display: "none", paddingLeft: "16px", paddingBottom: "4px", background: "#f8fafc", borderBottom: "1px solid #F8FAFC" }}>
+                    <Link
+                      href="/all-services"
+                      onClick={() => setMobileOpen(false)}
+                      style={{ display: "block", padding: "12px 0", fontSize: 13, fontWeight: 500, color: "#475569", textDecoration: "none" }}
+                    >
+                      All Services
+                    </Link>
+                  </div>
+                )}
+              </div>
             ))}
             {isAuthenticated ? (
               <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2">

@@ -1,6 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Search, Star, X } from "lucide-react";
+import ServiceGrid from "@/components/ServiceGrid";
+import CustomSelect from "@/components/CustomSelect";
+import { Filter } from "lucide-react";
 
 export const metadata = {
   title: "All Services | FixItNow",
@@ -51,10 +54,30 @@ export default async function AllServicesPage({ searchParams }: { searchParams?:
 
   return (
     <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
+      {/* Premium Hero Banner */}
+      <div className="premium-hero">
+        <div className="premium-hero-bg"></div>
+        <div className="premium-hero-glow"></div>
+        <div className="premium-hero-content">
+          <h1 className="premium-hero-title">
+            Explore All Services
+          </h1>
+          <p className="premium-hero-subtitle">
+            Find the perfect professional for your home repair and maintenance needs. Quality service, guaranteed.
+          </p>
+        </div>
+      </div>
+
       <div className="all-services-layout">
+        <input type="checkbox" id="mobile-sidebar-toggle" style={{ display: "none" }} />
+        
+        <label htmlFor="mobile-sidebar-toggle" className="mobile-sidebar-overlay"></label>
         
         {/* SIDEBAR */}
         <aside className="all-services-sidebar">
+          <label htmlFor="mobile-sidebar-toggle" className="mobile-sidebar-close">
+            <X size={24} />
+          </label>
           
           <div className="filter-section">
             <h3 className="filter-title">Filter</h3>
@@ -70,18 +93,14 @@ export default async function AllServicesPage({ searchParams }: { searchParams?:
           <div className="filter-section">
             <h3 className="filter-title">All Categories</h3>
             <div className="filter-list">
-              <Link href="/all-services" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <label className="filter-label" style={{ cursor: "pointer" }}>
-                  <input type="radio" name="category" readOnly checked={!selectedCategory} />
-                  <span>All Categories</span>
-                </label>
+              <Link href="/all-services" style={{ textDecoration: 'none', color: 'inherit' }} className="filter-label">
+                <input type="radio" name="category" readOnly checked={!selectedCategory} style={{ pointerEvents: 'none' }} />
+                <span>All Specializations</span>
               </Link>
               {categories.map((cat: any, i: number) => (
-                <Link key={cat.id || i} href={`/all-services?category=${cat.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <label className="filter-label" style={{ cursor: "pointer" }}>
-                    <input type="radio" name="category" readOnly checked={selectedCategory === cat.id} />
-                    <span>{cat.name}</span>
-                  </label>
+                <Link key={cat.id || i} href={`/all-services?category=${cat.id}`} style={{ textDecoration: 'none', color: 'inherit' }} className="filter-label">
+                  <input type="radio" name="category" readOnly checked={selectedCategory === cat.id} style={{ pointerEvents: 'none' }} />
+                  <span>{cat.name}</span>
                 </Link>
               ))}
             </div>
@@ -101,12 +120,11 @@ export default async function AllServicesPage({ searchParams }: { searchParams?:
 
           <div className="filter-section" style={{ marginBottom: 0 }}>
             <h3 className="filter-title">Location</h3>
-            <select style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #E2E8F0", outline: "none", color: "#475569" }}>
-              <option>Select location</option>
-              <option>New York</option>
-              <option>Los Angeles</option>
-              <option>Chicago</option>
-            </select>
+            <CustomSelect 
+              options={["New York", "Los Angeles", "Chicago", "Miami", "Austin"]}
+              value="New York"
+              placeholder="Select location"
+            />
           </div>
 
         </aside>
@@ -117,59 +135,32 @@ export default async function AllServicesPage({ searchParams }: { searchParams?:
           <div className="as-topbar">
             <div className="as-search-container">
               <Search style={{ width: 18, height: 18, color: "#94a3b8" }} />
-              <input type="text" placeholder="Search" className="as-search-input" />
+              <input type="text" placeholder="Search for any service..." className="as-search-input" />
             </div>
             
-            <div className="as-sort">
-              <span>Sort by:</span>
-              <select>
-                <option>Highest Ratings</option>
-                <option>Most Booked</option>
-                <option>Newest Providers</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="as-active-filters">
-            <span style={{ fontSize: 14, color: "#64748b" }}>Active Filters:</span>
-            <div className="as-active-filter-chip">
-              House section <X style={{ width: 14, height: 14 }} />
-            </div>
-            <div className="as-active-filter-chip">
-              $21 to $30 <X style={{ width: 14, height: 14 }} />
-            </div>
-          </div>
-
-          <h2 className="as-main-title">Reliable home repair and maintenance services</h2>
-
-          <div className="as-grid">
-            {activeServices.length > 0 ? activeServices.map((svc: any, idx: number) => (
-              <div key={svc.id || idx} className="as-card">
-                <div className="as-card-img">
-                  <Image 
-                    src={getFallbackImage(idx)} 
-                    alt={svc.name}
-                    fill
-                    priority={idx < 4}
-                    sizes="(max-width: 768px) 100vw, 300px"
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="as-card-content">
-                  <h3 className="as-card-title">{svc.name}</h3>
-                  <div className="as-card-rating">
-                    <Star style={{ width: 14, height: 14 }} className="as-card-rating-star" fill="currentColor" />
-                    <span>5.0</span>
-                    <span className="as-card-rating-count">(0 reviews)</span>
-                  </div>
-                  <p className="as-card-price">${svc.basePrice}</p>
-                  <button className="as-card-btn">View details</button>
-                </div>
+            <div className="as-sort-filter-row">
+              <div className="as-sort">
+                <span style={{ color: "#64748b" }}>Sort by:</span>
+                <CustomSelect 
+                  options={["Featured", "Price: Low to High", "Price: High to Low", "Newest"]}
+                  value="Featured"
+                />
               </div>
-            )) : (
-              <p style={{ color: "#64748B", fontSize: 16 }}>No services available for this category.</p>
-            )}
+              
+              <label htmlFor="mobile-sidebar-toggle" className="mobile-filter-btn">
+                <Filter size={18} /> Filters
+              </label>
+            </div>
           </div>
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+             <h2 className="as-main-title">
+               {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name || "Services" : "All Services"} 
+               <span>{activeServices.length} results</span>
+             </h2>
+          </div>
+
+          <ServiceGrid services={activeServices} />
 
         </main>
       </div>

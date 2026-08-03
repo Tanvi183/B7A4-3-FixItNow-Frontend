@@ -47,31 +47,14 @@ const adminNav: NavItemDef[] = [
 
 const technicianNav: NavItemDef[] = [
   { label: "Dashboard",  icon: <FiGrid />,        href: "/dashboard/technician" },
-  {
-    label: "My Bookings", icon: <FiCheckSquare />, href: "/dashboard/technician/bookings",
-    children: [
-      { label: "All Jobs",   href: "/dashboard/technician/bookings" },
-      { label: "Pending",    href: "/dashboard/technician/bookings?status=pending" },
-      { label: "Completed",  href: "/dashboard/technician/bookings?status=completed" },
-    ],
-  },
-  { label: "My Profile", icon: <FiUser />,        href: "/dashboard/technician/profile" },
 ];
 
 const customerNav: NavItemDef[] = [
   { label: "Dashboard",         icon: <FiGrid />,        href: "/dashboard/customer" },
-  { label: "Book a Service",    icon: <FiShoppingCart />,href: "/dashboard/customer/book" },
-  { label: "My Bookings",       icon: <FiCheckSquare />, href: "/dashboard/customer/bookings" },
-  { label: "Payments",          icon: <FiCreditCard />,  href: "/dashboard/customer/payments" },
-  { label: "My Reviews",        icon: <FiStar />,        href: "/dashboard/customer/reviews" },
-  { label: "Become a Technician", icon: <FiTool />,      href: "/dashboard/customer", badge: "NEW" },
+  { label: "Book a Service",    icon: <FiShoppingCart />,href: "/services" },
 ];
 
-const supportNav: NavItemDef[] = [
-  { label: "Chat",    icon: <FiMessageCircle />, href: "#" },
-  { label: "Support", icon: <FiHeadphones />,    href: "#", badge: "NEW" },
-  { label: "Email",   icon: <FiMail />,          href: "#" },
-];
+
 
 /* ─── Single nav item component ─── */
 function NavItem({
@@ -282,20 +265,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, sidebarExpanded, 
               )}
             </ul>
 
-            {/* Support group */}
-            <div className="mt-6">
-              {sidebarExpanded && (
-                <p className="mb-2 ml-3 text-[10px] font-semibold uppercase tracking-widest text-white/30">
-                  Support
-                </p>
-              )}
-              {!sidebarExpanded && <div className="my-3 border-t border-white/[0.06]" />}
-              <ul className="flex flex-col gap-0.5">
-                {mounted ? supportNav.map(item => (
-                  <NavItem key={item.label} item={item} expanded={sidebarExpanded} pathname={pathname} searchParams={searchParams} />
-                )) : null}
-              </ul>
-            </div>
           </nav>
         </div>
 

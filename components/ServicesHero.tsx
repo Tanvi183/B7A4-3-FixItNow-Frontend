@@ -43,53 +43,7 @@ export default function ServicesHero() {
               From small fixes to major tasks, find trusted professionals for every home need. Quality service, every time.
             </p>
 
-            {/* Search Block */}
-            <div className="services-search-block">
-              <div className="services-search-input-wrap">
-                <input
-                  type="text"
-                  placeholder="Search for a service..."
-                  className="services-search-input"
-                />
-                <button className="services-search-btn">
-                  <Search style={{ width: 18, height: 18, color: "#fff" }} />
-                </button>
-              </div>
 
-              <div className="services-location-wrap">
-                <div 
-                  className="services-location-selector"
-                  onClick={() => setLocationOpen(!locationOpen)}
-                >
-                  <div className="services-location-icon">
-                    <MapPin style={{ width: 20, height: 20, color: "#475569" }} />
-                  </div>
-                  <div className="services-location-text">
-                    <span className="services-location-label">Your Location</span>
-                    <span className="services-location-value">{selectedLocation}</span>
-                  </div>
-                  <ChevronDown style={{ width: 18, height: 18, color: "#475569", marginLeft: "auto", transition: "transform 0.2s", transform: locationOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
-                </div>
-                
-                {/* Dropdown Menu */}
-                {locationOpen && (
-                  <div className="services-location-dropdown">
-                    {locations.map((loc, i) => (
-                      <div 
-                        key={i} 
-                        className={`services-location-option ${selectedLocation === loc ? 'active' : ''}`}
-                        onClick={() => {
-                          setSelectedLocation(loc);
-                          setLocationOpen(false);
-                        }}
-                      >
-                        {loc}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Trust Badges */}
             <div className="services-trust-badges">

@@ -105,12 +105,14 @@ export default function ServicesPage() {
           
           <div className="services-category-grid">
             {categories.map((cat, i) => (
-              <div key={i} className="services-category-card">
-                <div className="services-category-icon-wrap">
-                  <cat.icon style={{ width: 24, height: 24, color: "#2563EB" }} />
+              <Link href="/all-services" key={i} style={{ textDecoration: 'none', display: 'block' }}>
+                <div className="services-category-card">
+                  <div className="services-category-icon-wrap">
+                    <cat.icon style={{ width: 24, height: 24, color: "#2563EB" }} />
+                  </div>
+                  <p className="services-category-name">{cat.label}</p>
                 </div>
-                <p className="services-category-name">{cat.label}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -124,7 +126,7 @@ export default function ServicesPage() {
               <p className="services-section-label">POPULAR SERVICES</p>
               <h2 className="services-section-title">Most in-demand services</h2>
             </div>
-            <Link href="/services" className="services-view-all">
+            <Link href="/all-services" className="services-view-all">
               View All Services &rarr;
             </Link>
           </div>
@@ -137,6 +139,7 @@ export default function ServicesPage() {
                     src={service.img}
                     alt={service.title}
                     fill
+                    priority={true}
                     sizes="(max-width: 768px) 100vw, 250px"
                     style={{ objectFit: "cover" }}
                   />
@@ -149,7 +152,7 @@ export default function ServicesPage() {
                     <span className="services-popular-count">({service.count})</span>
                   </div>
                   <p className="services-popular-price">From ${service.price}</p>
-                  <button className="services-popular-btn">Book Now</button>
+                  <a href="/all-services" className="services-popular-btn" style={{ textDecoration: 'none', textAlign: 'center', display: 'block' }}>Book Now</a>
                 </div>
               </div>
             ))}

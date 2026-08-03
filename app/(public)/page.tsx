@@ -99,19 +99,63 @@ export default async function HomePage() {
     console.error("Failed to fetch public reviews", error);
   }
 
+  let apiCategories: string[] = [];
+  let allCategories: any[] = [];
+  try {
+    const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, { next: { revalidate: 60 } });
+    const catData = await catRes.json();
+    if (catData.success) {
+      // Only include categories that have at least one technician providing a service in it
+      const techCategoryNames = new Set<string>();
+      if (apiTechnicians.length > 0) {
+        apiTechnicians.forEach((tech: any) => {
+          tech.services?.forEach((s: any) => {
+            if (s.category?.name) techCategoryNames.add(s.category.name);
+          });
+          if (tech.bio) {
+             catData.data.forEach((c: any) => {
+                if (tech.bio.includes(c.name)) techCategoryNames.add(c.name);
+             });
+          }
+        });
+      }
+      
+      allCategories = catData.data;
+      apiCategories = catData.data
+        .map((c: any) => c.name)
+        .filter((catName: string) => techCategoryNames.has(catName));
+    }
+  } catch (error) {
+    console.error("Failed to fetch categories", error);
+  }
+  
+  let apiServices: any[] = [];
+  try {
+    const svcRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { next: { revalidate: 60 } });
+    const svcData = await svcRes.json();
+    if (svcData.success) {
+      apiServices = svcData.data;
+    }
+  } catch (error) {
+    console.error("Failed to fetch services", error);
+  }
+  
+  const displayCategories = apiCategories.length > 0 ? apiCategories.slice(0, 6) : [];
+
   // Fallback to mock data if API fails or returns empty
   const displayTechnicians = apiTechnicians.length > 0 ? apiTechnicians.slice(0, 5) : [];
   const displayReviews = apiReviews.length > 0 ? apiReviews : reviews;
 
   const getCategoryIcon = (categoryName: string) => {
     switch (categoryName?.toLowerCase()) {
-      case "electrical works": return { icon: FaBolt, color: "#2563EB" };
-      case "plumbing": return { icon: FaFaucet, color: "#2563EB" };
-      case "hvac": return { icon: FaSnowflake, color: "#2563EB" };
-      case "cleaning": return { icon: GiVacuumCleaner, color: "#16A34A" };
-      case "painting": return { icon: FaPaintRoller, color: "#9333EA" };
-      case "carpentry": return { icon: GiWoodBeam, color: "#B45309" };
-      default: return { icon: HardHat, color: "#64748B" };
+      case "electrical works": return { icon: FaBolt, color: "#2563EB", bg: "#EFF6FF" };
+      case "electrical": return { icon: FaBolt, color: "#2563EB", bg: "#EFF6FF" };
+      case "plumbing": return { icon: FaFaucet, color: "#2563EB", bg: "#EFF6FF" };
+      case "hvac": return { icon: FaSnowflake, color: "#2563EB", bg: "#EFF6FF" };
+      case "cleaning": return { icon: GiVacuumCleaner, color: "#16A34A", bg: "#F0FDF4" };
+      case "painting": return { icon: FaPaintRoller, color: "#9333EA", bg: "#FAF5FF" };
+      case "carpentry": return { icon: GiWoodBeam, color: "#B45309", bg: "#FFF7ED" };
+      default: return { icon: HardHat, color: "#64748B", bg: "#F1F5F9" };
     }
   };
 
@@ -182,19 +226,18 @@ export default async function HomePage() {
                 Fast booking, secure payments, and happy homes.
               </p>
 
-              {/* Search Bar */}
-              <HeroSearch />
+              {/* Search Bar Removed per user request */}
 
               {/* Popular Searches */}
               <div className="popular-searches" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Popular searches:</span>
-                {popularSearches.map((s, i) => {
+                {displayCategories.map((s, i) => {
                   const icons = [FaBolt, GiVacuumCleaner, FaFaucet, FaSnowflake, FaPaintRoller, GiWoodBeam];
                   const Icon = icons[i % icons.length];
                   return (
                     <Link
                       key={s}
-                      href={`/services?search=${s.toLowerCase()}`}
+                      href={`/technicians?category=${encodeURIComponent(s)}`}
                       style={{
                         display: "flex", alignItems: "center", gap: 6,
                         fontSize: 13, fontWeight: 600, color: "#475569",
@@ -218,7 +261,7 @@ export default async function HomePage() {
             <div className="hero-image-container">
               {/* House Background */}
               <div className="hero-image-house">
-                <Image src="/house02.webp" alt="Modern House" fill sizes="600px" priority style={{ objectFit: "cover", objectPosition: "center" }} />
+                <Image src="/house02.webp" alt="Modern House" fill sizes="600px" priority style={{ objectFit: "contain", objectPosition: "bottom center" }} />
               </div>
               
               {/* Person Foreground */}
@@ -297,10 +340,15 @@ export default async function HomePage() {
           </div>
 
           <div className="services-grid">
-            {services.map((svc) => (
+            {allCategories.filter((cat: any) => apiServices.some(svc => svc.categoryId === cat.id)).slice(0, 6).map((cat: any) => {
+              const catServices = apiServices.filter(svc => svc.categoryId === cat.id);
+              const minPrice = catServices.length > 0 ? Math.min(...catServices.map(s => Number(s.basePrice))) : 0;
+              const { icon: Icon, color: iconColor, bg: iconBg } = getCategoryIcon(cat.name);
+              
+              return (
               <Link
-                key={svc.title}
-                href={`/services?category=${svc.title.toLowerCase()}`}
+                key={cat.id}
+                href={`/all-services?category=${cat.id}`}
                 className="card hover-scale"
                 style={{ 
                   padding: "36px 24px 24px", 
@@ -316,19 +364,21 @@ export default async function HomePage() {
                   border: "none"
                 }}
               >
-                <div style={{ width: 80, height: 80, borderRadius: "50%", background: svc.iconBg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, transition: "transform var(--transition)" }}>
-                  <svc.icon style={{ width: 36, height: 36, color: svc.iconColor }} />
+                <div style={{ width: 80, height: 80, borderRadius: "50%", background: iconBg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, transition: "transform var(--transition)" }}>
+                  <Icon style={{ width: 36, height: 36, color: iconColor }} />
                 </div>
-                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 700, color: "#0F172A", marginBottom: 8 }}>{svc.title}</h3>
-                <p style={{ color: "#64748B", fontSize: 13, lineHeight: 1.5, marginBottom: 32, padding: "0 4px" }}>{svc.desc}</p>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 700, color: "#0F172A", marginBottom: 8 }}>{cat.name}</h3>
+                <p style={{ color: "#64748B", fontSize: 13, lineHeight: 1.5, marginBottom: 32, padding: "0 4px" }}>
+                  {cat.description || "Expert professional services for your home."}
+                </p>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginTop: "auto" }}>
-                  <span style={{ color: "#0F172A", fontSize: 14, fontWeight: 700 }}>From {svc.price}</span>
+                  <span style={{ color: "#0F172A", fontSize: 14, fontWeight: 700 }}>{minPrice > 0 ? `From $${minPrice}` : "Explore now"}</span>
                   <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#2563EB", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <ArrowRight style={{ width: 14, height: 14, color: "#fff" }} />
                   </div>
                 </div>
               </Link>
-            ))}
+            )})}
           </div>
 
           <div style={{ textAlign: "center", marginTop: 56 }}>

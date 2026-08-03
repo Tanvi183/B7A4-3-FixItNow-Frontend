@@ -5,15 +5,11 @@ import Image from "next/image";
 import { Search, Star, MapPin, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import CustomSelect from "@/components/CustomSelect";
+import { Filter } from "lucide-react";
 
-const categories = [
-  "Electrical works",
-  "Plumbing",
-  "HVAC",
-  "Cleaning",
-  "Carpentry",
-  "General Maintenance"
-];
 
 const rates = [
   "All Rates",
@@ -33,37 +29,70 @@ const getFallbackImage = (name: string) => {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2563EB&color=fff&size=400`;
 };
 
-export default function TechniciansPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+function TechniciansContent() {
+  const searchParams = useSearchParams();
+  const initialQ = searchParams.get("q") || "";
+  const initialLoc = searchParams.get("loc") || "Select location";
+  const initialCategory = searchParams.get("category") || "All";
+
+  const [searchTerm, setSearchTerm] = useState(initialQ);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [technicians, setTechnicians] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // Custom Dropdown states
   const [sortOpen, setSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Highest Rated");
   const [areaOpen, setAreaOpen] = useState(false);
-  const [serviceArea, setServiceArea] = useState("Select location");
+  const [serviceArea, setServiceArea] = useState(initialLoc);
 
   useEffect(() => {
-    const fetchTechnicians = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/technicians`);
-        const data = await res.json();
+        const [techRes, catRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/technicians`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
+        ]);
         
-        if (data.success) {
-          setTechnicians(data.data);
+        const techData = await techRes.json();
+        const catData = await catRes.json();
+        
+        if (techData.success) {
+          setTechnicians(techData.data);
         } else {
           toast.error("Failed to load professionals.");
         }
+        
+        if (catData.success && Array.isArray(catData.data)) {
+          const techCategoryNames = new Set<string>();
+          if (techData.success && Array.isArray(techData.data)) {
+            techData.data.forEach((tech: any) => {
+              tech.services?.forEach((s: any) => {
+                if (s.category?.name) techCategoryNames.add(s.category.name);
+              });
+              if (tech.bio) {
+                catData.data.forEach((c: any) => {
+                  if (tech.bio.includes(c.name)) techCategoryNames.add(c.name);
+                });
+              }
+            });
+          }
+          
+          const filteredCategories = catData.data
+            .map((c: any) => c.name)
+            .filter((catName: string) => techCategoryNames.has(catName));
+            
+          setCategories(filteredCategories);
+        }
       } catch (error) {
-        console.error("Error fetching technicians:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchTechnicians();
+    fetchData();
   }, []);
 
   // Extract unique locations from backend data
@@ -86,10 +115,26 @@ export default function TechniciansPage() {
 
   return (
     <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
+      {/* Premium Hero Banner */}
+      <div className="premium-hero">
+        <div className="premium-hero-bg"></div>
+        <div className="premium-hero-glow"></div>
+        <div className="premium-hero-content">
+          <h1 className="premium-hero-title">Our Professionals</h1>
+          <p className="premium-hero-subtitle">Discover top-rated experts ready to handle your home service needs.</p>
+        </div>
+      </div>
+      
       <div className="all-services-layout">
+        <input type="checkbox" id="mobile-sidebar-toggle" style={{ display: "none" }} />
         
+        <label htmlFor="mobile-sidebar-toggle" className="mobile-sidebar-overlay"></label>
+
         {/* SIDEBAR */}
         <aside className="all-services-sidebar">
+          <label htmlFor="mobile-sidebar-toggle" className="mobile-sidebar-close">
+            <X size={24} />
+          </label>
           
           <div className="filter-section">
             <h3 className="filter-title">Filter</h3>
@@ -142,66 +187,11 @@ export default function TechniciansPage() {
 
           <div className="filter-section" style={{ marginBottom: 0 }}>
             <h3 className="filter-title">Service Area</h3>
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={() => setAreaOpen(!areaOpen)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 8,
-                  width: "100%",
-                  padding: "10px",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: 8,
-                  background: "#fff",
-                  color: "#475569",
-                  cursor: "pointer",
-                  outline: "none"
-                }}
-              >
-                <span style={{ fontSize: 14 }}>{serviceArea}</span>
-                <svg style={{ width: 16, height: 16, color: "#94a3b8", transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {areaOpen && (
-                <div style={{
-                  position: "absolute",
-                  top: "calc(100% + 4px)",
-                  left: 0,
-                  width: "100%",
-                  background: "#fff",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: 8,
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                  zIndex: 20,
-                  overflow: "hidden"
-                }}>
-                  {locationOptions.map(area => (
-                    <div
-                      key={area as string}
-                      onClick={() => {
-                        setServiceArea(area);
-                        setAreaOpen(false);
-                      }}
-                      style={{
-                        padding: "8px 12px",
-                        fontSize: 14,
-                        color: serviceArea === area ? "#2563EB" : "#475569",
-                        background: serviceArea === area ? "#F8FAFC" : "#fff",
-                        cursor: "pointer",
-                        transition: "background 0.2s"
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FAFC")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = serviceArea === area ? "#F8FAFC" : "#fff")}
-                    >
-                      {area}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <CustomSelect 
+              options={locationOptions}
+              value={serviceArea}
+              onChange={(val) => setServiceArea(val)}
+            />
           </div>
 
         </aside>
@@ -221,68 +211,20 @@ export default function TechniciansPage() {
               />
             </div>
             
-            <div className="as-sort">
-              <span>Sort by :</span>
-              <div style={{ position: "relative" }}>
-                <button
-                  onClick={() => setSortOpen(!sortOpen)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 8,
-                    width: 160,
-                    padding: "8px 12px",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: 8,
-                    background: "#fff",
-                    color: "#475569",
-                    cursor: "pointer",
-                    outline: "none"
-                  }}
-                >
-                  <span style={{ fontSize: 14 }}>{sortBy}</span>
-                  <svg style={{ width: 16, height: 16, color: "#94a3b8", transform: sortOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {sortOpen && (
-                  <div style={{
-                    position: "absolute",
-                    top: "calc(100% + 4px)",
-                    right: 0,
-                    width: "100%",
-                    background: "#fff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: 8,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                    zIndex: 20,
-                    overflow: "hidden"
-                  }}>
-                    {["Highest Rated", "Lowest Price", "Most Reviewed"].map(option => (
-                      <div
-                        key={option}
-                        onClick={() => {
-                          setSortBy(option);
-                          setSortOpen(false);
-                        }}
-                        style={{
-                          padding: "8px 12px",
-                          fontSize: 14,
-                          color: sortBy === option ? "#2563EB" : "#475569",
-                          background: sortBy === option ? "#F8FAFC" : "#fff",
-                          cursor: "pointer",
-                          transition: "background 0.2s"
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FAFC")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = sortBy === option ? "#F8FAFC" : "#fff")}
-                      >
-                        {option}
-                      </div>
-                    ))}
-                  </div>
-                )}
+            <div className="as-sort-filter-row">
+              <div className="as-sort">
+                <span style={{ color: "#64748b" }}>Sort by :</span>
+                <CustomSelect 
+                  options={["Highest Rated", "Lowest Price", "Most Reviewed"]}
+                  value={sortBy}
+                  onChange={(val) => setSortBy(val)}
+                  className="w-40"
+                />
               </div>
+
+              <label htmlFor="mobile-sidebar-toggle" className="mobile-filter-btn">
+                <Filter size={18} /> Filters
+              </label>
             </div>
           </div>
 
@@ -292,7 +234,7 @@ export default function TechniciansPage() {
             </div>
           </div>
 
-          <h2 className="as-main-title">All Professionals <span style={{ color: "#94a3b8", fontSize: 16, fontWeight: 500 }}>({filteredTechnicians.length})</span></h2>
+          <h2 className="as-main-title">All Professionals <span>{filteredTechnicians.length} results</span></h2>
 
           {isLoading ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "100px 0" }}>
@@ -301,13 +243,14 @@ export default function TechniciansPage() {
             </div>
           ) : filteredTechnicians.length > 0 ? (
             <div className="as-grid">
-              {filteredTechnicians.map((tech) => (
+              {filteredTechnicians.map((tech, index) => (
                 <div className="as-card" key={tech.id}>
                 <div className="as-card-img">
                   <Image 
                     src={getFallbackImage(tech.user?.name || "")} 
                     alt={tech.user?.name || "Professional"} 
                     fill 
+                    priority={index < 4}
                     className="object-cover" 
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
@@ -317,7 +260,7 @@ export default function TechniciansPage() {
                 </div>
                 <div className="as-card-content">
                   <h3 className="as-card-title">{tech.user?.name}</h3>
-                  <p style={{ fontSize: 13, color: "#64748b", marginBottom: 10 }}>{tech.bio}</p>
+                  <p className="as-card-bio">{tech.bio}</p>
                   
                   <div className="as-card-rating">
                     <Star className="as-card-rating-star" size={16} fill="currentColor" />
@@ -329,12 +272,12 @@ export default function TechniciansPage() {
                     <MapPin size={14} /> {tech.location || "City Wide"}
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div className="as-card-footer">
                     <div className="as-card-price">
                       ${Number(tech.pricingRate).toFixed(2)}<span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>/hr</span>
                     </div>
-                    <Link href={`/technicians/${tech.id}`} style={{ textDecoration: "none" }}>
-                      <button className="as-card-btn">View Profile</button>
+                    <Link href={`/technicians/${tech.id}`} className="as-card-btn" style={{ textDecoration: "none" }}>
+                      View Profile
                     </Link>
                   </div>
                 </div>
@@ -357,5 +300,17 @@ export default function TechniciansPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function TechniciansPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+        <Loader2 className="animate-spin text-blue-600" size={40} />
+      </div>
+    }>
+      <TechniciansContent />
+    </Suspense>
   );
 }
