@@ -16,6 +16,10 @@ const registerSchema = z.object({
   role: z.enum(["CUSTOMER", "TECHNICIAN"], {
     message: "Please select an account type.",
   }),
+  bio: z.string().optional(),
+  skills: z.string().optional(),
+  experienceYears: z.string().optional(),
+  pricingRate: z.string().optional(),
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -41,10 +45,19 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setIsLoading(true);
     try {
+      // Process skills into array if provided
+      let payload = { ...data };
+      if (data.role === "TECHNICIAN") {
+        payload = {
+          ...data,
+          skills: data.skills ? data.skills.split(",").map(s => s.trim()) : [],
+        } as any;
+      }
+      
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || "Failed to register");
@@ -159,6 +172,64 @@ export default function RegisterPage() {
           </div>
           {errors.password && <p className="auth-error-msg">{errors.password.message}</p>}
         </div>
+
+        {/* Conditional Technician Fields */}
+        {selectedRole === "TECHNICIAN" && (
+          <div className="space-y-4 rounded-md bg-gray/30 p-4 dark:bg-meta-4/20 border border-stroke dark:border-strokedark mt-2">
+            <h3 className="text-sm font-medium text-black dark:text-white">Technician Profile Details</h3>
+            
+            <div className="auth-field !mb-0">
+              <label className="auth-label text-xs" htmlFor="reg-bio">Bio</label>
+              <textarea
+                id="reg-bio"
+                {...register("bio")}
+                placeholder="Tell us about your experience..."
+                className="auth-input min-h-[60px] resize-none"
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div className="auth-field !mb-0">
+              <label className="auth-label text-xs" htmlFor="reg-skills">Skills (comma separated)</label>
+              <input
+                id="reg-skills"
+                {...register("skills")}
+                type="text"
+                placeholder="Plumbing, Electrical, Carpentry"
+                className="auth-input"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="auth-field !mb-0">
+                <label className="auth-label text-xs" htmlFor="reg-exp">Years of Experience</label>
+                <input
+                  id="reg-exp"
+                  {...register("experienceYears")}
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 5"
+                  className="auth-input"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="auth-field !mb-0">
+                <label className="auth-label text-xs" htmlFor="reg-price">Base Hourly Rate ($)</label>
+                <input
+                  id="reg-price"
+                  {...register("pricingRate")}
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 25"
+                  className="auth-input"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+            <p className="text-xs text-body dark:text-bodydark2">Note: Your application will require admin approval before you can access the technician dashboard.</p>
+          </div>
+        )}
 
         <button
           id="register-submit-btn"
