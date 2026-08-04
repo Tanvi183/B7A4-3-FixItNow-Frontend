@@ -7,7 +7,7 @@ import {
   FiGrid, FiUser, FiTool, FiTag, FiList, FiCheckSquare,
   FiCreditCard, FiStar, FiShoppingCart, FiMoreHorizontal,
   FiMessageCircle, FiHeadphones, FiMail, FiChevronDown, FiChevronRight,
-  FiXCircle, FiBriefcase, FiMapPin
+  FiXCircle, FiBriefcase
 } from "react-icons/fi";
 import { useAuthStore } from "@/stores/useAuthStore";
 
@@ -40,7 +40,6 @@ const adminNav: NavItemDef[] = [
     ],
   },
   { label: "Categories",  icon: <FiTag />,         href: "/dashboard/admin/categories" },
-  { label: "Locations",   icon: <FiMapPin />,      href: "/dashboard/admin/locations" },
   { label: "Services",    icon: <FiList />,        href: "/dashboard/admin/services" },
   { label: "Bookings",    icon: <FiCheckSquare />, href: "/dashboard/admin/bookings" },
   { label: "Payments",    icon: <FiCreditCard />,  href: "/dashboard/admin/payments" },
@@ -50,7 +49,6 @@ const adminNav: NavItemDef[] = [
 const technicianNav: NavItemDef[] = [
   { label: "Dashboard",  icon: <FiGrid />,        href: "/dashboard/technician" },
   { label: "Skills",     icon: <FiBriefcase />,   href: "/dashboard/technician/skills" },
-  { label: "Location",   icon: <FiMapPin />,      href: "/dashboard/technician/location" },
 ];
 
 const customerNav: NavItemDef[] = [

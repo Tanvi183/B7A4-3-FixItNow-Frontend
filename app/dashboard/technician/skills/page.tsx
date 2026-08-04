@@ -102,12 +102,10 @@ export default function TechnicianSkillsPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-500">
-      <div className="relative rounded-2xl bg-white/80 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl border border-white/20 dark:bg-boxdark/90 dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:border-strokedark/50">
+      <div className="relative rounded-2xl bg-white/80 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl border border-white/20 dark:bg-boxdark/90 dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:border-strokedark/50 overflow-hidden">
         {/* Decorative background blur */}
-        <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl dark:bg-purple-500/20" />
-          <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/20" />
-        </div>
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl dark:bg-purple-500/20" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/20" />
         
         <div className="relative mb-8 flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg shadow-purple-500/30">

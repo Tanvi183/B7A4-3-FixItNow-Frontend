@@ -163,6 +163,24 @@ export default function TechnicianProfilePage() {
             </div>
           </div>
 
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-black dark:text-white">
+              Location / Service Area
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                <FiMapPin className="h-4 w-4" />
+              </span>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="e.g. New York City, Brooklyn, Queens"
+                className="w-full rounded-xl border border-stroke bg-transparent py-3 pl-11 pr-4 text-sm outline-none transition focus:border-blue-600 active:border-blue-600 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500"
+              />
+            </div>
+          </div>
 
           <div className="pt-4 border-t border-stroke dark:border-strokedark">
             <button
