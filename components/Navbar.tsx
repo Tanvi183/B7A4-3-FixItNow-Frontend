@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Search, User, ArrowRight, Menu, X, Wrench, LayoutDashboard, LogOut, Briefcase, Settings, Star } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "next-themes";
 
 type NavLink = {
   label: string;
@@ -32,6 +34,15 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { isAuthenticated, user, logout, setUser } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = isMounted && resolvedTheme === "dark";
+
+  // Dynamic color helpers
+  const navBg        = isDark ? "var(--color-bg)" : "var(--color-bg-card)";
+  const navBgScrolled = isDark ? "rgba(3,7,18,0.85)" : "rgba(255,255,255,0.85)";
+  const navBorder    = "var(--color-border)";
+  const textBody     = "var(--color-body)";
+  const textHeading  = "var(--color-heading)";
 
 
   useEffect(() => {
@@ -49,14 +60,12 @@ export function Navbar() {
         top: 0,
         zIndex: 50,
         width: "100%",
-        // When scrolled, add vertical padding so pill "floats" with space above
         paddingTop: scrolled ? 10 : 0,
         paddingBottom: scrolled ? 10 : 0,
-        // Horizontal padding matches .container's 48px gutter at lg
         paddingLeft: scrolled ? 20 : 0,
         paddingRight: scrolled ? 20 : 0,
-        background: scrolled ? "transparent" : "#fff",
-        borderBottom: scrolled ? "none" : "1px solid #F1F5F9",
+        background: scrolled ? "transparent" : navBg,
+        borderBottom: scrolled ? "none" : `1px solid ${navBorder}`,
         transition: "padding 350ms cubic-bezier(.4,0,.2,1), background 350ms cubic-bezier(.4,0,.2,1), border-color 350ms cubic-bezier(.4,0,.2,1)",
         boxSizing: "border-box",
       }}
@@ -65,7 +74,7 @@ export function Navbar() {
         /* Hide nav links on tablets (1024px and below) */
         @media (max-width: 1024px) {
           .nav-links-container { display: none !important; }
-          .nav-mobile-toggle { display: block !important; }
+          .nav-mobile-toggle { display: flex !important; }
           .navbar-inner { padding: 12px 32px !important; height: auto !important; }
         }
         /* Hide right controls only on mobile (640px and below) */
@@ -91,16 +100,16 @@ export function Navbar() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: scrolled ? "rgba(255, 255, 255, 0.85)" : "#fff",
+          background: scrolled ? navBgScrolled : navBg,
           backdropFilter: scrolled ? "blur(16px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
-          // Flat: no rounding, no shadow — blends with page
           borderRadius: scrolled ? 999 : 0,
           boxShadow: scrolled
-            ? "0 4px 30px rgba(15,23,42,.12), 0 1px 6px rgba(15,23,42,.06)"
+            ? isDark
+              ? "0 4px 30px rgba(0,0,0,0.4), 0 1px 6px rgba(0,0,0,0.2)"
+              : "0 4px 30px rgba(15,23,42,.12), 0 1px 6px rgba(15,23,42,.06)"
             : "none",
-          border: scrolled ? "1px solid #F1F5F9" : "none",
-          // Flat: tall open bar matching .container horizontal padding; Scrolled: compact pill padding
+          border: scrolled ? `1px solid ${navBorder}` : "none",
           height: scrolled ? "auto" : 76,
           padding: scrolled ? "10px 16px 10px 20px" : "0 64px",
           transition:
@@ -169,10 +178,10 @@ export function Navbar() {
           </div>
           <div className="logo-text">
             <p style={{ lineHeight: 1.1, margin: 0 }}>
-              <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, fontWeight: 700, color: "#0F172A" }}>FixIt</span>
+              <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, fontWeight: 700, color: "var(--color-heading)" }}>FixIt</span>
               <span style={{ fontFamily: "var(--font-heading)", fontSize: 19, fontWeight: 800, color: "#2563EB" }}>Now</span>
             </p>
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "#94A3B8", lineHeight: 1, margin: "3px 0 0" }}>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-light)", lineHeight: 1, margin: "3px 0 0" }}>
               Home Services, Done Right
             </p>
           </div>
@@ -184,8 +193,9 @@ export function Navbar() {
             <div key={link.label} className="relative group">
               <Link
                 href={link.href}
-                className={`flex items-center gap-1.5 ${link.active ? "text-white" : "text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"}`}
+                className={`flex items-center gap-1.5 ${link.active ? "text-white" : ""}`}
                 style={{
+                  color: link.active ? "#fff" : "var(--color-heading)",
                   padding: link.active ? "9px 20px" : "9px 16px",
                   fontSize: 14,
                   fontFamily: "var(--font-body)",
@@ -230,13 +240,13 @@ export function Navbar() {
                   <div style={{
                     position: "absolute", top: 3, left: "50%",
                     transform: "translateX(-50%) rotate(45deg)",
-                    width: 10, height: 10, background: "#fff",
+                    width: 10, height: 10, background: "var(--color-bg-card)",
                     borderLeft: "1px solid #E2E8F0", borderTop: "1px solid #E2E8F0", zIndex: 1,
                   }} />
                   {/* Panel */}
                   <div style={{
                     position: "relative", zIndex: 2,
-                    background: "#fff", border: "1px solid #E2E8F0",
+                    background: "var(--color-bg-card)", border: "1px solid var(--color-border)",
                     borderRadius: 16, boxShadow: "0 8px 24px rgba(15,23,42,0.09)",
                     padding: "6px",
                   }}>
@@ -248,7 +258,7 @@ export function Navbar() {
                         fontSize: 14,
                         fontFamily: "var(--font-body)",
                         fontWeight: 500,
-                        color: "#475569",
+                        color: "var(--color-body)",
                         textDecoration: "none",
                         borderRadius: 999,
                         whiteSpace: "nowrap",
@@ -267,6 +277,8 @@ export function Navbar() {
 
         {/* ── Right Controls ── */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, marginLeft: 12 }}>
+          <ThemeToggle />
+
           <button
             aria-label="Search"
             className="hover:bg-slate-50 hover:border-slate-300 hover:scale-105"
@@ -274,7 +286,7 @@ export function Navbar() {
               width: 40, height: 40,
               borderRadius: "50%",
               border: "1.5px solid #E2E8F0",
-              background: "#fff",
+              background: "var(--color-bg-card)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -283,7 +295,7 @@ export function Navbar() {
               flexShrink: 0,
             }}
           >
-            <Search style={{ width: 16, height: 16, color: "#64748B" }} />
+            <Search style={{ width: 16, height: 16, color: "var(--color-light)" }} />
           </button>
 
           {!isMounted ? (
@@ -301,11 +313,11 @@ export function Navbar() {
                   fontSize: 14,
                   fontFamily: "var(--font-body)",
                   fontWeight: 600,
-                  color: "#475569",
+                  color: "var(--color-body)",
                   textDecoration: "none",
                   borderRadius: 999,
                   border: "1.5px solid #E2E8F0",
-                  background: "#fff",
+                  background: "var(--color-bg-card)",
                   whiteSpace: "nowrap",
                   transition: "all 250ms ease",
                 }}
@@ -401,11 +413,11 @@ export function Navbar() {
                   fontSize: 14,
                   fontFamily: "var(--font-body)",
                   fontWeight: 500,
-                  color: "#475569",
+                  color: "var(--color-body)",
                   textDecoration: "none",
                   borderRadius: 999,
                   border: "1.5px solid #E2E8F0",
-                  background: "#fff",
+                  background: "var(--color-bg-card)",
                   whiteSpace: "nowrap",
                   flexShrink: 0,
                   transition: "all 250ms ease",
@@ -442,29 +454,31 @@ export function Navbar() {
             </div>
           )}
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="nav-mobile-toggle"
-            style={{ display: "none", padding: 8, background: "none", border: "none", cursor: "pointer", color: "#475569" }}
-          >
-            {mobileOpen ? <X style={{ width: 28, height: 28 }} /> : <Menu style={{ width: 28, height: 28 }} />}
-          </button>
+          {/* Mobile theme toggle + hamburger */}
+          <div className="nav-mobile-toggle" style={{ display: "none", alignItems: "center", gap: 8 }}>
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              style={{ padding: 8, background: "none", border: "none", cursor: "pointer", color: "var(--color-body)" }}
+            >
+              {mobileOpen ? <X style={{ width: 28, height: 28 }} /> : <Menu style={{ width: 28, height: 28 }} />}
+            </button>
+          </div>
         </div>
       </nav>
 
       {/* ── Mobile Menu ── */}
       {mobileOpen && (
         <div style={{ maxWidth: 1280, margin: "8px auto 0", padding: "0 20px" }}>
-          <div style={{ background: "#fff", borderRadius: 24, boxShadow: "0 8px 32px rgba(15,23,42,.12)", border: "1px solid #F1F5F9", padding: "16px 20px 20px" }}>
+          <div style={{ background: navBg, borderRadius: 24, boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.4)" : "0 8px 32px rgba(15,23,42,.12)", border: `1px solid ${navBorder}`, padding: "16px 20px 20px" }}>
             {navLinks.map((link) => (
               <div key={link.label}>
                 {link.hasDropdown ? (
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #F8FAFC" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${navBorder}` }}>
                     <Link
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      style={{ padding: "12px 0", flex: 1, fontSize: 14, fontWeight: link.active ? 600 : 500, color: link.active ? "#2563EB" : "#475569", textDecoration: "none" }}
+                      style={{ padding: "12px 0", flex: 1, fontSize: 14, fontWeight: link.active ? 600 : 500, color: link.active ? "#2563EB" : textBody, textDecoration: "none" }}
                     >
                       {link.label}
                     </Link>
@@ -476,7 +490,7 @@ export function Navbar() {
                           dropdownContent.style.display = dropdownContent.style.display === "none" ? "block" : "none";
                         }
                       }}
-                      style={{ padding: "12px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: link.active ? "#2563EB" : "#475569" }}
+                      style={{ padding: "12px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: link.active ? "#2563EB" : textBody }}
                     >
                       <ChevronDown style={{ width: 14, height: 14 }} />
                     </div>
@@ -485,7 +499,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", fontSize: 14, fontWeight: link.active ? 600 : 500, color: link.active ? "#2563EB" : "#475569", textDecoration: "none", borderBottom: "1px solid #F8FAFC" }}
+                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", fontSize: 14, fontWeight: link.active ? 600 : 500, color: link.active ? "#2563EB" : textBody, textDecoration: "none", borderBottom: `1px solid ${navBorder}` }}
                   >
                     {link.label}
                   </Link>
@@ -493,11 +507,11 @@ export function Navbar() {
                 
                 {/* Mobile Dropdown Sub-menu */}
                 {link.hasDropdown && (
-                  <div id={`mobile-dropdown-${link.label}`} style={{ display: "none", paddingLeft: "16px", paddingBottom: "4px", background: "#f8fafc", borderBottom: "1px solid #F8FAFC" }}>
+                  <div id={`mobile-dropdown-${link.label}`} style={{ display: "none", paddingLeft: "16px", paddingBottom: "4px", background: isDark ? "var(--color-heading)" : "#f8fafc", borderBottom: `1px solid ${navBorder}` }}>
                     <Link
                       href="/all-services"
                       onClick={() => setMobileOpen(false)}
-                      style={{ display: "block", padding: "12px 0", fontSize: 13, fontWeight: 500, color: "#475569", textDecoration: "none" }}
+                      style={{ display: "block", padding: "12px 0", fontSize: 13, fontWeight: 500, color: textBody, textDecoration: "none" }}
                     >
                       All Services
                     </Link>
@@ -581,7 +595,7 @@ export function Navbar() {
               </div>
             ) : (
               <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-                <Link href="/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: "center", padding: "11px 0", fontSize: 13, fontWeight: 600, color: "#475569", border: "1.5px solid #E2E8F0", borderRadius: 999, textDecoration: "none" }}>Log In</Link>
+                <Link href="/login" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: "center", padding: "11px 0", fontSize: 13, fontWeight: 600, color: "var(--color-body)", border: "1.5px solid #E2E8F0", borderRadius: 999, textDecoration: "none" }}>Log In</Link>
                 <Link href="/register" onClick={() => setMobileOpen(false)} style={{ flex: 1, textAlign: "center", padding: "11px 0", fontSize: 13, fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)", borderRadius: 999, textDecoration: "none" }}>Get Started</Link>
               </div>
             )}

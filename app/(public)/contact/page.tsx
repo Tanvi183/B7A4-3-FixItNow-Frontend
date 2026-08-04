@@ -25,10 +25,10 @@ export default function ContactPage() {
   const inputStyle = {
     width: "100%",
     padding: "16px 20px",
-    background: "#F8FAFC",
-    border: "1px solid #E2E8F0",
+    background: "var(--color-bg-section)",
+    border: "1px solid var(--color-border)",
     borderRadius: 16,
-    color: "#0F172A",
+    color: "var(--color-heading)",
     fontSize: 16,
     outline: "none",
     fontFamily: "var(--font-body)",
@@ -36,18 +36,18 @@ export default function ContactPage() {
   };
 
   return (
-    <div style={{ overflowX: "hidden", minHeight: "100vh", background: "#F8FAFC" }}>
+    <div style={{ overflowX: "hidden", minHeight: "100vh", background: "var(--color-bg-section)" }}>
       
       {/* ══ HERO ══════════════════════════════════════════════════════════════ */}
-      <section style={{ position: "relative", paddingTop: 100, paddingBottom: 80, background: "#fff", textAlign: "center", borderBottom: "1px solid #F1F5F9" }}>
+      <section style={{ position: "relative", paddingTop: 100, paddingBottom: 80, background: "var(--color-bg-card)", textAlign: "center", borderBottom: "1px solid var(--color-border)" }}>
         <div className="container">
           <div className="section-label" style={{ color: "#2563EB", letterSpacing: "0.05em", fontWeight: 800, justifyContent: "center", marginBottom: 16 }}>
             GET IN TOUCH
           </div>
-          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 48, fontWeight: 800, color: "#0F172A", marginBottom: 20, letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 48, fontWeight: 800, color: "var(--color-heading)", marginBottom: 20, letterSpacing: "-0.02em" }}>
             We're here to help
           </h1>
-          <p style={{ color: "#64748B", fontSize: 18, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
+          <p style={{ color: "var(--color-light)", fontSize: 18, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
             Have a question, need assistance, or want to partner with us? Reach out and our team will get back to you shortly.
           </p>
         </div>
@@ -59,33 +59,33 @@ export default function ContactPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
             
             {/* Email Card */}
-            <div style={{ background: "#fff", padding: 40, borderRadius: 24, boxShadow: "0 10px 40px rgba(15,23,42,0.04)", textAlign: "center", border: "1px solid #F8FAFC" }}>
-              <div style={{ width: 64, height: 64, background: "#EFF6FF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+            <div style={{ background: "var(--color-bg-card)", padding: 40, borderRadius: 24, boxShadow: "0 10px 40px rgba(15,23,42,0.04)", textAlign: "center", border: "1px solid #F8FAFC" }}>
+              <div style={{ width: 64, height: 64, background: "rgba(37, 99, 235, 0.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                 <Mail style={{ width: 28, height: 28, color: "#2563EB" }} />
               </div>
-              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 800, color: "#0F172A", marginBottom: 12 }}>Email Us</h3>
-              <p style={{ color: "#64748B", fontSize: 15, marginBottom: 8 }}>Support: support@fixitnow.com</p>
-              <p style={{ color: "#64748B", fontSize: 15 }}>Sales: sales@fixitnow.com</p>
+              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 800, color: "var(--color-heading)", marginBottom: 12 }}>Email Us</h3>
+              <p style={{ color: "var(--color-light)", fontSize: 15, marginBottom: 8 }}>Support: support@fixitnow.com</p>
+              <p style={{ color: "var(--color-light)", fontSize: 15 }}>Sales: sales@fixitnow.com</p>
             </div>
 
             {/* Phone Card */}
-            <div style={{ background: "#fff", padding: 40, borderRadius: 24, boxShadow: "0 10px 40px rgba(15,23,42,0.04)", textAlign: "center", border: "1px solid #F8FAFC" }}>
-              <div style={{ width: 64, height: 64, background: "#EFF6FF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+            <div style={{ background: "var(--color-bg-card)", padding: 40, borderRadius: 24, boxShadow: "0 10px 40px rgba(15,23,42,0.04)", textAlign: "center", border: "1px solid #F8FAFC" }}>
+              <div style={{ width: 64, height: 64, background: "rgba(37, 99, 235, 0.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                 <Phone style={{ width: 28, height: 28, color: "#2563EB" }} />
               </div>
-              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 800, color: "#0F172A", marginBottom: 12 }}>Call Us</h3>
-              <p style={{ color: "#64748B", fontSize: 15, marginBottom: 8 }}>Toll-Free: 1-800-FIXIT-NOW</p>
-              <p style={{ color: "#64748B", fontSize: 15 }}>Local: (555) 123-4567</p>
+              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 800, color: "var(--color-heading)", marginBottom: 12 }}>Call Us</h3>
+              <p style={{ color: "var(--color-light)", fontSize: 15, marginBottom: 8 }}>Toll-Free: 1-800-FIXIT-NOW</p>
+              <p style={{ color: "var(--color-light)", fontSize: 15 }}>Local: (555) 123-4567</p>
             </div>
 
             {/* Office Card */}
-            <div style={{ background: "#fff", padding: 40, borderRadius: 24, boxShadow: "0 10px 40px rgba(15,23,42,0.04)", textAlign: "center", border: "1px solid #F8FAFC" }}>
-              <div style={{ width: 64, height: 64, background: "#EFF6FF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+            <div style={{ background: "var(--color-bg-card)", padding: 40, borderRadius: 24, boxShadow: "0 10px 40px rgba(15,23,42,0.04)", textAlign: "center", border: "1px solid #F8FAFC" }}>
+              <div style={{ width: 64, height: 64, background: "rgba(37, 99, 235, 0.1)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                 <MapPin style={{ width: 28, height: 28, color: "#2563EB" }} />
               </div>
-              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 800, color: "#0F172A", marginBottom: 12 }}>Visit Us</h3>
-              <p style={{ color: "#64748B", fontSize: 15, marginBottom: 8 }}>123 Home Service Blvd,</p>
-              <p style={{ color: "#64748B", fontSize: 15 }}>Suite 400, New York, NY 10012</p>
+              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 800, color: "var(--color-heading)", marginBottom: 12 }}>Visit Us</h3>
+              <p style={{ color: "var(--color-light)", fontSize: 15, marginBottom: 8 }}>123 Home Service Blvd,</p>
+              <p style={{ color: "var(--color-light)", fontSize: 15 }}>Suite 400, New York, NY 10012</p>
             </div>
 
           </div>
@@ -95,13 +95,13 @@ export default function ContactPage() {
       {/* ══ CONTACT FORM ═══════════════════════════════════════════════════════ */}
       <section style={{ paddingBottom: 100 }}>
         <div className="container" style={{ maxWidth: 800 }}>
-          <div className="contact-form-card" style={{ background: "#fff", borderRadius: 32, boxShadow: "0 20px 60px rgba(15,23,42,0.06)", border: "1px solid #F1F5F9" }}>
+          <div className="contact-form-card" style={{ background: "var(--color-bg-card)", borderRadius: 32, boxShadow: "0 20px 60px rgba(15,23,42,0.06)", border: "1px solid #F1F5F9" }}>
             
             <div style={{ textAlign: "center", marginBottom: 40 }}>
-              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 32, fontWeight: 800, color: "#0F172A", marginBottom: 12, letterSpacing: "-0.01em" }}>
+              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 32, fontWeight: 800, color: "var(--color-heading)", marginBottom: 12, letterSpacing: "-0.01em" }}>
                 Send us a Message
               </h2>
-              <p style={{ color: "#64748B", fontSize: 16 }}>
+              <p style={{ color: "var(--color-light)", fontSize: 16 }}>
                 Fill out the form below and we'll reply as soon as possible.
               </p>
             </div>
@@ -117,7 +117,7 @@ export default function ContactPage() {
               
               <div className="contact-form-row">
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <label style={{ fontSize: 14, fontWeight: 700, color: "#334155" }}>Full Name</label>
+                  <label style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)" }}>Full Name</label>
                   <input 
                     type="text" 
                     placeholder="John Doe" 
@@ -131,7 +131,7 @@ export default function ContactPage() {
                 </div>
                 
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <label style={{ fontSize: 14, fontWeight: 700, color: "#334155" }}>Email Address</label>
+                  <label style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)" }}>Email Address</label>
                   <input 
                     type="email" 
                     placeholder="john@example.com" 
@@ -146,7 +146,7 @@ export default function ContactPage() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label style={{ fontSize: 14, fontWeight: 700, color: "#334155" }}>Subject</label>
+                <label style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)" }}>Subject</label>
                 <input 
                   type="text" 
                   placeholder="How can we help you?" 
@@ -160,7 +160,7 @@ export default function ContactPage() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label style={{ fontSize: 14, fontWeight: 700, color: "#334155" }}>Message</label>
+                <label style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)" }}>Message</label>
                 <textarea 
                   placeholder="Write your message here..." 
                   required 

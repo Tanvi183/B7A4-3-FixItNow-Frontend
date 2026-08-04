@@ -80,7 +80,7 @@ export function Footer() {
               </div>
               <span style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 800, color: "#F8FAFC", letterSpacing: "-0.02em" }}>FixItNow</span>
             </Link>
-            <p style={{ color: "#94A3B8", fontSize: 15, lineHeight: 1.8, marginBottom: 32, maxWidth: 320 }}>
+            <p style={{ color: "var(--color-light)", fontSize: 15, lineHeight: 1.8, marginBottom: 32, maxWidth: 320 }}>
               Your trusted home service platform. Connecting you with skilled, verified, and highly-rated professionals for all your home needs.
             </p>
             {/* Social icons */}
@@ -92,7 +92,7 @@ export function Footer() {
                   aria-label={label}
                   className="social-link"
                 >
-                  <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, stroke: "#94A3B8", fill: "none", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", transition: "stroke 0.2s ease" }}>
+                  <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, stroke: "var(--color-light)", fill: "none", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", transition: "stroke 0.2s ease" }}>
                     <path d={path} />
                   </svg>
                 </Link>
@@ -122,10 +122,10 @@ export function Footer() {
       {/* Bottom bar */}
       <div style={{ borderTop: "1px solid #1E293B", background: "#080B13" }}>
         <div className="container footer-bottom">
-          <p style={{ color: "#64748B", fontSize: 14, margin: 0 }}>© {new Date().getFullYear()} FixItNow. All rights reserved.</p>
+          <p style={{ color: "var(--color-light)", fontSize: 14, margin: 0 }}>© {new Date().getFullYear()} FixItNow. All rights reserved.</p>
           <div style={{ display: "flex", gap: 32 }}>
-            <Link href="#" style={{ color: "#64748B", fontSize: 14, textDecoration: "none", transition: "color 0.2s ease" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={(e) => (e.currentTarget.style.color = "#64748B")}>Privacy Policy</Link>
-            <Link href="#" style={{ color: "#64748B", fontSize: 14, textDecoration: "none", transition: "color 0.2s ease" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={(e) => (e.currentTarget.style.color = "#64748B")}>Terms of Service</Link>
+            <Link href="#" style={{ color: "var(--color-light)", fontSize: 14, textDecoration: "none", transition: "color 0.2s ease" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-light)")}>Privacy Policy</Link>
+            <Link href="#" style={{ color: "var(--color-light)", fontSize: 14, textDecoration: "none", transition: "color 0.2s ease" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-light)")}>Terms of Service</Link>
           </div>
         </div>
       </div>

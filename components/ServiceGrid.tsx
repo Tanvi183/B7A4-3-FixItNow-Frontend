@@ -132,16 +132,16 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
             gridColumn: "1 / -1",
             textAlign: "center",
             padding: "64px 20px",
-            background: "#fff",
+            background: "var(--color-bg-card)",
             borderRadius: 24,
             border: "1px dashed #cbd5e1",
           }}
         >
           <Search style={{ width: 48, height: 48, color: "#cbd5e1", margin: "0 auto 16px" }} />
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: "#1e293b", marginBottom: 8 }}>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: "var(--color-heading)", marginBottom: 8 }}>
             No services found
           </h3>
-          <p style={{ color: "#64748B", fontSize: 15 }}>
+          <p style={{ color: "var(--color-light)", fontSize: 15 }}>
             Try adjusting your filters or browsing a different category.
           </p>
           <button
@@ -188,13 +188,13 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                 <h3 className="as-card-title">{svc.name}</h3>
                 <div className="as-card-rating">
                   <Star style={{ width: 16, height: 16 }} className="as-card-rating-star" fill="currentColor" />
-                  <span style={{ fontWeight: 600, color: "#1e293b" }}>5.0</span>
+                  <span style={{ fontWeight: 600, color: "var(--color-heading)" }}>5.0</span>
                   <span className="as-card-rating-count">(120 reviews)</span>
                 </div>
 
                 <div className="as-card-footer">
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontSize: 12, color: "#64748b", fontWeight: 500 }}>Starting from</span>
+                    <span style={{ fontSize: 12, color: "var(--color-light)", fontWeight: 500 }}>Starting from</span>
                     <div className="as-card-price" style={{ marginBottom: 0 }}>
                       ${Number(svc.basePrice).toFixed(2)}
                     </div>
@@ -206,7 +206,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                       disabled
                       style={{
                         background: "#f1f5f9",
-                        color: "#64748b",
+                        color: "var(--color-light)",
                         border: "1px solid #e2e8f0",
                         cursor: "not-allowed",
                         display: "flex",
@@ -264,7 +264,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
         >
           <div
             style={{
-              background: "#fff",
+              background: "var(--color-bg-card)",
               borderRadius: 20,
               width: "100%",
               maxWidth: 480,
@@ -317,7 +317,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
               {/* Service Info */}
               <div
                 style={{
-                  background: "#f8fafc",
+                  background: "var(--color-bg-section)",
                   border: "1px solid #e2e8f0",
                   borderRadius: 12,
                   padding: "12px 16px",
@@ -327,7 +327,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                   marginBottom: 20,
                 }}
               >
-                <span style={{ fontSize: 14, color: "#475569", fontWeight: 500 }}>
+                <span style={{ fontSize: 14, color: "var(--color-body)", fontWeight: 500 }}>
                   Service Price
                 </span>
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#2563eb" }}>
@@ -384,8 +384,8 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                         padding: "10px 8px",
                         border: `1.5px solid ${time === slot ? "#2563EB" : "#e2e8f0"}`,
                         borderRadius: 10,
-                        background: time === slot ? "#eff6ff" : "#fff",
-                        color: time === slot ? "#2563EB" : "#475569",
+                        background: time === slot ? "rgba(37, 99, 235, 0.1)" : "#fff",
+                        color: time === slot ? "#2563EB" : "var(--color-body)",
                         fontSize: 12,
                         fontWeight: time === slot ? 600 : 400,
                         cursor: "pointer",
@@ -397,7 +397,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                   ))}
                 </div>
                 {!time && (
-                  <p style={{ fontSize: 11, color: "#94a3b8", marginTop: 6 }}>
+                  <p style={{ fontSize: 11, color: "var(--color-light)", marginTop: 6 }}>
                     Please select a time slot above
                   </p>
                 )}
@@ -440,7 +440,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                 )}
               </button>
 
-              <p style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 12 }}>
+              <p style={{ textAlign: "center", fontSize: 11, color: "var(--color-light)", marginTop: 12 }}>
                 You'll pay once the admin reviews and accepts your request.
               </p>
             </form>

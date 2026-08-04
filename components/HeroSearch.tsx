@@ -82,14 +82,14 @@ export function HeroSearch() {
           className="hero-search-input-group" 
           style={{ cursor: "pointer", width: "100%", paddingRight: 10, position: "relative" }}
         >
-          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <Search style={{ width: 18, height: 18, color: "#0F172A" }} />
+          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--color-bg-section)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Search style={{ width: 18, height: 18, color: "var(--color-heading)" }} />
           </div>
           <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 15, fontWeight: 500, color: selectedCategory === "All Services" ? "#94A3B8" : "#334155" }}>
+            <span style={{ fontSize: 15, fontWeight: 500, color: selectedCategory === "All Services" ? "var(--color-light)" : "var(--color-heading)" }}>
               {selectedCategory}
             </span>
-            {isCategoryOpen ? <ChevronUp style={{ width: 16, height: 16, color: "#94A3B8" }} /> : <ChevronDown style={{ width: 16, height: 16, color: "#94A3B8" }} />}
+            {isCategoryOpen ? <ChevronUp style={{ width: 16, height: 16, color: "var(--color-light)" }} /> : <ChevronDown style={{ width: 16, height: 16, color: "var(--color-light)" }} />}
           </div>
         </div>
 
@@ -99,7 +99,7 @@ export function HeroSearch() {
             top: "calc(100% + 8px)",
             left: 0,
             width: "100%",
-            background: "#fff",
+            background: "var(--color-bg-card)",
             borderRadius: 16,
             boxShadow: "0 10px 40px rgba(15,23,42,.15)",
             border: "1px solid #F1F5F9",
@@ -125,7 +125,7 @@ export function HeroSearch() {
                   cursor: "pointer",
                   fontSize: 14,
                   fontWeight: 500,
-                  color: "#475569",
+                  color: "var(--color-body)",
                   transition: "background 0.2s"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "#F8FAFC"}
@@ -148,7 +148,7 @@ export function HeroSearch() {
             display: "flex", 
             alignItems: "center", 
             gap: 10, 
-            background: "#EFF6FF", // Light blue to match website theme
+            background: "rgba(37, 99, 235, 0.1)", // Light blue to match website theme
             padding: "12px 18px", 
             borderRadius: 999, 
             border: "none",
@@ -173,7 +173,7 @@ export function HeroSearch() {
             top: "calc(100% + 8px)",
             left: 0,
             width: "240px",
-            background: "#fff",
+            background: "var(--color-bg-card)",
             borderRadius: 16,
             boxShadow: "0 10px 40px rgba(15,23,42,.15)",
             border: "1px solid #F1F5F9",
@@ -199,7 +199,7 @@ export function HeroSearch() {
                   cursor: "pointer",
                   fontSize: 14,
                   fontWeight: 500,
-                  color: "#475569",
+                  color: "var(--color-body)",
                   transition: "background 0.2s"
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "#F8FAFC"}

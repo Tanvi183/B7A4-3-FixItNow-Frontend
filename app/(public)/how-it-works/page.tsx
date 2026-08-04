@@ -72,7 +72,7 @@ const trustFeatures = [
 
 export default function HowItWorksPage() {
   return (
-    <div style={{ overflowX: "hidden", background: "#fff" }}>
+    <div style={{ overflowX: "hidden", background: "var(--color-bg-card)" }}>
 
       {/* ── HERO ── */}
       <section className="hiw-hero-section">
@@ -185,8 +185,8 @@ export default function HowItWorksPage() {
                 {i < steps.length - 1 && (
                   <div className="hiw-step-arrow">
                     <svg width="60" height="20" viewBox="0 0 60 20" fill="none">
-                      <line x1="0" y1="10" x2="45" y2="10" stroke="#94A3B8" strokeWidth="2" strokeDasharray="6 4" />
-                      <polyline points="42,4 50,10 42,16" fill="none" stroke="#94A3B8" strokeWidth="2" />
+                      <line x1="0" y1="10" x2="45" y2="10" stroke="var(--color-light)" strokeWidth="2" strokeDasharray="6 4" />
+                      <polyline points="42,4 50,10 42,16" fill="none" stroke="var(--color-light)" strokeWidth="2" />
                     </svg>
                   </div>
                 )}

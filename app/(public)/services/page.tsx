@@ -92,7 +92,7 @@ const trustFeatures = [
 
 export default function ServicesPage() {
   return (
-    <div style={{ overflowX: "hidden", background: "#f8fafc" }}>
+    <div style={{ overflowX: "hidden", background: "var(--color-bg-section)" }}>
       <ServicesHero />
 
       {/* ── BROWSE BY CATEGORY ── */}
@@ -161,11 +161,11 @@ export default function ServicesPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="hiw-process-section" style={{ background: "#f8fafc" }}>
+      <section className="hiw-process-section" style={{ background: "var(--color-bg-section)" }}>
         <div className="container">
           <div className="hiw-section-header">
             <p className="hiw-section-label" style={{ color: "#2563EB" }}>HOW IT WORKS</p>
-            <h2 className="hiw-section-title" style={{ fontSize: "36px", margin: "16px 0", color: "#0F172A", fontWeight: 800 }}>Get your job done in 3 simple steps</h2>
+            <h2 className="hiw-section-title" style={{ fontSize: "36px", margin: "16px 0", color: "var(--color-heading)", fontWeight: 800 }}>Get your job done in 3 simple steps</h2>
             <p className="hiw-section-desc">
               Quick, easy, and hassle-free.
             </p>
@@ -196,8 +196,8 @@ export default function ServicesPage() {
                 {i < steps.length - 1 && (
                   <div className="hiw-step-arrow">
                     <svg width="60" height="20" viewBox="0 0 60 20" fill="none">
-                      <line x1="0" y1="10" x2="45" y2="10" stroke="#94A3B8" strokeWidth="2" strokeDasharray="6 4" />
-                      <polyline points="42,4 50,10 42,16" fill="none" stroke="#94A3B8" strokeWidth="2" />
+                      <line x1="0" y1="10" x2="45" y2="10" stroke="var(--color-light)" strokeWidth="2" strokeDasharray="6 4" />
+                      <polyline points="42,4 50,10 42,16" fill="none" stroke="var(--color-light)" strokeWidth="2" />
                     </svg>
                   </div>
                 )}
@@ -208,7 +208,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ── WHY CHOOSE FIXITNOW? ── */}
-      <section className="hiw-trust-section" style={{ background: "#f8fafc", paddingBottom: "100px" }}>
+      <section className="hiw-trust-section" style={{ background: "var(--color-bg-section)", paddingBottom: "100px" }}>
         <div className="container">
           <div className="hiw-section-header" style={{ marginBottom: "40px" }}>
             <p className="hiw-section-label" style={{ color: "#2563EB" }}>WHY CHOOSE FIXITNOW?</p>

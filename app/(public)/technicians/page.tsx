@@ -114,7 +114,7 @@ function TechniciansContent() {
   });
 
   return (
-    <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
+    <div style={{ background: "var(--color-bg-section)", minHeight: "100vh" }}>
       {/* Premium Hero Banner */}
       <div className="premium-hero">
         <div className="premium-hero-bg"></div>
@@ -201,7 +201,7 @@ function TechniciansContent() {
           
           <div className="as-topbar">
             <div className="as-search-container">
-              <Search style={{ width: 18, height: 18, color: "#94a3b8" }} />
+              <Search style={{ width: 18, height: 18, color: "var(--color-light)" }} />
               <input 
                 type="text" 
                 placeholder="Search professionals by name..." 
@@ -213,7 +213,7 @@ function TechniciansContent() {
             
             <div className="as-sort-filter-row">
               <div className="as-sort">
-                <span style={{ color: "#64748b" }}>Sort by :</span>
+                <span style={{ color: "var(--color-light)" }}>Sort by :</span>
                 <CustomSelect 
                   options={["Highest Rated", "Lowest Price", "Most Reviewed"]}
                   value={sortBy}
@@ -254,7 +254,7 @@ function TechniciansContent() {
                     className="object-cover" 
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
-                  <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(255,255,255,0.9)", padding: "4px 8px", borderRadius: 4, fontSize: 12, fontWeight: 600, color: "#1E293B" }}>
+                  <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(255,255,255,0.9)", padding: "4px 8px", borderRadius: 4, fontSize: 12, fontWeight: 600, color: "var(--color-heading)" }}>
                     {tech.availabilitySlots?.[0] || "Available"}
                   </div>
                 </div>
@@ -264,17 +264,17 @@ function TechniciansContent() {
                   
                   <div className="as-card-rating">
                     <Star className="as-card-rating-star" size={16} fill="currentColor" />
-                    <span style={{ fontWeight: 600, color: "#1E293B" }}>{Number(tech.averageRating || 5.0).toFixed(1)}</span>
+                    <span style={{ fontWeight: 600, color: "var(--color-heading)" }}>{Number(tech.averageRating || 5.0).toFixed(1)}</span>
                     <span className="as-card-rating-count">({tech.reviewCount || 0} reviews)</span>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748b", marginBottom: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--color-light)", marginBottom: 16 }}>
                     <MapPin size={14} /> {tech.location || "City Wide"}
                   </div>
 
                   <div className="as-card-footer">
                     <div className="as-card-price">
-                      ${Number(tech.pricingRate).toFixed(2)}<span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>/hr</span>
+                      ${Number(tech.pricingRate).toFixed(2)}<span style={{ fontSize: 12, color: "var(--color-light)", fontWeight: 500 }}>/hr</span>
                     </div>
                     <Link href={`/technicians/${tech.id}`} className="as-card-btn" style={{ textDecoration: "none" }}>
                       View Profile
@@ -285,7 +285,7 @@ function TechniciansContent() {
             ))}
           </div>
           ) : (
-            <div style={{ textAlign: "center", padding: "100px 0", color: "#64748b" }}>
+            <div style={{ textAlign: "center", padding: "100px 0", color: "var(--color-light)" }}>
               <p>No professionals found matching your filters.</p>
               <button 
                 onClick={() => { setSearchTerm(""); setSelectedCategory("All"); setServiceArea("Select location"); }}

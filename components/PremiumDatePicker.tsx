@@ -48,17 +48,17 @@ export default function PremiumDatePicker({ value, onChange, minDate = new Date(
         <button 
           type="button"
           onClick={prevMonth}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", padding: 4, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-light)", padding: 4, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           <ChevronLeft size={18} />
         </button>
-        <span style={{ fontWeight: 700, fontSize: 15, color: "#1e293b" }}>
+        <span style={{ fontWeight: 700, fontSize: 15, color: "var(--color-heading)" }}>
           {format(currentMonth, "MMMM yyyy")}
         </span>
         <button 
           type="button"
           onClick={nextMonth}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", padding: 4, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-light)", padding: 4, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           <ChevronRight size={18} />
         </button>
@@ -72,7 +72,7 @@ export default function PremiumDatePicker({ value, onChange, minDate = new Date(
     let startDate = startOfWeek(currentMonth);
     for (let i = 0; i < 7; i++) {
       days.push(
-        <div key={i} style={{ textAlign: "center", fontSize: 12, fontWeight: 600, color: "#94a3b8", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div key={i} style={{ textAlign: "center", fontSize: 12, fontWeight: 600, color: "var(--color-light)", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {format(addDays(startDate, i), dateFormat)}
         </div>
       );
@@ -115,7 +115,7 @@ export default function PremiumDatePicker({ value, onChange, minDate = new Date(
               fontWeight: isSelected ? 600 : 500,
               cursor: isDisabled ? "not-allowed" : "pointer",
               borderRadius: "50%",
-              color: isDisabled ? "#cbd5e1" : isSelected ? "#fff" : isCurrentMonth ? "#334155" : "#94a3b8",
+              color: isDisabled ? "#cbd5e1" : isSelected ? "#fff" : isCurrentMonth ? "var(--color-heading)" : "var(--color-light)",
               background: isSelected ? "#2563EB" : "transparent",
               transition: "all 0.2s ease",
             }}
@@ -156,14 +156,14 @@ export default function PremiumDatePicker({ value, onChange, minDate = new Date(
           padding: "12px 14px",
           border: `1.5px solid ${isOpen ? "#2563EB" : "#e2e8f0"}`,
           borderRadius: 10,
-          background: "#fff",
+          background: "var(--color-bg-card)",
           cursor: "pointer",
           transition: "all 0.2s ease",
           boxShadow: isOpen ? "0 0 0 3px rgba(37, 99, 235, 0.1)" : "none",
         }}
       >
-        <CalendarIcon size={18} style={{ color: isOpen ? "#2563EB" : "#94a3b8", transition: "color 0.2s" }} />
-        <span style={{ fontSize: 14, color: displayValue ? "#1e293b" : "#94a3b8", fontWeight: 500, flex: 1 }}>
+        <CalendarIcon size={18} style={{ color: isOpen ? "#2563EB" : "var(--color-light)", transition: "color 0.2s" }} />
+        <span style={{ fontSize: 14, color: displayValue ? "var(--color-heading)" : "var(--color-light)", fontWeight: 500, flex: 1 }}>
           {displayValue || "Select a date..."}
         </span>
       </div>
@@ -176,7 +176,7 @@ export default function PremiumDatePicker({ value, onChange, minDate = new Date(
             top: "calc(100% + 8px)",
             left: 0,
             zIndex: 50,
-            background: "#fff",
+            background: "var(--color-bg-card)",
             border: "1px solid #e2e8f0",
             borderRadius: 16,
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",

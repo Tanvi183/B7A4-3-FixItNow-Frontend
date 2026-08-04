@@ -62,11 +62,11 @@ export function ReviewsCarousel({ reviews }: { reviews: any[] }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "#fff",
+              background: "var(--color-bg-card)",
               boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
             }}
           >
-            <ChevronLeft style={{ width: 20, height: 20, color: "#0F172A" }} />
+            <ChevronLeft style={{ width: 20, height: 20, color: "var(--color-heading)" }} />
           </button>
           
           <button 
@@ -83,11 +83,11 @@ export function ReviewsCarousel({ reviews }: { reviews: any[] }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "#fff",
+              background: "var(--color-bg-card)",
               boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
             }}
           >
-            <ChevronRight style={{ width: 20, height: 20, color: "#0F172A" }} />
+            <ChevronRight style={{ width: 20, height: 20, color: "var(--color-heading)" }} />
           </button>
         </>
       )}
@@ -104,18 +104,18 @@ export function ReviewsCarousel({ reviews }: { reviews: any[] }) {
             <div key={rev.id || index} className="premium-review-card">
               <div className="premium-review-quote-icon">"</div>
               <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-                <div style={{ position: "relative", width: 64, height: 64, borderRadius: "50%", overflow: "hidden", background: "#F8FAFC", flexShrink: 0, border: "2px solid #fff", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+                <div style={{ position: "relative", width: 64, height: 64, borderRadius: "50%", overflow: "hidden", background: "var(--color-bg-section)", flexShrink: 0, border: "2px solid #fff", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
                   <Image src={rImage} alt={rName} fill sizes="100px" style={{ objectFit: "cover", objectPosition: "top" }} />
                 </div>
                 <div>
-                  <p style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#1E293B", marginBottom: 6 }}>{rName}</p>
+                  <p style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "var(--color-heading)", marginBottom: 6 }}>{rName}</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <Stars count={rRating} />
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1E293B" }}>{Number(rRating).toFixed(1)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-heading)" }}>{Number(rRating).toFixed(1)}</span>
                   </div>
                 </div>
               </div>
-              <p style={{ color: "#475569", fontSize: 15, lineHeight: 1.6, marginBottom: 28, position: "relative", zIndex: 1 }}>
+              <p style={{ color: "var(--color-body)", fontSize: 15, lineHeight: 1.6, marginBottom: 28, position: "relative", zIndex: 1 }}>
                 {rText}
               </p>
               <div className="premium-verified-badge">

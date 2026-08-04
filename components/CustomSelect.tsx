@@ -47,11 +47,11 @@ export default function CustomSelect({ options, value: initialValue, onChange, p
           alignItems: "center",
           justifyContent: "space-between",
           padding: "10px 16px",
-          background: "#fff",
+          background: "var(--color-bg-card)",
           border: isOpen ? "1px solid #3C50E0" : "1px solid #e2e8f0",
           borderRadius: "10px",
           fontSize: "14px",
-          color: selectedValue ? "#0f172a" : "#94a3b8",
+          color: selectedValue ? "var(--color-heading)" : "var(--color-light)",
           cursor: "pointer",
           transition: "all 0.2s ease",
           boxShadow: isOpen ? "0 0 0 3px rgba(37,99,235,0.1)" : "0 2px 4px rgba(0,0,0,0.02)",
@@ -61,7 +61,7 @@ export default function CustomSelect({ options, value: initialValue, onChange, p
         <span style={{ fontWeight: 500 }}>{displayValue}</span>
         <ChevronDown 
           style={{ 
-            width: 16, height: 16, color: "#64748b", 
+            width: 16, height: 16, color: "var(--color-light)", 
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", 
             transition: "transform 0.2s" 
           }} 
@@ -76,7 +76,7 @@ export default function CustomSelect({ options, value: initialValue, onChange, p
             top: "calc(100% + 8px)",
             left: 0,
             right: 0,
-            background: "#fff",
+            background: "var(--color-bg-card)",
             border: "1px solid #e2e8f0",
             borderRadius: "12px",
             boxShadow: "0 10px 25px rgba(15,23,42,0.1)",
@@ -92,7 +92,7 @@ export default function CustomSelect({ options, value: initialValue, onChange, p
               style={{
                 padding: "10px 12px",
                 fontSize: "14px",
-                color: selectedValue === opt ? "#3C50E0" : "#475569",
+                color: selectedValue === opt ? "#3C50E0" : "var(--color-body)",
                 background: selectedValue === opt ? "#F0F9FF" : "transparent",
                 fontWeight: selectedValue === opt ? 600 : 400,
                 borderRadius: "8px",
@@ -102,13 +102,13 @@ export default function CustomSelect({ options, value: initialValue, onChange, p
               onMouseEnter={(e) => {
                 if (selectedValue !== opt) {
                   e.currentTarget.style.background = "#F8FAFC";
-                  e.currentTarget.style.color = "#0f172a";
+                  e.currentTarget.style.color = "var(--color-heading)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (selectedValue !== opt) {
                   e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = "#475569";
+                  e.currentTarget.style.color = "var(--color-body)";
                 }
               }}
             >

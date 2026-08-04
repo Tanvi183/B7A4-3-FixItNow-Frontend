@@ -53,7 +53,7 @@ export default async function AllServicesPage({ searchParams }: { searchParams?:
   const activeServices = selectedCategory ? services.filter((svc: any) => svc.categoryId === selectedCategory) : services;
 
   return (
-    <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
+    <div style={{ background: "var(--color-bg-section)", minHeight: "100vh" }}>
       {/* Premium Hero Banner */}
       <div className="premium-hero">
         <div className="premium-hero-bg"></div>
@@ -134,13 +134,13 @@ export default async function AllServicesPage({ searchParams }: { searchParams?:
           
           <div className="as-topbar">
             <div className="as-search-container">
-              <Search style={{ width: 18, height: 18, color: "#94a3b8" }} />
+              <Search style={{ width: 18, height: 18, color: "var(--color-light)" }} />
               <input type="text" placeholder="Search for any service..." className="as-search-input" />
             </div>
             
             <div className="as-sort-filter-row">
               <div className="as-sort">
-                <span style={{ color: "#64748b" }}>Sort by:</span>
+                <span style={{ color: "var(--color-light)" }}>Sort by:</span>
                 <CustomSelect 
                   options={["Featured", "Price: Low to High", "Price: High to Low", "Newest"]}
                   value="Featured"

@@ -30,11 +30,11 @@ import { ReviewsCarousel } from "@/components/ReviewsCarousel";
 const popularSearches = ["Electrical", "Cleaning", "Plumbing", "AC Repair", "Painting", "Carpentry"];
 
 const services = [
-  { icon: FaBolt,          iconBg: "#EFF6FF", iconColor: "#2563EB", title: "Electrical",  desc: "Wiring, lighting, repairs & more",           price: "$40" },
-  { icon: FaFaucet,        iconBg: "#EFF6FF", iconColor: "#2563EB", title: "Plumbing",    desc: "Leak repairs, pipe fitting & installation",  price: "$35" },
+  { icon: FaBolt,          iconBg: "rgba(37, 99, 235, 0.1)", iconColor: "#2563EB", title: "Electrical",  desc: "Wiring, lighting, repairs & more",           price: "$40" },
+  { icon: FaFaucet,        iconBg: "rgba(37, 99, 235, 0.1)", iconColor: "#2563EB", title: "Plumbing",    desc: "Leak repairs, pipe fitting & installation",  price: "$35" },
   { icon: GiVacuumCleaner, iconBg: "#F0FDF4", iconColor: "#16A34A", title: "Cleaning",    desc: "Home, office & deep cleaning",                price: "$25" },
   { icon: FaPaintRoller,   iconBg: "#FAF5FF", iconColor: "#9333EA", title: "Painting",    desc: "Interior, exterior & wall painting",          price: "$45" },
-  { icon: FaSnowflake,     iconBg: "#EFF6FF", iconColor: "#2563EB", title: "AC Repair",   desc: "Installation, servicing & gas refilling",    price: "$50" },
+  { icon: FaSnowflake,     iconBg: "rgba(37, 99, 235, 0.1)", iconColor: "#2563EB", title: "AC Repair",   desc: "Installation, servicing & gas refilling",    price: "$50" },
   { icon: GiWoodBeam,      iconBg: "#FFF7ED", iconColor: "#B45309", title: "Carpentry",   desc: "Custom furniture, repairs & more",            price: "$30" },
 ];
 
@@ -148,14 +148,14 @@ export default async function HomePage() {
 
   const getCategoryIcon = (categoryName: string) => {
     switch (categoryName?.toLowerCase()) {
-      case "electrical works": return { icon: FaBolt, color: "#2563EB", bg: "#EFF6FF" };
-      case "electrical": return { icon: FaBolt, color: "#2563EB", bg: "#EFF6FF" };
-      case "plumbing": return { icon: FaFaucet, color: "#2563EB", bg: "#EFF6FF" };
-      case "hvac": return { icon: FaSnowflake, color: "#2563EB", bg: "#EFF6FF" };
+      case "electrical works": return { icon: FaBolt, color: "#2563EB", bg: "rgba(37, 99, 235, 0.1)" };
+      case "electrical": return { icon: FaBolt, color: "#2563EB", bg: "rgba(37, 99, 235, 0.1)" };
+      case "plumbing": return { icon: FaFaucet, color: "#2563EB", bg: "rgba(37, 99, 235, 0.1)" };
+      case "hvac": return { icon: FaSnowflake, color: "#2563EB", bg: "rgba(37, 99, 235, 0.1)" };
       case "cleaning": return { icon: GiVacuumCleaner, color: "#16A34A", bg: "#F0FDF4" };
       case "painting": return { icon: FaPaintRoller, color: "#9333EA", bg: "#FAF5FF" };
       case "carpentry": return { icon: GiWoodBeam, color: "#B45309", bg: "#FFF7ED" };
-      default: return { icon: HardHat, color: "#64748B", bg: "#F1F5F9" };
+      default: return { icon: HardHat, color: "var(--color-light)", bg: "#F1F5F9" };
     }
   };
 
@@ -163,7 +163,7 @@ export default async function HomePage() {
     <div style={{ overflowX: "hidden" }}>
 
       {/* ══ HERO ══════════════════════════════════════════════════════════════ */}
-      <section style={{ position: "relative", overflow: "hidden", paddingTop: 80, paddingBottom: 60, background: "#fff" }}>
+      <section style={{ position: "relative", overflow: "hidden", paddingTop: 80, paddingBottom: 60, background: "var(--color-bg-card)" }}>
         {/* Background Decorative blob (Right Side) */}
         {/* <div style={{
           position: "absolute",
@@ -201,7 +201,7 @@ export default async function HomePage() {
             {/* ── Left Content ── */}
             <div style={{ position: "relative", zIndex: 10 }}>
               {/* Trust Badge */}
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#EEF2FF", padding: "6px 16px", borderRadius: 999, marginBottom: 24 }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(37, 99, 235, 0.1)", padding: "6px 16px", borderRadius: 999, marginBottom: 24 }}>
                 <ShieldCheck style={{ width: 16, height: 16, color: "#2563EB" }} />
                 <span style={{ color: "#2563EB", fontSize: 13, fontWeight: 600 }}>Trusted by 25K+ Happy Customers</span>
               </div>
@@ -210,7 +210,7 @@ export default async function HomePage() {
               <h1 className="hero-title" style={{
                 fontFamily: "var(--font-heading)",
                 fontWeight: 800,
-                color: "#0F172A",
+                color: "var(--color-heading)",
                 lineHeight: 1.15,
                 letterSpacing: "-0.03em",
                 marginBottom: 24,
@@ -221,7 +221,7 @@ export default async function HomePage() {
               </h1>
               
               {/* Subtitle */}
-              <p style={{ color: "#475569", fontSize: 18, lineHeight: 1.6, maxWidth: 520, marginBottom: 40 }}>
+              <p style={{ color: "var(--color-body)", fontSize: 18, lineHeight: 1.6, maxWidth: 520, marginBottom: 40 }}>
                 Find skilled professionals for any home service.<br />
                 Fast booking, secure payments, and happy homes.
               </p>
@@ -230,7 +230,7 @@ export default async function HomePage() {
 
               {/* Popular Searches */}
               <div className="popular-searches" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>Popular searches:</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-heading)" }}>Popular searches:</span>
                 {displayCategories.map((s, i) => {
                   const icons = [FaBolt, GiVacuumCleaner, FaFaucet, FaSnowflake, FaPaintRoller, GiWoodBeam];
                   const Icon = icons[i % icons.length];
@@ -240,8 +240,8 @@ export default async function HomePage() {
                       href={`/technicians?category=${encodeURIComponent(s)}`}
                       style={{
                         display: "flex", alignItems: "center", gap: 6,
-                        fontSize: 13, fontWeight: 600, color: "#475569",
-                        background: "#fff", border: "1px solid #E2E8F0",
+                        fontSize: 13, fontWeight: 600, color: "var(--color-body)",
+                        background: "var(--color-bg-card)", border: "1px solid var(--color-border)",
                         borderRadius: 999, padding: "8px 16px",
                         textDecoration: "none",
                         boxShadow: "0 2px 8px rgba(15,23,42,.04)",
@@ -271,7 +271,7 @@ export default async function HomePage() {
 
               {/* Review Badge */}
               <div className="hero-review-badge" style={{
-                background: "#fff",
+                background: "var(--color-bg-card)",
                 borderRadius: 16,
                 padding: "14px 20px",
                 boxShadow: "0 12px 40px rgba(15,23,42,.15)",
@@ -294,9 +294,9 @@ export default async function HomePage() {
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                     <Star style={{ width: 22, height: 22, fill: "#F59E0B", color: "#F59E0B" }} />
-                    <span style={{ fontFamily: "var(--font-heading)", fontSize: 24, fontWeight: 800, color: "#0F172A", lineHeight: 1 }}>4.9/5</span>
+                    <span style={{ fontFamily: "var(--font-heading)", fontSize: 24, fontWeight: 800, color: "var(--color-heading)", lineHeight: 1 }}>4.9/5</span>
                   </div>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: "#64748B", margin: 0 }}>From 12K+ reviews</p>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: "var(--color-light)", margin: 0 }}>From 12K+ reviews</p>
                 </div>
               </div>
             </div>
@@ -358,7 +358,7 @@ export default async function HomePage() {
                   textAlign: "center", 
                   textDecoration: "none", 
                   cursor: "pointer",
-                  background: "#fff",
+                  background: "var(--color-bg-card)",
                   borderRadius: 24,
                   boxShadow: "0 10px 40px rgba(15,23,42,0.04)",
                   border: "none"
@@ -367,12 +367,12 @@ export default async function HomePage() {
                 <div style={{ width: 80, height: 80, borderRadius: "50%", background: iconBg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, transition: "transform var(--transition)" }}>
                   <Icon style={{ width: 36, height: 36, color: iconColor }} />
                 </div>
-                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 700, color: "#0F172A", marginBottom: 8 }}>{cat.name}</h3>
-                <p style={{ color: "#64748B", fontSize: 13, lineHeight: 1.5, marginBottom: 32, padding: "0 4px" }}>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 700, color: "var(--color-heading)", marginBottom: 8 }}>{cat.name}</h3>
+                <p style={{ color: "var(--color-light)", fontSize: 13, lineHeight: 1.5, marginBottom: 32, padding: "0 4px" }}>
                   {cat.description || "Expert professional services for your home."}
                 </p>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginTop: "auto" }}>
-                  <span style={{ color: "#0F172A", fontSize: 14, fontWeight: 700 }}>{minPrice > 0 ? `From $${minPrice}` : "Explore now"}</span>
+                  <span style={{ color: "var(--color-heading)", fontSize: 14, fontWeight: 700 }}>{minPrice > 0 ? `From $${minPrice}` : "Explore now"}</span>
                   <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#2563EB", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <ArrowRight style={{ width: 14, height: 14, color: "#fff" }} />
                   </div>
@@ -390,7 +390,7 @@ export default async function HomePage() {
       </section>
 
       {/* ══ HOW IT WORKS ══════════════════════════════════════════════════════ */}
-      <section id="how-it-works" style={{ background: "#F8FAFC", padding: "120px 0" }}>
+      <section id="how-it-works" style={{ background: "var(--color-bg-section)", padding: "120px 0" }}>
         <div className="container how-it-works-grid">
           
           {/* Left Column */}
@@ -398,10 +398,10 @@ export default async function HomePage() {
             <div style={{ color: "#2563EB", fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16 }}>
               How It Works
             </div>
-            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 42, fontWeight: 800, color: "#0F172A", marginBottom: 20, lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 42, fontWeight: 800, color: "var(--color-heading)", marginBottom: 20, lineHeight: 1.2 }}>
               Get your job done<br />in 3 simple steps
             </h2>
-            <p style={{ color: "#475569", fontSize: 16, lineHeight: 1.6, marginBottom: 40, maxWidth: 380 }}>
+            <p style={{ color: "var(--color-body)", fontSize: 16, lineHeight: 1.6, marginBottom: 40, maxWidth: 380 }}>
               We make it easy to connect with trusted professionals and get things done.
             </p>
             <Link href="/services" style={{ background: "#2563EB", color: "#fff", padding: "14px 28px", borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: "none", display: "inline-block" }}>
@@ -417,7 +417,7 @@ export default async function HomePage() {
                 {/* Step Card */}
                 <div style={{ 
                   flex: 1, 
-                  background: "#fff", 
+                  background: "var(--color-bg-card)", 
                   borderRadius: 24, 
                   boxShadow: "0 10px 40px rgba(15,23,42,0.06)", 
                   position: "relative",
@@ -455,15 +455,15 @@ export default async function HomePage() {
                      <Image src={step.image} alt={step.title} fill sizes="250px" style={{ objectFit: "contain", borderTopLeftRadius: 24, borderTopRightRadius: 24 }} />
                   </div>
 
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#0F172A", marginBottom: 12, padding: "0 16px" }}>{step.title}</h3>
-                  <p style={{ color: "#64748B", fontSize: 13, lineHeight: 1.5, padding: "0 24px", margin: 0 }}>{step.desc}</p>
+                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "var(--color-heading)", marginBottom: 12, padding: "0 16px" }}>{step.title}</h3>
+                  <p style={{ color: "var(--color-light)", fontSize: 13, lineHeight: 1.5, padding: "0 24px", margin: 0 }}>{step.desc}</p>
                 </div>
 
                 {/* Dashed Arrow (except after last card) */}
                 {i < 2 && (
                   <svg width="40" height="20" viewBox="0 0 40 20" fill="none" style={{ flexShrink: 0 }}>
-                    <line x1="0" y1="10" x2="32" y2="10" stroke="#0F172A" strokeWidth="1.5" strokeDasharray="4 4" />
-                    <path d="M32 5 L39 10 L32 15" stroke="#0F172A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <line x1="0" y1="10" x2="32" y2="10" stroke="var(--color-heading)" strokeWidth="1.5" strokeDasharray="4 4" />
+                    <path d="M32 5 L39 10 L32 15" stroke="var(--color-heading)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
               </div>
@@ -519,13 +519,13 @@ export default async function HomePage() {
           <div className="section-header-flex">
             <div>
               <div className="section-label" style={{ color: "#2563EB", letterSpacing: "0.05em", fontWeight: 800 }}>TOP RATED TECHNICIANS</div>
-              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 36, fontWeight: 800, color: "#0F172A", marginBottom: 8 }}>
+              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 36, fontWeight: 800, color: "var(--color-heading)", marginBottom: 8 }}>
                 Skilled. Trusted. Rated by you.
               </h2>
-              <p style={{ color: "#64748B", fontSize: 15, margin: 0 }}>Browse top rated professionals based on customer reviews and job performance.</p>
+              <p style={{ color: "var(--color-light)", fontSize: 15, margin: 0 }}>Browse top rated professionals based on customer reviews and job performance.</p>
             </div>
             <Link href="/technicians" style={{ display: "flex", alignItems: "center", gap: 8, color: "#2563EB", fontSize: 14, fontWeight: 700, textDecoration: "none", marginTop: 24 }}>
-              View All Technicians <div style={{ background: "#EFF6FF", borderRadius: "50%", padding: 6, display: "flex" }}><ChevronRight style={{ width: 16, height: 16 }} /></div>
+              View All Technicians <div style={{ background: "rgba(37, 99, 235, 0.1)", borderRadius: "50%", padding: 6, display: "flex" }}><ChevronRight style={{ width: 16, height: 16 }} /></div>
             </Link>
           </div>
 
@@ -539,28 +539,28 @@ export default async function HomePage() {
               <Link
                 key={tech.id}
                 href={`/technicians/${tech.id}`}
-                style={{ background: "#fff", borderRadius: 20, padding: 16, textDecoration: "none", boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}
+                style={{ background: "var(--color-bg-card)", borderRadius: 20, padding: 16, textDecoration: "none", boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}
               >
-                <div style={{ position: "relative", width: "100%", height: 160, background: "#F3F4F6", borderRadius: 16, marginBottom: 16, overflow: "hidden" }}>
+                <div style={{ position: "relative", width: "100%", height: 160, background: "var(--color-bg-section)", borderRadius: 16, marginBottom: 16, overflow: "hidden" }}>
                   <Image src={tech.user?.image || "https://ui-avatars.com/api/?name=" + encodeURIComponent(tech.user?.name || "Professional") + "&background=2563EB&color=fff&size=400"} alt={tech.user?.name} fill sizes="200px" style={{ objectFit: "cover", objectPosition: "top" }} />
-                  <div style={{ position: "absolute", top: 10, right: 10, background: "#fff", padding: "4px 8px", borderRadius: 12, display: "flex", alignItems: "center", gap: 4, boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
+                  <div style={{ position: "absolute", top: 10, right: 10, background: "var(--color-bg-card)", padding: "4px 8px", borderRadius: 12, display: "flex", alignItems: "center", gap: 4, boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
                     <ShieldCheck style={{ width: 12, height: 12, color: "#10B981" }} />
                     <span style={{ fontSize: 10, fontWeight: 700, color: "#10B981" }}>Verified</span>
                   </div>
                 </div>
-                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#0F172A", marginBottom: 4 }}>{tech.user?.name}</h3>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "var(--color-heading)", marginBottom: 4 }}>{tech.user?.name}</h3>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
                   <TechIcon style={{ width: 14, height: 14, color: catData.color }} />
                   <span style={{ fontSize: 13, fontWeight: 600, color: catData.color }}>{tech.services?.[0]?.category?.name || "Professional"}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
                   <Star style={{ width: 14, height: 14, fill: "#FBBF24", color: "#FBBF24" }} />
-                  <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{Number(tech.averageRating || 5.0).toFixed(1)}</span>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: "#94A3B8" }}>({tech.reviewCount || 0} reviews)</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: "var(--color-heading)" }}>{Number(tech.averageRating || 5.0).toFixed(1)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "var(--color-light)" }}>({tech.reviewCount || 0} reviews)</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>From ${Number(tech.pricingRate).toFixed(0)}</span>
-                  <div style={{ background: "#EFF6FF", color: "#2563EB", padding: "8px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-heading)" }}>From ${Number(tech.pricingRate).toFixed(0)}</span>
+                  <div style={{ background: "rgba(37, 99, 235, 0.1)", color: "#2563EB", padding: "8px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
                     View Profile
                   </div>
                 </div>
@@ -569,28 +569,28 @@ export default async function HomePage() {
               <Link
                 key={tech.name}
                 href="/technicians"
-                style={{ background: "#fff", borderRadius: 20, padding: 16, textDecoration: "none", boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}
+                style={{ background: "var(--color-bg-card)", borderRadius: 20, padding: 16, textDecoration: "none", boxShadow: "0 4px 24px rgba(15,23,42,0.04)" }}
               >
-                <div style={{ position: "relative", width: "100%", height: 160, background: "#F3F4F6", borderRadius: 16, marginBottom: 16, overflow: "hidden" }}>
+                <div style={{ position: "relative", width: "100%", height: 160, background: "var(--color-bg-section)", borderRadius: 16, marginBottom: 16, overflow: "hidden" }}>
                   <Image src={tech.image} alt={tech.name} fill sizes="200px" style={{ objectFit: "cover", objectPosition: "top" }} />
-                  <div style={{ position: "absolute", top: 10, right: 10, background: "#fff", padding: "4px 8px", borderRadius: 12, display: "flex", alignItems: "center", gap: 4, boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
+                  <div style={{ position: "absolute", top: 10, right: 10, background: "var(--color-bg-card)", padding: "4px 8px", borderRadius: 12, display: "flex", alignItems: "center", gap: 4, boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
                     <ShieldCheck style={{ width: 12, height: 12, color: "#10B981" }} />
                     <span style={{ fontSize: 10, fontWeight: 700, color: "#10B981" }}>Verified</span>
                   </div>
                 </div>
-                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "#0F172A", marginBottom: 4 }}>{tech.name}</h3>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800, color: "var(--color-heading)", marginBottom: 4 }}>{tech.name}</h3>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
                   <tech.icon style={{ width: 14, height: 14, color: tech.iconColor }} />
                   <span style={{ fontSize: 13, fontWeight: 600, color: tech.iconColor }}>{tech.role}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
                   <Star style={{ width: 14, height: 14, fill: "#FBBF24", color: "#FBBF24" }} />
-                  <span style={{ fontSize: 13, fontWeight: 800, color: "#0F172A" }}>{tech.rating}</span>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: "#94A3B8" }}>({tech.reviews} reviews)</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: "var(--color-heading)" }}>{tech.rating}</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "var(--color-light)" }}>({tech.reviews} reviews)</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: "#0F172A" }}>From {tech.price}</span>
-                  <div style={{ background: "#EFF6FF", color: "#2563EB", padding: "8px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-heading)" }}>From {tech.price}</span>
+                  <div style={{ background: "rgba(37, 99, 235, 0.1)", color: "#2563EB", padding: "8px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
                     View Profile
                   </div>
                 </div>
@@ -602,12 +602,12 @@ export default async function HomePage() {
           <div className="trust-badges-grid">
             {trustBadges.map((badge, i) => (
               <div key={badge.title} className="trust-badge-item">
-                <div style={{ background: "#EFF6FF", width: 48, height: 48, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div style={{ background: "rgba(37, 99, 235, 0.1)", width: 48, height: 48, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <badge.icon style={{ width: 24, height: 24, color: "#2563EB" }} />
                 </div>
                 <div>
-                  <h4 style={{ fontFamily: "var(--font-heading)", fontSize: 14, fontWeight: 800, color: "#0F172A", marginBottom: 4 }}>{badge.title}</h4>
-                  <p style={{ fontSize: 12, color: "#64748B", lineHeight: 1.5, margin: 0 }}>{badge.desc}</p>
+                  <h4 style={{ fontFamily: "var(--font-heading)", fontSize: 14, fontWeight: 800, color: "var(--color-heading)", marginBottom: 4 }}>{badge.title}</h4>
+                  <p style={{ fontSize: 12, color: "var(--color-light)", lineHeight: 1.5, margin: 0 }}>{badge.desc}</p>
                 </div>
               </div>
             ))}
@@ -616,14 +616,14 @@ export default async function HomePage() {
       </section>
 
       {/* ══ REVIEWS ══════════════════════════════════════════════════════════ */}
-      <section style={{ background: "#F8FAFC", padding: "96px 0", position: "relative" }}>
+      <section style={{ background: "var(--color-bg-section)", padding: "96px 0", position: "relative" }}>
         <div className="container" style={{ position: "relative" }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
             <div className="section-label" style={{ color: "#2563EB", letterSpacing: "0.05em", fontWeight: 800 }}>CUSTOMER REVIEWS</div>
-            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 40, fontWeight: 800, color: "#0F172A", marginBottom: 16 }}>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 40, fontWeight: 800, color: "var(--color-heading)", marginBottom: 16 }}>
               Real people. Real results.
             </h2>
-            <p style={{ color: "#64748B", fontSize: 16, maxWidth: 460, margin: "0 auto", lineHeight: 1.6 }}>
+            <p style={{ color: "var(--color-light)", fontSize: 16, maxWidth: 460, margin: "0 auto", lineHeight: 1.6 }}>
               See why thousands of homeowners trust FixItNow for their home service needs.
             </p>
           </div>

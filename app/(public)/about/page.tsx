@@ -37,12 +37,12 @@ const stats = [
 ];
 
 const mission = [
-  { icon: Target, color: "#2563EB", bg: "#EFF6FF", title: "Our Mission", desc: "To simplify home services by providing a seamless platform that connects customers with trusted professionals, ensuring quality work and complete peace of mind." },
+  { icon: Target, color: "#2563EB", bg: "rgba(37, 99, 235, 0.1)", title: "Our Mission", desc: "To simplify home services by providing a seamless platform that connects customers with trusted professionals, ensuring quality work and complete peace of mind." },
   { icon: Eye, color: "#059669", bg: "#ECFDF5", title: "Our Vision", desc: "To become the most trusted home service platform, known for reliability, innovation, and delivering outstanding customer experiences." }
 ];
 
 const values = [
-  { icon: ShieldCheck, color: "#2563EB", bg: "#EFF6FF", title: "Trust & Safety", desc: "We verify every professional to ensure your safety and peace of mind." },
+  { icon: ShieldCheck, color: "#2563EB", bg: "rgba(37, 99, 235, 0.1)", title: "Trust & Safety", desc: "We verify every professional to ensure your safety and peace of mind." },
   { icon: Award,       color: "#059669", bg: "#ECFDF5", title: "Quality First",  desc: "We are committed to delivering top-quality services, every time." },
   { icon: Clock,       color: "#7C3AED", bg: "#F5F3FF", title: "On-Time Service",desc: "We respect your time and ensure prompt and reliable service." },
   { icon: User,        color: "#EA580C", bg: "#FFF7ED", title: "Customer Focus", desc: "Your satisfaction is our priority. We're here to make things right." },
@@ -59,7 +59,7 @@ const team = [
 
 export default function AboutPage() {
   return (
-    <div style={{ overflowX: "hidden", background: "#fff" }}>
+    <div style={{ overflowX: "hidden", background: "var(--color-bg-card)" }}>
 
       {/* HERO */}
       <section className="about-hero-section">
@@ -150,7 +150,7 @@ export default function AboutPage() {
       </section>
 
       {/* MISSION */}
-      <section className="about-section" style={{ background: "#F8FAFC", padding: "80px 0" }}>
+      <section className="about-section" style={{ background: "var(--color-bg-section)", padding: "80px 0" }}>
         <div className="container">
           <div className="about-section-header">
             <p className="about-section-label">OUR MISSION</p>
@@ -177,7 +177,7 @@ export default function AboutPage() {
       </section>
 
       {/* VALUES */}
-      <section className="about-section" style={{ background: "#F8FAFC", padding: "40px 0 80px" }}>
+      <section className="about-section" style={{ background: "var(--color-bg-section)", padding: "40px 0 80px" }}>
         <div className="container">
           <div className="about-section-header">
             <p className="about-section-label">OUR VALUES</p>
@@ -199,7 +199,7 @@ export default function AboutPage() {
       </section>
 
       {/* TEAM */}
-      <section className="about-section" style={{ background: "#F8FAFC", padding: "40px 0 80px" }}>
+      <section className="about-section" style={{ background: "var(--color-bg-section)", padding: "40px 0 80px" }}>
         <div className="container">
           <div className="about-section-header">
             <p className="about-section-label">OUR TEAM</p>
@@ -235,7 +235,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="about-section" style={{ background: "#F8FAFC", padding: "40px 0 100px" }}>
+      <section className="about-section" style={{ background: "var(--color-bg-section)", padding: "40px 0 100px" }}>
         <div className="container">
           <div className="about-cta-banner">
             <div className="about-cta-left">
