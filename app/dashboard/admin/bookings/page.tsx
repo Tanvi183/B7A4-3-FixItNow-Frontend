@@ -53,28 +53,30 @@ interface Booking {
 }
 
 // ─── Assign Technician Dropdown ───────────────────────────────────────────────
-function AssignDropdown({ booking, technicians, onAssign, isLoading, label = "Assign Tech" }: {
+function AssignDropdown({ booking, technicians, onAssign, isLoading, label = "Assign Tech", showAll = false }: {
   booking: Booking;
   technicians: Technician[];
   onAssign: (bookingId: string, technicianId: string) => void;
   isLoading: boolean;
   label?: string;
+  showAll?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [selectedTech, setSelectedTech] = useState("");
 
   const filteredTechnicians = useMemo(() => {
+    if (showAll) return technicians; // For reassignment, show all
     return technicians.filter(t => {
       const bookingCategory = booking.service?.category?.name;
-      if (!bookingCategory) return true; // If booking has no category, show all
+      if (!bookingCategory) return true;
       return t.services?.some(s => s.category?.name === bookingCategory);
     });
-  }, [technicians, booking]);
+  }, [technicians, booking, showAll]);
 
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={() => { setSelectedTech(""); setOpen(o => !o); }}
         className="flex items-center gap-1.5 rounded-xl bg-[#3C50E0] px-4 py-2 text-xs font-semibold text-white hover:bg-[#3C50E0]/90 transition-all active:scale-95 cursor-pointer shadow-sm"
       >
         <FiUser className="h-3.5 w-3.5" />
@@ -254,7 +256,8 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
               technicians={technicians} 
               onAssign={onAssign} 
               isLoading={isLoading} 
-              label="Reassign Tech" 
+              label="Reassign Tech"
+              showAll={true}
             />
           )}
 
@@ -355,7 +358,7 @@ export default function AdminBookingsPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingId}/admin-review`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ action: "approve", technicianId }),
+        body: JSON.stringify({ action: "reassign", technicianId }),
       });
       const data = await res.json();
       if (data.success) {
