@@ -235,8 +235,7 @@ export default function Header({ sidebarOpen, setSidebarOpen, sidebarExpanded, s
                 {/* Menu items */}
                 <div className="p-2">
                   {[
-                    { icon: <FiUser className="w-4 h-4" />,     label: "Edit profile",      href: "#" },
-                    { icon: <FiSettings className="w-4 h-4" />, label: "Account settings",  href: "#" },
+                    { icon: <FiUser className="w-4 h-4" />,     label: "Edit profile",      href: user?.role === "TECHNICIAN" || user?.role === "technician" ? "/dashboard/technician/profile" : "#" },
                   ].map(item => (
                     <Link
                       key={item.label}

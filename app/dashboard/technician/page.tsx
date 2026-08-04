@@ -262,13 +262,28 @@ export default function TechnicianDashboard() {
 
   // Stats
   const stats = useMemo(() => {
-    let pendingRequests = 0, activeJobs = 0, totalEarnings = 0;
+    let pendingRequests = 0, activeJobs = 0, jobEarnings = 0, cancellationEarnings = 0;
+    let completedJobsCount = 0, feeCancelledCount = 0, techDeclinedCount = 0;
+
     bookings.forEach(b => {
       if (["assigned", "REQUESTED", "cancellation_requested"].includes(b.status)) pendingRequests++;
       if (["technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS"].includes(b.status)) activeJobs++;
-      if (["paid", "completed", "PAID", "COMPLETED"].includes(b.status)) totalEarnings += Number(b.totalAmount ?? b.price ?? b.service?.basePrice ?? 0);
+      
+      if (["paid", "completed", "PAID", "COMPLETED"].includes(b.status)) {
+        jobEarnings += Number(b.totalAmount ?? b.price ?? b.service?.basePrice ?? 0);
+        completedJobsCount++;
+      } else if (["cancelled", "CANCELLED"].includes(b.status) && b.cancellationOffer) {
+        // Cancellation fees that were paid successfully
+        cancellationEarnings += Number(b.cancellationOffer);
+        feeCancelledCount++;
+      } else if (["technician_declined"].includes(b.status)) {
+        techDeclinedCount++;
+      }
     });
-    return { pendingRequests, activeJobs, totalEarnings };
+    return { 
+      pendingRequests, activeJobs, jobEarnings, cancellationEarnings, totalEarnings: jobEarnings + cancellationEarnings,
+      completedJobsCount, feeCancelledCount, techDeclinedCount
+    };
   }, [bookings]);
 
   const filtered = useMemo(() => {
@@ -321,7 +336,7 @@ export default function TechnicianDashboard() {
       </div>
 
       {/* ── Stat Cards ── */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark group hover:shadow-md transition-shadow">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 mb-4 group-hover:scale-110 transition-transform">
             <FiClock className="h-6 w-6" />
@@ -329,6 +344,7 @@ export default function TechnicianDashboard() {
           <h4 className="text-3xl font-bold text-black dark:text-white">{stats.pendingRequests}</h4>
           <span className="text-sm font-medium text-body dark:text-bodydark2">Pending Requests</span>
         </div>
+        
         <div className="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark group hover:shadow-md transition-shadow">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 mb-4 group-hover:scale-110 transition-transform">
             <FiBriefcase className="h-6 w-6" />
@@ -336,12 +352,45 @@ export default function TechnicianDashboard() {
           <h4 className="text-3xl font-bold text-black dark:text-white">{stats.activeJobs}</h4>
           <span className="text-sm font-medium text-body dark:text-bodydark2">Active Jobs</span>
         </div>
-        <div className="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark group hover:shadow-md transition-shadow">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
-            <FiDollarSign className="h-6 w-6" />
+
+        <div className="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark group hover:shadow-md transition-shadow flex flex-col justify-between">
+          <div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400 mb-4 group-hover:scale-110 transition-transform">
+              <FiCheckCircle className="h-6 w-6" />
+            </div>
+            <h4 className="text-3xl font-bold text-black dark:text-white">{stats.completedJobsCount}</h4>
+            <span className="text-sm font-medium text-body dark:text-bodydark2">Completed Jobs</span>
           </div>
-          <h4 className="text-3xl font-bold text-black dark:text-white">${stats.totalEarnings.toFixed(2)}</h4>
-          <span className="text-sm font-medium text-body dark:text-bodydark2">Total Earnings</span>
+          <div className="mt-5 pt-4 border-t border-stroke dark:border-strokedark flex justify-between text-xs">
+            <div className="flex flex-col">
+              <span className="text-gray-500 dark:text-gray-400">Cancel w/ Fee</span>
+              <span className="font-semibold text-orange-500 dark:text-orange-400 mt-0.5">{stats.feeCancelledCount}</span>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-gray-500 dark:text-gray-400">Declined Self</span>
+              <span className="font-semibold text-red-500 dark:text-red-400 mt-0.5">{stats.techDeclinedCount}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark group hover:shadow-md transition-shadow flex flex-col justify-between">
+          <div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
+              <FiDollarSign className="h-6 w-6" />
+            </div>
+            <h4 className="text-3xl font-bold text-black dark:text-white">${stats.totalEarnings.toFixed(2)}</h4>
+            <span className="text-sm font-medium text-body dark:text-bodydark2">Total Earnings</span>
+          </div>
+          <div className="mt-5 pt-4 border-t border-stroke dark:border-strokedark flex justify-between text-xs">
+            <div className="flex flex-col">
+              <span className="text-gray-500 dark:text-gray-400">Job Fees</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">${stats.jobEarnings.toFixed(2)}</span>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-gray-500 dark:text-gray-400">Cancel Fees</span>
+              <span className="font-semibold text-orange-500 dark:text-orange-400 mt-0.5">${stats.cancellationEarnings.toFixed(2)}</span>
+            </div>
+          </div>
         </div>
       </div>
 

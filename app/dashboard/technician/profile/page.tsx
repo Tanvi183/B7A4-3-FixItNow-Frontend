@@ -12,7 +12,6 @@ export default function TechnicianProfilePage() {
   
   const [formData, setFormData] = useState({
     bio: "",
-    skills: "",
     experienceYears: 0,
     pricingRate: 0,
     location: "",
@@ -31,7 +30,6 @@ export default function TechnicianProfilePage() {
           const profile = data.data.technicianProfile;
           setFormData({
             bio: profile.bio || "",
-            skills: profile.skills?.join(", ") || "",
             experienceYears: profile.experienceYears || 0,
             pricingRate: profile.pricingRate || 0,
             location: profile.location || "",
@@ -61,7 +59,6 @@ export default function TechnicianProfilePage() {
     try {
       const payload = {
         ...formData,
-        skills: formData.skills.split(",").map(s => s.trim()).filter(Boolean),
       };
 
       const token = getCookie("accessToken");
@@ -123,24 +120,7 @@ export default function TechnicianProfilePage() {
             />
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-black dark:text-white">
-              Skills (Comma separated)
-            </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
-                <FiBriefcase className="h-4 w-4" />
-              </span>
-              <input
-                type="text"
-                name="skills"
-                value={formData.skills}
-                onChange={handleChange}
-                placeholder="e.g. Plumbing, Pipe repair, Water heater installation"
-                className="w-full rounded-xl border border-stroke bg-transparent py-3 pl-11 pr-4 text-sm outline-none transition focus:border-blue-600 active:border-blue-600 dark:border-form-strokedark dark:bg-form-input dark:focus:border-blue-500"
-              />
-            </div>
-          </div>
+
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
