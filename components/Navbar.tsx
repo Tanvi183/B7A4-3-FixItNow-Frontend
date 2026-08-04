@@ -344,7 +344,7 @@ export function Navbar() {
                       <Link href="/dashboard/technician" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                         <LayoutDashboard size={16} /> Provider Dashboard
                       </Link>
-                      <Link href="/dashboard/technician/bookings" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                      <Link href="/dashboard/technician" onClick={() => setDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                         <Wrench size={16} /> My Jobs
                       </Link>
                     </>
@@ -536,7 +536,7 @@ export function Navbar() {
                     <Link href="/dashboard/technician" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
                       <LayoutDashboard size={16} /> Provider Dashboard
                     </Link>
-                    <Link href="/dashboard/technician/jobs" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                    <Link href="/dashboard/technician" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
                       <Wrench size={16} /> My Jobs
                     </Link>
                   </>

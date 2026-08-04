@@ -27,8 +27,8 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
   const [visibleCount, setVisibleCount] = useState(6);
   const { user } = useAuthStore();
 
-  // Bookings the user has already made (to detect "pending" state per service)
-  const [pendingServiceIds, setPendingServiceIds] = useState<Set<string>>(new Set());
+  // Bookings the user has already made (to detect active state per service)
+  const [activeBookingsMap, setActiveBookingsMap] = useState<Record<string, string>>({});
 
   // Modal state
   const [modalSvc, setModalSvc] = useState<any>(null);
@@ -48,12 +48,13 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
       });
       const data = await res.json();
       const bookings: any[] = data.data || data || [];
-      const ids = new Set<string>(
-        bookings
-          .filter((b) => !["cancelled", "completed", "paid", "CANCELLED", "COMPLETED", "PAID"].includes(b.status))
-          .map((b) => b.serviceId)
-      );
-      setPendingServiceIds(ids);
+      const map: Record<string, string> = {};
+      bookings.forEach((b) => {
+        if (!["cancelled", "completed", "paid", "CANCELLED", "COMPLETED", "PAID", "admin_rejected", "DECLINED", "customer_disputed"].includes(b.status)) {
+          map[b.serviceId] = b.status;
+        }
+      });
+      setActiveBookingsMap(map);
     } catch (err) {
       console.error("Failed to fetch bookings", err);
     }
@@ -160,7 +161,17 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
       {/* ── Service Cards ─────────────────────────────────────────────────── */}
       <div className="as-grid">
         {visibleServices.map((svc, idx) => {
-          const isPending = pendingServiceIds.has(svc.id);
+          const activeStatus = activeBookingsMap[svc.id];
+          let statusLabel = "";
+          if (activeStatus) {
+            if (["requested", "REQUESTED"].includes(activeStatus)) statusLabel = "Pending";
+            else if (["assigned"].includes(activeStatus)) statusLabel = "Assigned";
+            else if (["technician_accepted", "ACCEPTED"].includes(activeStatus)) statusLabel = "Tech Coming";
+            else if (["in_progress", "IN_PROGRESS"].includes(activeStatus)) statusLabel = "In Progress";
+            else if (["work_completed", "payment_pending"].includes(activeStatus)) statusLabel = "Payment Pending";
+            else if (["cancellation_requested", "cancellation_approved"].includes(activeStatus)) statusLabel = "Cancelling...";
+            else statusLabel = "Active";
+          }
           return (
             <div key={svc.id || idx} className="as-card">
               <div className="as-card-img">
@@ -189,7 +200,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                     </div>
                   </div>
 
-                  {isPending ? (
+                  {activeStatus ? (
                     <button
                       className="as-card-btn"
                       disabled
@@ -204,7 +215,8 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
                         gap: 6,
                       }}
                     >
-                      <Clock size={14} /> Pending
+                      <Clock size={14} style={{ marginRight: 6 }} />
+                      {statusLabel}
                     </button>
                   ) : (
                     <button

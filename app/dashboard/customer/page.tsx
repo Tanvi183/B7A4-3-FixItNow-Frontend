@@ -52,6 +52,7 @@ interface Booking {
   createdAt?: string;
   price?: number;
   totalAmount?: number;
+  cancellationOffer?: number;
   service?: { name: string; basePrice?: number; description?: string };
   technician?: { user?: { name: string; email?: string } };
   adminNote?: string;
@@ -80,10 +81,12 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
   actionLoading: string | null;
   onDelete: (id: string) => void;
 }) {
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [offerAmount, setOfferAmount] = useState("");
+  const isLoading = actionLoading === booking.id;
   const conf = getStatusConf(booking.status);
   const date = booking.scheduledDate || booking.date || booking.createdAt;
   const price = booking.totalAmount ?? booking.price ?? booking.service?.basePrice ?? 0;
-  const isLoading = actionLoading === booking.id;
 
   return (
     <div className="group flex flex-col rounded-2xl border border-stroke bg-white shadow-sm hover:shadow-md dark:border-strokedark dark:bg-boxdark transition-all duration-200">
@@ -204,7 +207,7 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
                 {["assigned", "technician_declined"].includes(booking.status) ? "Awaiting technician response…" : "Your technician is on the job!"}
               </span>
               <button
-                onClick={() => onAction(booking.id, `bookings/${booking.id}/customer-cancel`)}
+                onClick={() => setCancelModalOpen(true)}
                 disabled={isLoading}
                 className="flex items-center justify-center gap-1.5 rounded-xl bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-600 shadow-sm border border-orange-100 hover:bg-orange-100 disabled:opacity-60 transition-all cursor-pointer dark:bg-orange-500/10 dark:border-orange-500/20 dark:text-orange-400 dark:hover:bg-orange-500/20"
               >
@@ -215,7 +218,21 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
           )}
 
           {["cancellation_requested"].includes(booking.status) && (
-            <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">Cancellation requested. Admin is reviewing.</span>
+            <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">Cancellation requested with offer ${booking.cancellationOffer || 0}. Waiting for technician.</span>
+          )}
+
+          {["cancellation_approved"].includes(booking.status) && (
+            <div className="flex w-full items-center justify-between">
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Cancellation approved. Fee: ${booking.cancellationOffer || 0}</span>
+              <button
+                onClick={() => onAction(booking.id, `bookings/${booking.id}/customer-cancel`)}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-red-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm border border-red-500 hover:bg-red-600 disabled:opacity-60 transition-all cursor-pointer"
+              >
+                {isLoading ? <FiLoader className="h-3 w-3 animate-spin" /> : <FiX className="h-3 w-3" />}
+                Finalize Cancellation
+              </button>
+            </div>
           )}
 
           {["customer_disputed"].includes(booking.status) && (
@@ -239,6 +256,47 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
           )}
         </div>
       </div>
+      
+      {/* ── Cancellation Modal ── */}
+      {cancelModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-boxdark">
+            <h3 className="mb-2 text-lg font-bold text-black dark:text-white">Offer Cancellation Fee</h3>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+              The technician is already assigned to this job. To cancel, you must offer a cancellation fee.
+            </p>
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-medium text-black dark:text-white">Offer Amount ($)</label>
+              <input
+                type="number"
+                min="0"
+                value={offerAmount}
+                onChange={e => setOfferAmount(e.target.value)}
+                placeholder="e.g. 15.00"
+                className="w-full rounded-xl border border-stroke bg-gray-50 px-4 py-2.5 text-black outline-none focus:border-[#3C50E0] dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#3C50E0]"
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setCancelModalOpen(false)}
+                className="rounded-xl px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-meta-4 cursor-pointer"
+              >
+                Nevermind
+              </button>
+              <button
+                onClick={() => {
+                  onAction(booking.id, `bookings/${booking.id}/customer-cancel`, { offerAmount: Number(offerAmount) });
+                  setCancelModalOpen(false);
+                }}
+                disabled={!offerAmount || Number(offerAmount) < 0}
+                className="rounded-xl bg-[#3C50E0] px-4 py-2 text-sm font-medium text-white hover:bg-[#3C50E0]/90 disabled:opacity-60 cursor-pointer"
+              >
+                Send Offer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

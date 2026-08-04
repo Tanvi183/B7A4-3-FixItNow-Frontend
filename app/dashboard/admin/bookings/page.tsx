@@ -260,7 +260,7 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
             </>
           )}
 
-          {["assigned", "technician_accepted", "in_progress"].includes(booking.status) && (
+          {["assigned"].includes(booking.status) && (
             <AssignDropdown 
               booking={booking} 
               technicians={technicians} 
@@ -271,7 +271,7 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
             />
           )}
 
-          {["work_completed", "payment_pending"].includes(booking.status) && (
+          {["technician_accepted", "in_progress", "work_completed", "payment_pending"].includes(booking.status) && (
             <span className="text-xs text-body dark:text-bodydark2 italic">In progress…</span>
           )}
 

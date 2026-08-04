@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useAuthStore, getCookie } from "@/stores/useAuthStore";
 import {
   FiBriefcase, FiClock, FiDollarSign, FiCalendar, FiArrowRight,
-  FiCheckCircle, FiXCircle, FiPlay, FiFlag, FiLoader, FiTool, FiRefreshCw, FiInbox
+  FiCheckCircle, FiXCircle, FiPlay, FiFlag, FiLoader, FiTool, FiRefreshCw, FiInbox, FiSearch
 } from "react-icons/fi";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -44,6 +44,7 @@ interface Booking {
   createdAt?: string;
   price?: number;
   totalAmount?: number;
+  cancellationOffer?: number;
   customer?: { user?: { name: string; email?: string } };
   service?: { name: string; basePrice?: number };
 }
@@ -103,6 +104,34 @@ function BookingActions({ booking, onAction, isLoading }: {
         Mark as Done
       </button>
     );
+  }
+
+  if (["cancellation_requested"].includes(status)) {
+    return (
+      <div className="flex gap-2 flex-wrap items-center">
+        <span className="mr-2 text-xs font-semibold text-orange-600 dark:text-orange-400">Offer: ${booking.cancellationOffer || 0}</span>
+        <button
+          onClick={() => onAction(id, `bookings/${id}/cancellation-response`, { action: "accept" })}
+          disabled={isLoading}
+          className="flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
+        >
+          {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiCheckCircle className="h-3.5 w-3.5" />}
+          Accept
+        </button>
+        <button
+          onClick={() => onAction(id, `bookings/${id}/cancellation-response`, { action: "reject" })}
+          disabled={isLoading}
+          className="flex items-center gap-1.5 rounded-xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
+        >
+          <FiXCircle className="h-3.5 w-3.5" />
+          Reject
+        </button>
+      </div>
+    );
+  }
+
+  if (["cancellation_approved"].includes(status)) {
+    return <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Cancellation fee accepted. Waiting for customer.</span>;
   }
 
   if (["work_completed"].includes(status)) {
@@ -172,25 +201,22 @@ export default function TechnicianDashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const fetchBookings = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
     try {
       const token = getCookie("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/my-bookings`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (data.success && Array.isArray(data.data)) {
-        setBookings(data.data);
+      if (res.ok) {
+        setBookings(data.data || data);
       } else {
-        // Try technician-specific endpoint
-        const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/technicians/bookings`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data2 = await res2.json();
-        if (data2.success && Array.isArray(data2.data)) setBookings(data2.data);
+        throw new Error(data.message || "Failed to load bookings");
       }
     } catch (err) {
       toast.error("Failed to load bookings");
@@ -236,9 +262,22 @@ export default function TechnicianDashboard() {
     return { pendingRequests, activeJobs, totalEarnings };
   }, [bookings]);
 
-  const newRequests = bookings.filter(b => ["assigned", "REQUESTED"].includes(b.status));
-  const activeJobs = bookings.filter(b => ["technician_accepted", "in_progress", "work_completed", "ACCEPTED", "IN_PROGRESS"].includes(b.status));
-  const pastJobs = bookings.filter(b => ["paid", "completed", "PAID", "COMPLETED", "customer_disputed", "payment_pending"].includes(b.status));
+  const filtered = useMemo(() => {
+    return bookings.filter(b => {
+      const matchesSearch =
+        (b.service?.name || "").toLowerCase().includes(search.toLowerCase()) ||
+        (b.customer?.user?.name || "").toLowerCase().includes(search.toLowerCase()) ||
+        b.id.toLowerCase().includes(search.toLowerCase());
+      
+      if (statusFilter === "all") return matchesSearch && b.status !== "technician_declined";
+      if (statusFilter === "new") return matchesSearch && ["assigned", "REQUESTED"].includes(b.status);
+      if (statusFilter === "active") return matchesSearch && ["technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS"].includes(b.status);
+      if (statusFilter === "completed") return matchesSearch && ["work_completed", "payment_pending", "paid", "completed", "PAID", "COMPLETED"].includes(b.status);
+      if (statusFilter === "declined") return matchesSearch && ["technician_declined"].includes(b.status);
+      
+      return matchesSearch;
+    });
+  }, [bookings, search, statusFilter]);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -297,68 +336,123 @@ export default function TechnicianDashboard() {
         </div>
       </div>
 
-      {/* ── New Requests ── */}
-      {!loading && (
-        <div className="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">
-          <div className="border-b border-stroke px-6 py-5 dark:border-strokedark flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-black dark:text-white">New Requests</h3>
-              {newRequests.length > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">{newRequests.length}</span>
-              )}
+      {/* ── Filters ── */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-white border border-stroke p-5 shadow-sm dark:bg-boxdark dark:border-strokedark">
+        <div className="relative flex-1 max-w-sm">
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search by service, client or ID…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full rounded-xl border border-stroke bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-[#3C50E0] focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#3C50E0]"
+          />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { v: "all", label: "All" },
+            { v: "new", label: "New Requests" },
+            { v: "active", label: "Active Jobs" },
+            { v: "completed", label: "Completed" },
+            { v: "declined", label: "Declined" },
+          ].map(tab => (
+            <button
+              key={tab.v}
+              onClick={() => setStatusFilter(tab.v)}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition-all cursor-pointer ${
+                statusFilter === tab.v
+                  ? "bg-[#3C50E0] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-meta-4 dark:text-bodydark2 dark:hover:bg-meta-4/80"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Booking List ── */}
+      {loading ? (
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="h-20 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-meta-4" />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-stroke bg-white py-16 shadow-sm dark:border-strokedark dark:bg-boxdark">
+          <FiInbox className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-4" />
+          <h3 className="text-lg font-semibold text-black dark:text-white">No jobs found</h3>
+          <p className="mt-1 text-sm text-body dark:text-bodydark2">
+            {search ? "Try a different search term" : "You have no jobs matching this criteria."}
+          </p>
+        </div>
+      ) : statusFilter === "all" && !search ? (
+        <div className="space-y-6">
+          {/* Grouped view for "All" tab */}
+          {(() => {
+            const newRequests = filtered.filter(b => ["assigned", "REQUESTED"].includes(b.status));
+            const activeJobs = filtered.filter(b => ["technician_accepted", "in_progress", "work_completed", "ACCEPTED", "IN_PROGRESS"].includes(b.status));
+            const closedJobs = filtered.filter(b => ["paid", "completed", "PAID", "COMPLETED", "customer_disputed", "payment_pending"].includes(b.status));
+
+            return (
+              <>
+                {newRequests.length > 0 && (
+                  <div className="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">
+                    <div className="border-b border-stroke px-6 py-5 dark:border-strokedark flex items-center justify-between bg-gray-50/50 dark:bg-meta-4/20">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-black dark:text-white">New Requests</h3>
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">{newRequests.length}</span>
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {newRequests.map(b => (
+                        <BookingRow key={b.id} booking={b} onAction={handleAction} actionLoading={actionLoading} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeJobs.length > 0 && (
+                  <div className="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">
+                    <div className="border-b border-stroke px-6 py-5 dark:border-strokedark flex items-center gap-2 bg-gray-50/50 dark:bg-meta-4/20">
+                      <h3 className="font-semibold text-black dark:text-white">Active Jobs</h3>
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">{activeJobs.length}</span>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {activeJobs.map(b => (
+                        <BookingRow key={b.id} booking={b} onAction={handleAction} actionLoading={actionLoading} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {closedJobs.length > 0 && (
+                  <div className="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">
+                    <div className="border-b border-stroke px-6 py-5 dark:border-strokedark bg-gray-50/50 dark:bg-meta-4/20">
+                      <h3 className="font-semibold text-black dark:text-white">Closed Jobs</h3>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {closedJobs.map(b => (
+                        <BookingRow key={b.id} booking={b} onAction={handleAction} actionLoading={actionLoading} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((b, idx) => (
+            <div
+              key={b.id}
+              className="animate-in slide-in-from-bottom-2 fade-in"
+              style={{ animationDelay: `${idx * 40}ms`, animationFillMode: "both" }}
+            >
+              <BookingRow booking={b} onAction={handleAction} actionLoading={actionLoading} />
             </div>
-          </div>
-          <div className="p-4">
-            {loading ? (
-              <div className="h-8 w-full animate-pulse rounded bg-gray-100 dark:bg-meta-4" />
-            ) : newRequests.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <FiInbox className="h-10 w-10 text-gray-300 dark:text-gray-600 mb-3" />
-                <p className="text-sm font-medium text-body dark:text-bodydark2">No new requests right now</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {newRequests.map(b => (
-                  <BookingRow key={b.id} booking={b} onAction={handleAction} actionLoading={actionLoading} />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ── Active Jobs ── */}
-      {!loading && activeJobs.length > 0 && (
-        <div className="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">
-          <div className="border-b border-stroke px-6 py-5 dark:border-strokedark flex items-center gap-2">
-            <h3 className="font-semibold text-black dark:text-white">Active Jobs</h3>
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">{activeJobs.length}</span>
-          </div>
-          <div className="p-4 space-y-3">
-            {activeJobs.map(b => (
-              <BookingRow key={b.id} booking={b} onAction={handleAction} actionLoading={actionLoading} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Past/Closed Jobs ── */}
-      {!loading && pastJobs.length > 0 && (
-        <div className="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">
-          <div className="border-b border-stroke px-6 py-5 dark:border-strokedark">
-            <h3 className="font-semibold text-black dark:text-white">Closed Jobs</h3>
-          </div>
-          <div className="p-4 space-y-3">
-            {pastJobs.slice(0, 5).map(b => (
-              <BookingRow key={b.id} booking={b} onAction={handleAction} actionLoading={actionLoading} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {loading && (
-        <div className="flex h-32 items-center justify-center">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#3C50E0] border-t-transparent" />
+          ))}
         </div>
       )}
     </div>
