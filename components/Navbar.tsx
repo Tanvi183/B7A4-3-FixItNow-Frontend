@@ -519,11 +519,14 @@ export function Navbar() {
                 
                 {user?.role === "CUSTOMER" && (
                   <>
-                    <Link href="/dashboard/user" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                    <Link href="/dashboard/customer" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
                       <LayoutDashboard size={16} /> Dashboard
                     </Link>
-                    <Link href="/dashboard/user/bookings" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                    <Link href="/dashboard/customer?filter=ongoing" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
                       <Briefcase size={16} /> My Bookings
+                    </Link>
+                    <Link href="/dashboard/customer?filter=completed" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-2 py-2 text-sm font-medium text-slate-700 hover:text-blue-600">
+                      <Star size={16} /> Completed Work
                     </Link>
                   </>
                 )}

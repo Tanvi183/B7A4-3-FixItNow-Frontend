@@ -3,12 +3,12 @@
 import React, { useEffect, useState, useMemo, Suspense } from "react";
 import { useAuthStore, getCookie } from "@/stores/useAuthStore";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import {
   FiCalendar, FiClock, FiCheckCircle, FiAlertTriangle,
   FiCreditCard, FiRefreshCw, FiStar, FiLoader, FiInbox,
-  FiTool, FiSearch
+  FiTool, FiSearch, FiX
 } from "react-icons/fi";
 
 // ─── Status Config ────────────────────────────────────────────────────────────
@@ -28,6 +28,8 @@ const STATUS_CONFIG: Record<string, {
   payment_pending:      { label: "Payment Due",             badge: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400", dot: "bg-yellow-500" },
   paid:                 { label: "Paid",                    badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-400", dot: "bg-indigo-500" },
   completed:            { label: "Completed",               badge: "bg-gray-100 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400",       dot: "bg-gray-400" },
+  cancellation_requested: { label: "Cancellation Pending",    badge: "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400", dot: "bg-orange-500" },
+  cancelled:            { label: "Cancelled",               badge: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400",            dot: "bg-red-500" },
   // Legacy status support
   REQUESTED:            { label: "Pending Review",         badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",    dot: "bg-amber-500" },
   ACCEPTED:             { label: "Technician Coming",      badge: "bg-teal-100 text-teal-700 dark:bg-teal-500/15 dark:text-teal-400",        dot: "bg-teal-500" },
@@ -179,24 +181,50 @@ function BookingCard({ booking, onAction, actionLoading }: {
             </Link>
           )}
 
-          {/* Neutral statuses: just show a label */}
+          {/* requested: Customer can cancel directly */}
           {["requested", "REQUESTED"].includes(booking.status) && (
-            <span className="text-xs text-body dark:text-bodydark2 italic">Waiting for admin to review your request…</span>
+            <div className="flex w-full items-center justify-between">
+              <span className="text-xs text-body dark:text-bodydark2 italic">Waiting for admin to review your request…</span>
+              <button
+                onClick={() => onAction(booking.id, `bookings/${booking.id}/customer-cancel`)}
+                disabled={isLoading}
+                className="flex items-center gap-1.5 rounded-xl bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 shadow-sm border border-red-100 hover:bg-red-100 disabled:opacity-60 transition-all cursor-pointer dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400 dark:hover:bg-red-500/20"
+              >
+                {isLoading ? <FiLoader className="h-3 w-3 animate-spin" /> : <FiX className="h-3 w-3" />}
+                Cancel Booking
+              </button>
+            </div>
           )}
-          {["assigned", "technician_declined"].includes(booking.status) && (
-            <span className="text-xs text-body dark:text-bodydark2 italic">Awaiting technician response…</span>
+
+          {/* assigned, technician_accepted, in_progress: Customer can apply for cancellation */}
+          {["assigned", "technician_declined", "technician_accepted", "in_progress", "IN_PROGRESS"].includes(booking.status) && (
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-xs text-body dark:text-bodydark2 italic">
+                {["assigned", "technician_declined"].includes(booking.status) ? "Awaiting technician response…" : "Your technician is on the job!"}
+              </span>
+              <button
+                onClick={() => onAction(booking.id, `bookings/${booking.id}/customer-cancel`)}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-600 shadow-sm border border-orange-100 hover:bg-orange-100 disabled:opacity-60 transition-all cursor-pointer dark:bg-orange-500/10 dark:border-orange-500/20 dark:text-orange-400 dark:hover:bg-orange-500/20"
+              >
+                {isLoading ? <FiLoader className="h-3 w-3 animate-spin" /> : <FiAlertTriangle className="h-3 w-3" />}
+                Apply for Cancellation
+              </button>
+            </div>
           )}
-          {["technician_accepted", "in_progress", "IN_PROGRESS"].includes(booking.status) && (
-            <span className="text-xs text-body dark:text-bodydark2 italic">Your technician is on the job!</span>
+
+          {["cancellation_requested"].includes(booking.status) && (
+            <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">Cancellation requested. Admin is reviewing.</span>
           )}
+
           {["customer_disputed"].includes(booking.status) && (
             <span className="text-xs text-rose-600 dark:text-rose-400 font-medium">Dispute submitted. Admin is reviewing.</span>
           )}
           {["paid", "PAID"].includes(booking.status) && (
             <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Payment received. Job will be closed soon.</span>
           )}
-          {["admin_rejected", "DECLINED", "CANCELLED"].includes(booking.status) && (
-            <span className="text-xs text-red-600 dark:text-red-400 font-medium">This booking was not accepted.</span>
+          {["admin_rejected", "DECLINED", "CANCELLED", "cancelled"].includes(booking.status) && (
+            <span className="text-xs text-red-600 dark:text-red-400 font-medium">This booking was {booking.status === "cancelled" || booking.status === "CANCELLED" ? "cancelled" : "not accepted"}.</span>
           )}
         </div>
       </div>
@@ -265,36 +293,37 @@ function SkeletonCard() {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
-export default function CustomerDashboard() {
+function CustomerDashboardContent() {
+  const searchParams = useSearchParams();
+  const filterParam = searchParams.get("filter") || "all";
+  
   const { user } = useAuthStore();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(filterParam);
+
+  // Sync state if URL changes
+  useEffect(() => {
+    const currentFilter = searchParams.get("filter");
+    if (currentFilter) setStatusFilter(currentFilter);
+  }, [searchParams]);
 
   const fetchBookings = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
     try {
       const token = getCookie("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/my-bookings`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (data.success && Array.isArray(data.data)) {
-        setBookings(data.data);
+      if (res.ok) {
+        setBookings(data.data || data);
       } else {
-        // Fallback path
-        const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data2 = await res2.json();
-        if (data2.success && Array.isArray(data2.data)) {
-          setBookings(data2.data);
-        }
+        throw new Error(data.message || "Failed to load bookings");
       }
     } catch (err) {
       toast.error("Failed to load bookings");
@@ -335,6 +364,7 @@ export default function CustomerDashboard() {
     active: bookings.filter(b => ["assigned", "technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS"].includes(b.status)).length,
     pending: bookings.filter(b => ["requested", "REQUESTED", "payment_pending", "work_completed"].includes(b.status)).length,
     completed: bookings.filter(b => ["completed", "COMPLETED", "paid", "PAID"].includes(b.status)).length,
+    cancelled: bookings.filter(b => ["cancelled", "CANCELLED", "admin_rejected", "DECLINED", "customer_disputed"].includes(b.status)).length,
   }), [bookings]);
 
   // Filter
@@ -345,9 +375,9 @@ export default function CustomerDashboard() {
         (b.technician?.user?.name || "").toLowerCase().includes(search.toLowerCase()) ||
         b.id.toLowerCase().includes(search.toLowerCase());
       if (statusFilter === "all") return matchesSearch;
-      if (statusFilter === "active") return matchesSearch && ["assigned", "technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS"].includes(b.status);
-      if (statusFilter === "pending") return matchesSearch && ["requested", "REQUESTED", "payment_pending", "work_completed"].includes(b.status);
+      if (statusFilter === "ongoing") return matchesSearch && ["assigned", "technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS", "requested", "REQUESTED", "payment_pending", "work_completed", "cancellation_requested"].includes(b.status);
       if (statusFilter === "completed") return matchesSearch && ["completed", "COMPLETED", "paid", "PAID"].includes(b.status);
+      if (statusFilter === "cancelled") return matchesSearch && ["cancelled", "CANCELLED", "admin_rejected", "DECLINED", "customer_disputed"].includes(b.status);
       return matchesSearch && b.status === statusFilter;
     });
   }, [bookings, search, statusFilter]);
@@ -403,9 +433,9 @@ export default function CustomerDashboard() {
         <div className="flex gap-2 flex-wrap">
           {[
             { v: "all", label: "All" },
-            { v: "pending", label: "Pending" },
-            { v: "active", label: "Active" },
+            { v: "ongoing", label: "My Bookings (Active)" },
             { v: "completed", label: "Completed" },
+            { v: "cancelled", label: "Cancelled" },
           ].map(tab => (
             <button
               key={tab.v}
@@ -453,5 +483,13 @@ export default function CustomerDashboard() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CustomerDashboard() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center"><FiLoader className="h-8 w-8 animate-spin text-blue-600" /></div>}>
+      <CustomerDashboardContent />
+    </Suspense>
   );
 }

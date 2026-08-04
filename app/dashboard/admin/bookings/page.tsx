@@ -21,6 +21,8 @@ const STATUS_CONFIG: Record<string, { label: string; badge: string; dot: string 
   payment_pending:     { label: "Payment Pending",    badge: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400", dot: "bg-yellow-500" },
   paid:                { label: "Paid",               badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-400", dot: "bg-indigo-500" },
   completed:           { label: "Completed",          badge: "bg-gray-100 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400",        dot: "bg-gray-400" },
+  cancellation_requested: { label: "Cancel Requested",   badge: "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400", dot: "bg-orange-500 animate-pulse" },
+  cancelled:           { label: "Cancelled",          badge: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400",             dot: "bg-red-500" },
   // Legacy
   REQUESTED:  { label: "Requested",   badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",     dot: "bg-amber-500 animate-pulse" },
   ACCEPTED:   { label: "Accepted",    badge: "bg-teal-100 text-teal-700 dark:bg-teal-500/15 dark:text-teal-400",         dot: "bg-teal-500" },
@@ -35,7 +37,7 @@ function getStatusConf(status: string) {
   return STATUS_CONFIG[status] ?? { label: status, badge: "bg-gray-100 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400", dot: "bg-gray-400" };
 }
 
-interface Technician { id: string; userId: string; user?: { name: string; email?: string }; isApproved?: boolean; }
+interface Technician { id: string; userId: string; user?: { name: string; email?: string }; isApproved?: boolean; services?: { id: string; category?: { name: string } }[]; }
 interface Booking {
   id: string;
   status: string;
@@ -46,19 +48,28 @@ interface Booking {
   totalAmount?: number;
   customer?: { user?: { name: string; email?: string } };
   technician?: { user?: { name: string } };
-  service?: { name: string; basePrice?: number };
+  service?: { id: string; name: string; basePrice?: number; categoryId?: string; category?: { name: string } };
   adminNote?: string;
 }
 
 // ─── Assign Technician Dropdown ───────────────────────────────────────────────
-function AssignDropdown({ booking, technicians, onAssign, isLoading }: {
+function AssignDropdown({ booking, technicians, onAssign, isLoading, label = "Assign Tech" }: {
   booking: Booking;
   technicians: Technician[];
   onAssign: (bookingId: string, technicianId: string) => void;
   isLoading: boolean;
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [selectedTech, setSelectedTech] = useState("");
+
+  const filteredTechnicians = useMemo(() => {
+    return technicians.filter(t => {
+      const bookingCategory = booking.service?.category?.name;
+      if (!bookingCategory) return true; // If booking has no category, show all
+      return t.services?.some(s => s.category?.name === bookingCategory);
+    });
+  }, [technicians, booking]);
 
   return (
     <div className="relative">
@@ -67,33 +78,57 @@ function AssignDropdown({ booking, technicians, onAssign, isLoading }: {
         className="flex items-center gap-1.5 rounded-xl bg-[#3C50E0] px-4 py-2 text-xs font-semibold text-white hover:bg-[#3C50E0]/90 transition-all active:scale-95 cursor-pointer shadow-sm"
       >
         <FiUser className="h-3.5 w-3.5" />
-        Assign Tech
+        {label}
         <FiChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 z-50 w-64 rounded-xl bg-white shadow-xl ring-1 ring-black/5 dark:bg-[#1e2340] dark:ring-white/10 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-1.5 z-[999] w-72 rounded-xl bg-white shadow-xl ring-1 ring-black/5 dark:bg-[#1e2340] dark:ring-white/10 animate-in fade-in zoom-in-95 duration-150">
           <div className="p-3 border-b border-stroke dark:border-strokedark">
-            <p className="text-xs font-semibold text-black dark:text-white mb-2">Select a Technician</p>
-            <select
-              value={selectedTech}
-              onChange={e => setSelectedTech(e.target.value)}
-              className="w-full rounded-lg border border-stroke bg-gray-50 px-3 py-2 text-sm outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white"
-            >
-              <option value="">Choose technician…</option>
-              {technicians.map(t => (
-                <option key={t.id} value={t.userId}>{t.user?.name || t.userId}</option>
-              ))}
-            </select>
+            <p className="text-xs font-semibold text-black dark:text-white mb-2">
+              Select a Technician {filteredTechnicians.length > 0 ? `(${filteredTechnicians.length} available)` : ""}
+            </p>
+            {filteredTechnicians.length === 0 ? (
+              <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5 text-xs text-amber-700">
+                No technicians found for this category.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-600">
+                {filteredTechnicians.map(t => {
+                  const isSelected = selectedTech === t.userId;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => setSelectedTech(t.userId)}
+                      className={`flex items-center justify-between w-full rounded-lg px-3 py-2.5 text-sm transition-all duration-200 cursor-pointer ${
+                        isSelected 
+                          ? "bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-[#3C50E0]/20 dark:text-white font-medium" 
+                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-meta-4 hover:text-black dark:hover:text-white"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${
+                          isSelected ? "bg-[#3C50E0] text-white shadow-sm" : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+                        }`}>
+                          {t.user?.name?.charAt(0) || "T"}
+                        </div>
+                        <span className="truncate">{t.user?.name || t.userId}</span>
+                      </div>
+                      {isSelected && <FiCheckCircle className="h-4 w-4 text-[#3C50E0]" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
           <div className="p-3 flex gap-2">
             <button
               onClick={() => { if (selectedTech) { onAssign(booking.id, selectedTech); setOpen(false); } else toast.error("Please select a technician"); }}
-              disabled={isLoading}
-              className="flex-1 rounded-xl bg-[#3C50E0] py-2 text-xs font-semibold text-white hover:bg-[#3C50E0]/90 disabled:opacity-60 cursor-pointer"
+              disabled={isLoading || filteredTechnicians.length === 0}
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[#3C50E0] py-2 text-xs font-semibold text-white hover:bg-[#3C50E0]/90 transition-all shadow-sm active:scale-95 disabled:opacity-60 disabled:active:scale-100 cursor-pointer"
             >
               {isLoading ? "Assigning…" : "Confirm Assign"}
             </button>
-            <button onClick={() => setOpen(false)} className="rounded-xl bg-gray-100 dark:bg-meta-4 px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition cursor-pointer">
+            <button onClick={() => setOpen(false)} className="rounded-xl bg-gray-100 dark:bg-meta-4 px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-meta-4/80 transition-colors cursor-pointer">
               Cancel
             </button>
           </div>
@@ -119,8 +154,8 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
 
   return (
     <tr
-      className="group border-b border-stroke dark:border-strokedark hover:bg-[#3C50E0]/5 transition-all duration-200 animate-in slide-in-from-bottom-2 fade-in"
-      style={{ animationDelay: `${idx * 30}ms`, animationFillMode: "both" }}
+      className="group relative hover:bg-[#3C50E0]/5 border-b border-stroke dark:border-strokedark transition-all duration-200 animate-in slide-in-from-bottom-2 fade-in"
+      style={{ animationDelay: `${idx * 30}ms`, animationFillMode: "both", zIndex: 100 - idx }}
     >
       {/* Booking ID + Service */}
       <td className="py-4 px-5">
@@ -173,7 +208,7 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
 
       {/* Actions */}
       <td className="py-4 px-5">
-        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="flex items-center justify-end gap-2">
           {/* requested or technician_declined: Admin assigns or rejects */}
           {(["requested", "REQUESTED", "technician_declined"].includes(booking.status)) && (
             <>
@@ -201,7 +236,29 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
             </button>
           )}
 
-          {["assigned", "technician_accepted", "in_progress", "work_completed", "payment_pending"].includes(booking.status) && (
+          {/* cancellation_requested: admin approves */}
+          {["cancellation_requested"].includes(booking.status) && (
+            <button
+              onClick={() => onAction(booking.id, `bookings/${booking.id}/admin-review`, { action: "approve_cancellation" })}
+              disabled={isLoading}
+              className="flex items-center gap-1.5 rounded-xl bg-orange-500 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
+            >
+              {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiAlertTriangle className="h-3.5 w-3.5" />}
+              Approve Cancellation
+            </button>
+          )}
+
+          {["assigned", "technician_accepted", "in_progress"].includes(booking.status) && (
+            <AssignDropdown 
+              booking={booking} 
+              technicians={technicians} 
+              onAssign={onAssign} 
+              isLoading={isLoading} 
+              label="Reassign Tech" 
+            />
+          )}
+
+          {["work_completed", "payment_pending"].includes(booking.status) && (
             <span className="text-xs text-body dark:text-bodydark2 italic">In progress…</span>
           )}
 
@@ -257,7 +314,7 @@ export default function AdminBookingsPage() {
       ]);
       const [bData, tData] = await Promise.all([bRes.json(), tRes.json()]);
       if (bData.success && Array.isArray(bData.data)) setBookings(bData.data);
-      if (tData.success && Array.isArray(tData.data)) setTechnicians(tData.data.filter((t: Technician) => t.isApproved !== false));
+      if (tData.success && Array.isArray(tData.data)) setTechnicians(tData.data);
     } catch {
       toast.error("Failed to load bookings");
     } finally {
