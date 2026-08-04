@@ -266,7 +266,7 @@ export default async function HomePage() {
               
               {/* Person Foreground */}
               <div className="hero-image-person">
-                <Image src="/person.png" alt="Professional Technician" fill sizes="480px" style={{ objectFit: "contain", objectPosition: "bottom center" }} />
+                <Image src="/person.png" alt="Professional Technician" fill sizes="480px" style={{ objectFit: "contain", objectPosition: "bottom center" }} priority />
               </div>
 
               {/* Review Badge */}

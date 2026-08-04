@@ -238,16 +238,26 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
             </button>
           )}
 
-          {/* cancellation_requested: admin approves */}
+          {/* cancellation_requested: admin approves or rejects */}
           {["cancellation_requested"].includes(booking.status) && (
-            <button
-              onClick={() => onAction(booking.id, `bookings/${booking.id}/admin-review`, { action: "approve_cancellation" })}
-              disabled={isLoading}
-              className="flex items-center gap-1.5 rounded-xl bg-orange-500 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
-            >
-              {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiAlertTriangle className="h-3.5 w-3.5" />}
-              Approve Cancellation
-            </button>
+            <>
+              <button
+                onClick={() => onAction(booking.id, `bookings/${booking.id}/admin-review`, { action: "reject_cancellation" })}
+                disabled={isLoading}
+                className="flex items-center gap-1.5 rounded-xl bg-gray-500 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
+              >
+                {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiXCircle className="h-3.5 w-3.5" />}
+                Reject
+              </button>
+              <button
+                onClick={() => onAction(booking.id, `bookings/${booking.id}/admin-review`, { action: "approve_cancellation" })}
+                disabled={isLoading}
+                className="flex items-center gap-1.5 rounded-xl bg-orange-500 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
+              >
+                {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiAlertTriangle className="h-3.5 w-3.5" />}
+                Approve
+              </button>
+            </>
           )}
 
           {["assigned", "technician_accepted", "in_progress"].includes(booking.status) && (

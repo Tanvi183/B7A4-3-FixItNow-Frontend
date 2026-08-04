@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import {
   FiCalendar, FiClock, FiCheckCircle, FiAlertTriangle,
   FiCreditCard, FiRefreshCw, FiStar, FiLoader, FiInbox,
-  FiTool, FiSearch, FiX
+  FiTool, FiSearch, FiX, FiTrash2
 } from "react-icons/fi";
 
 // ─── Status Config ────────────────────────────────────────────────────────────
@@ -74,10 +74,11 @@ function StatCard({ label, value, icon, from, to }: { label: string; value: numb
 }
 
 // ─── Booking Card ─────────────────────────────────────────────────────────────
-function BookingCard({ booking, onAction, actionLoading }: {
+function BookingCard({ booking, onAction, actionLoading, onDelete }: {
   booking: Booking;
   onAction: (id: string, endpoint: string, payload?: any) => void;
   actionLoading: string | null;
+  onDelete: (id: string) => void;
 }) {
   const conf = getStatusConf(booking.status);
   const date = booking.scheduledDate || booking.date || booking.createdAt;
@@ -224,7 +225,17 @@ function BookingCard({ booking, onAction, actionLoading }: {
             <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Payment received. Job will be closed soon.</span>
           )}
           {["admin_rejected", "DECLINED", "CANCELLED", "cancelled"].includes(booking.status) && (
-            <span className="text-xs text-red-600 dark:text-red-400 font-medium">This booking was {booking.status === "cancelled" || booking.status === "CANCELLED" ? "cancelled" : "not accepted"}.</span>
+            <div className="flex w-full items-center justify-between">
+              <span className="text-xs text-red-600 dark:text-red-400 font-medium">This booking was {booking.status === "cancelled" || booking.status === "CANCELLED" ? "cancelled" : "not accepted"}.</span>
+              <button
+                onClick={() => onDelete(booking.id)}
+                disabled={isLoading}
+                className="flex items-center gap-1.5 rounded-xl bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm border border-gray-200 hover:bg-gray-200 disabled:opacity-60 transition-all cursor-pointer dark:bg-meta-4 dark:border-strokedark dark:text-bodydark dark:hover:bg-meta-4/80"
+              >
+                {isLoading ? <FiLoader className="h-3 w-3 animate-spin" /> : <FiTrash2 className="h-3 w-3" />}
+                Remove
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -304,6 +315,7 @@ function CustomerDashboardContent() {
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(filterParam);
+  const [bookingToDelete, setBookingToDelete] = useState<string | null>(null);
 
   // Sync state if URL changes
   useEffect(() => {
@@ -358,6 +370,30 @@ function CustomerDashboardContent() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!bookingToDelete) return;
+    setActionLoading(bookingToDelete);
+    try {
+      const token = getCookie("accessToken");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingToDelete}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Booking removed from history!");
+        fetchBookings(true);
+      } else {
+        toast.error(data.message || "Failed to remove booking");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+    } finally {
+      setActionLoading(null);
+      setBookingToDelete(null);
+    }
+  };
+
   // Stats
   const stats = useMemo(() => ({
     total: bookings.length,
@@ -374,7 +410,7 @@ function CustomerDashboardContent() {
         (b.service?.name || "").toLowerCase().includes(search.toLowerCase()) ||
         (b.technician?.user?.name || "").toLowerCase().includes(search.toLowerCase()) ||
         b.id.toLowerCase().includes(search.toLowerCase());
-      if (statusFilter === "all") return matchesSearch;
+      if (statusFilter === "all") return matchesSearch && !["cancelled", "CANCELLED", "admin_rejected", "DECLINED", "customer_disputed"].includes(b.status);
       if (statusFilter === "ongoing") return matchesSearch && ["assigned", "technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS", "requested", "REQUESTED", "payment_pending", "work_completed", "cancellation_requested"].includes(b.status);
       if (statusFilter === "completed") return matchesSearch && ["completed", "COMPLETED", "paid", "PAID"].includes(b.status);
       if (statusFilter === "cancelled") return matchesSearch && ["cancelled", "CANCELLED", "admin_rejected", "DECLINED", "customer_disputed"].includes(b.status);
@@ -476,10 +512,41 @@ function CustomerDashboardContent() {
               <BookingCard
                 booking={booking}
                 onAction={handleAction}
+                onDelete={(id) => setBookingToDelete(id)}
                 actionLoading={actionLoading}
               />
             </div>
           ))}
+        </div>
+      )}
+      {/* ── Delete Confirmation Modal ── */}
+      {bookingToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-boxdark dark:border dark:border-strokedark animate-in zoom-in-95 duration-200">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600 mb-4 dark:bg-red-500/20 dark:text-red-400">
+              <FiAlertTriangle className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-black dark:text-white mb-2">Remove Booking?</h3>
+            <p className="text-sm text-body dark:text-bodydark2 mb-6">
+              Are you sure you want to permanently remove this cancelled booking from your history? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setBookingToDelete(null)}
+                className="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-all dark:bg-meta-4 dark:text-white dark:hover:bg-meta-4/80"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={actionLoading === bookingToDelete}
+                className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 transition-all disabled:opacity-60"
+              >
+                {actionLoading === bookingToDelete ? <FiLoader className="h-4 w-4 animate-spin" /> : <FiTrash2 className="h-4 w-4" />}
+                Remove
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

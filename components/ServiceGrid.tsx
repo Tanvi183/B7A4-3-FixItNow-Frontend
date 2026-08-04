@@ -50,7 +50,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
       const bookings: any[] = data.data || data || [];
       const ids = new Set<string>(
         bookings
-          .filter((b) => b.status === "requested" || b.status === "REQUESTED")
+          .filter((b) => !["cancelled", "completed", "paid", "CANCELLED", "COMPLETED", "PAID"].includes(b.status))
           .map((b) => b.serviceId)
       );
       setPendingServiceIds(ids);
@@ -111,7 +111,7 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
 
       // Mark this service as pending immediately (no page reload needed)
       setPendingServiceIds((prev) => new Set([...prev, modalSvc.id]));
-      toast.success("✅ Request sent to Admin! You'll be notified once accepted.");
+      toast.success("Request sent to Admin! You'll be notified once accepted.");
       setModalSvc(null);
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
