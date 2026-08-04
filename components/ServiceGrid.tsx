@@ -110,8 +110,8 @@ export default function ServiceGrid({ services }: ServiceGridProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Booking failed");
 
-      // Mark this service as pending immediately (no page reload needed)
-      setPendingServiceIds((prev) => new Set([...prev, modalSvc.id]));
+      // Mark this service as requested immediately (no page reload needed)
+      setActiveBookingsMap((prev) => ({ ...prev, [modalSvc.id]: "requested" }));
       toast.success("Request sent to Admin! You'll be notified once accepted.");
       setModalSvc(null);
     } catch (err: any) {
