@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { FiLoader } from "react-icons/fi";
 
 export default function DashboardRoot() {
-  const { user, isHydrated } = useAuthStore();
+  const { user } = useAuthStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
   const router = useRouter();
 
   useEffect(() => {

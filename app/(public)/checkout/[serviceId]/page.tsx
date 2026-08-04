@@ -11,7 +11,12 @@ export default function CheckoutPage() {
   const router = useRouter();
   const params = useParams();
   const serviceId = params.serviceId as string;
-  const { user, isHydrated } = useAuthStore();
+  const { user } = useAuthStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const [service, setService] = useState<any>(null);
   const [loading, setLoading] = useState(true);

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Search, User, ArrowRight, Menu, X, Wrench, LayoutDashboard, LogOut, Briefcase, Settings } from "lucide-react";
+import { ChevronDown, Search, User, ArrowRight, Menu, X, Wrench, LayoutDashboard, LogOut, Briefcase, Settings, Star } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 type NavLink = {
