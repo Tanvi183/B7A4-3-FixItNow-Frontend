@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import {
   FiCalendar, FiClock, FiCheckCircle, FiAlertTriangle,
   FiCreditCard, FiRefreshCw, FiStar, FiLoader, FiInbox,
-  FiTool, FiSearch, FiX, FiTrash2
+  FiTool, FiSearch, FiX, FiTrash2, FiAlertCircle
 } from "react-icons/fi";
 
 // ─── Status Config ────────────────────────────────────────────────────────────
@@ -83,13 +83,17 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
 }) {
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [offerAmount, setOfferAmount] = useState("");
+  const [cancellationReason, setCancellationReason] = useState("");
   const isLoading = actionLoading === booking.id;
   const conf = getStatusConf(booking.status);
   const date = booking.scheduledDate || booking.date || booking.createdAt;
   const price = booking.totalAmount ?? booking.price ?? booking.service?.basePrice ?? 0;
+  const isDue = ["cancellation_approved", "payment_pending"].includes(booking.status);
 
   return (
-    <div className="group flex flex-col rounded-2xl border border-stroke bg-white shadow-sm hover:shadow-md dark:border-strokedark dark:bg-boxdark transition-all duration-200">
+    <div className={`group flex flex-col rounded-2xl border bg-white shadow-sm hover:shadow-md transition-all duration-200 ${
+      isDue ? "border-rose-300 dark:border-rose-500/50 shadow-rose-500/10 dark:bg-rose-950/10 ring-1 ring-rose-500/20" : "border-stroke dark:border-strokedark dark:bg-boxdark"
+    }`}>
       {/* Card Header */}
       <div className="flex items-center justify-between border-b border-stroke/50 px-6 py-4 dark:border-strokedark/50">
         <div className="flex items-center gap-3">
@@ -224,14 +228,7 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
           {["cancellation_approved"].includes(booking.status) && (
             <div className="flex w-full items-center justify-between">
               <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Cancellation approved. Fee: ${booking.cancellationOffer || 0}</span>
-              <button
-                onClick={() => onAction(booking.id, `bookings/${booking.id}/customer-cancel`)}
-                disabled={isLoading}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-red-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm border border-red-500 hover:bg-red-600 disabled:opacity-60 transition-all cursor-pointer"
-              >
-                {isLoading ? <FiLoader className="h-3 w-3 animate-spin" /> : <FiX className="h-3 w-3" />}
-                Finalize Cancellation
-              </button>
+              <PayButton booking={booking} price={Number(booking.cancellationOffer) || 0} label="Pay Cancellation Fee" />
             </div>
           )}
 
@@ -273,7 +270,15 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
                 value={offerAmount}
                 onChange={e => setOfferAmount(e.target.value)}
                 placeholder="e.g. 15.00"
-                className="w-full rounded-xl border border-stroke bg-gray-50 px-4 py-2.5 text-black outline-none focus:border-[#3C50E0] dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#3C50E0]"
+                className="w-full rounded-xl border border-stroke bg-gray-50 px-4 py-2.5 text-black outline-none focus:border-[#3C50E0] dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#3C50E0] mb-4"
+              />
+              
+              <label className="mb-2 block text-sm font-medium text-black dark:text-white">Cancellation Note</label>
+              <textarea
+                value={cancellationReason}
+                onChange={e => setCancellationReason(e.target.value)}
+                placeholder="Reason for cancellation..."
+                className="w-full rounded-xl border border-stroke bg-gray-50 px-4 py-2.5 text-black outline-none focus:border-[#3C50E0] dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#3C50E0] min-h-[80px]"
               />
             </div>
             <div className="flex justify-end gap-3">
@@ -285,7 +290,7 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
               </button>
               <button
                 onClick={() => {
-                  onAction(booking.id, `bookings/${booking.id}/customer-cancel`, { offerAmount: Number(offerAmount) });
+                  onAction(booking.id, `bookings/${booking.id}/customer-cancel`, { offerAmount: Number(offerAmount), cancellationReason });
                   setCancelModalOpen(false);
                 }}
                 disabled={!offerAmount || Number(offerAmount) < 0}
@@ -302,7 +307,7 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
 }
 
 // ─── Pay Button (Stripe) ──────────────────────────────────────────────────────
-function PayButton({ booking, price }: { booking: Booking; price: number }) {
+function PayButton({ booking, price, label }: { booking: Booking; price: number; label?: string }) {
   const [paying, setPaying] = useState(false);
 
   const handlePay = async () => {
@@ -337,7 +342,7 @@ function PayButton({ booking, price }: { booking: Booking; price: number }) {
       className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#3C50E0] to-[#6577F3] px-5 py-2 text-xs font-semibold text-white shadow-md shadow-[#3C50E0]/20 hover:from-[#3C50E0]/90 hover:to-[#6577F3]/90 disabled:opacity-60 transition-all active:scale-95 cursor-pointer"
     >
       {paying ? <FiLoader className="h-3.5 w-3.5 animate-spin" /> : <FiCreditCard className="h-3.5 w-3.5" />}
-      {paying ? "Redirecting…" : "Pay Now"}
+      {paying ? "Redirecting…" : (label || "Pay Now")}
     </button>
   );
 }
@@ -463,18 +468,29 @@ function CustomerDashboardContent() {
 
   // Filter
   const filtered = useMemo(() => {
-    return bookings.filter(b => {
+    let result = bookings.filter(b => {
       const matchesSearch =
         (b.service?.name || "").toLowerCase().includes(search.toLowerCase()) ||
         (b.technician?.user?.name || "").toLowerCase().includes(search.toLowerCase()) ||
         b.id.toLowerCase().includes(search.toLowerCase());
       if (statusFilter === "all") return matchesSearch && !["cancelled", "CANCELLED", "admin_rejected", "DECLINED", "customer_disputed"].includes(b.status);
-      if (statusFilter === "ongoing") return matchesSearch && ["assigned", "technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS", "requested", "REQUESTED", "payment_pending", "work_completed", "cancellation_requested"].includes(b.status);
+      if (statusFilter === "ongoing") return matchesSearch && ["assigned", "technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS", "requested", "REQUESTED", "payment_pending", "work_completed", "cancellation_requested", "cancellation_approved"].includes(b.status);
       if (statusFilter === "completed") return matchesSearch && ["completed", "COMPLETED", "paid", "PAID"].includes(b.status);
       if (statusFilter === "cancelled") return matchesSearch && ["cancelled", "CANCELLED", "admin_rejected", "DECLINED", "customer_disputed"].includes(b.status);
       return matchesSearch && b.status === statusFilter;
     });
+
+    // Sort dues to the top
+    result.sort((a, b) => {
+      const aDue = ["cancellation_approved", "payment_pending"].includes(a.status) ? 1 : 0;
+      const bDue = ["cancellation_approved", "payment_pending"].includes(b.status) ? 1 : 0;
+      return bDue - aDue;
+    });
+
+    return result;
   }, [bookings, search, statusFilter]);
+
+  const dues = useMemo(() => bookings.filter(b => ["cancellation_approved", "payment_pending"].includes(b.status)), [bookings]);
 
   const greetingHour = new Date().getHours();
   const greeting = greetingHour < 12 ? "Good morning" : greetingHour < 17 ? "Good afternoon" : "Good evening";
@@ -503,6 +519,23 @@ function CustomerDashboardContent() {
           </button>
         </div>
       </div>
+
+      {/* ── Unpaid Dues Banner ── */}
+      {dues.length > 0 && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 shadow-sm dark:border-rose-500/20 dark:bg-rose-500/10 animate-in fade-in zoom-in-95">
+          <div className="flex items-start sm:items-center gap-4">
+            <div className="mt-0.5 sm:mt-0 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400">
+              <FiAlertCircle className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-rose-800 dark:text-rose-300 text-lg">Action Required: Unpaid Dues</h3>
+              <p className="mt-1 text-sm text-rose-600 dark:text-rose-400">
+                You have {dues.length} booking(s) pending payment. Please settle your dues to continue booking new services.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

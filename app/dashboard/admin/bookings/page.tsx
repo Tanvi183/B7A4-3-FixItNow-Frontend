@@ -22,6 +22,7 @@ const STATUS_CONFIG: Record<string, { label: string; badge: string; dot: string 
   paid:                { label: "Paid",               badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-400", dot: "bg-indigo-500" },
   completed:           { label: "Completed",          badge: "bg-gray-100 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400",        dot: "bg-gray-400" },
   cancellation_requested: { label: "Cancel Requested",   badge: "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400", dot: "bg-orange-500 animate-pulse" },
+  cancellation_approved:  { label: "Cancel Approved",    badge: "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400", dot: "bg-orange-500" },
   cancelled:           { label: "Cancelled",          badge: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400",             dot: "bg-red-500" },
   // Legacy
   REQUESTED:  { label: "Requested",   badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",     dot: "bg-amber-500 animate-pulse" },
@@ -46,6 +47,8 @@ interface Booking {
   date?: string;
   price?: number;
   totalAmount?: number;
+  cancellationOffer?: number | string | null;
+  cancellationReason?: string | null;
   customer?: { user?: { name: string; email?: string } };
   technician?: { user?: { name: string } };
   service?: { id: string; name: string; basePrice?: number; categoryId?: string; category?: { name: string } };
@@ -65,8 +68,13 @@ function AssignDropdown({ booking, technicians, onAssign, isLoading, label = "As
   const [selectedTech, setSelectedTech] = useState("");
 
   const filteredTechnicians = useMemo(() => {
-    if (showAll) return technicians; // For reassignment, show all
-    return technicians.filter(t => {
+    // Only allow assigning approved technicians
+    const approvedTechs = technicians.filter(t => t.isApproved);
+    
+    if (showAll) return approvedTechs; // For reassignment, show all approved techs
+
+    // Filter by matching service category
+    return approvedTechs.filter(t => {
       const bookingCategory = booking.service?.category?.name;
       if (!bookingCategory) return true;
       return t.services?.some(s => s.category?.name === bookingCategory);
@@ -151,8 +159,10 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
 }) {
   const conf = getStatusConf(booking.status);
   const date = booking.scheduledDate || booking.date || booking.createdAt;
-  const price = booking.totalAmount ?? booking.price ?? booking.service?.basePrice ?? 0;
+  const price = booking.cancellationOffer ?? booking.totalAmount ?? booking.price ?? booking.service?.basePrice ?? 0;
   const isLoading = actionLoading === booking.id;
+
+  const originalPrice = booking.price ?? booking.service?.basePrice ?? 0;
 
   return (
     <tr
@@ -195,17 +205,33 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
 
       {/* Price */}
       <td className="py-4 px-5">
-        {price > 0 ? (
-          <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">${Number(price).toFixed(2)}</span>
+        {Number(price) > 0 ? (
+          <div className="flex flex-col">
+            <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">${Number(price).toFixed(2)}</span>
+            {!!booking.cancellationOffer && (
+              <>
+                <span className="text-[10px] text-orange-500 font-medium">Cancellation Fee</span>
+                {originalPrice > 0 && <span className="text-[10px] text-gray-400 font-medium line-through">Orig: ${Number(originalPrice).toFixed(2)}</span>}
+              </>
+            )}
+          </div>
         ) : <span className="text-xs text-gray-400">—</span>}
       </td>
 
       {/* Status */}
-      <td className="py-4 px-5">
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${conf.badge}`}>
-          <span className={`h-1.5 w-1.5 rounded-full ${conf.dot}`} />
-          {conf.label}
-        </span>
+      <td className="py-4 px-5 align-top">
+        <div className="flex flex-col items-start gap-2">
+          <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${conf.badge}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${conf.dot}`} />
+            {conf.label}
+          </span>
+          {booking.cancellationReason && (
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 max-w-[150px] leading-tight break-words border-l-2 border-orange-300 dark:border-orange-500/50 pl-2">
+              <span className="font-semibold text-orange-500 dark:text-orange-400 block mb-0.5">Note:</span>
+              {booking.cancellationReason}
+            </div>
+          )}
+        </div>
       </td>
 
       {/* Actions */}
@@ -238,26 +264,9 @@ function BookingRow({ booking, technicians, onAction, onAssign, actionLoading, i
             </button>
           )}
 
-          {/* cancellation_requested: admin approves or rejects */}
+          {/* cancellation_requested: admin just observes, technician approves */}
           {["cancellation_requested"].includes(booking.status) && (
-            <>
-              <button
-                onClick={() => onAction(booking.id, `bookings/${booking.id}/admin-review`, { action: "reject_cancellation" })}
-                disabled={isLoading}
-                className="flex items-center gap-1.5 rounded-xl bg-gray-500 px-4 py-2 text-xs font-semibold text-white hover:bg-gray-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
-              >
-                {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiXCircle className="h-3.5 w-3.5" />}
-                Reject
-              </button>
-              <button
-                onClick={() => onAction(booking.id, `bookings/${booking.id}/admin-review`, { action: "approve_cancellation" })}
-                disabled={isLoading}
-                className="flex items-center gap-1.5 rounded-xl bg-orange-500 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
-              >
-                {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiAlertTriangle className="h-3.5 w-3.5" />}
-                Approve
-              </button>
-            </>
+            <span className="text-xs text-orange-600 dark:text-orange-400 font-medium mr-2">Waiting on Tech</span>
           )}
 
           {["assigned"].includes(booking.status) && (
@@ -388,17 +397,29 @@ export default function AdminBookingsPage() {
   const counts = useMemo(() => ({
     all: bookings.length,
     requested: bookings.filter(b => ["requested", "REQUESTED"].includes(b.status)).length,
-    active: bookings.filter(b => ["assigned", "technician_accepted", "in_progress", "work_completed", "ACCEPTED", "IN_PROGRESS"].includes(b.status)).length,
+    active: bookings.filter(b => ["assigned", "technician_accepted", "in_progress", "work_completed", "payment_pending", "ACCEPTED", "IN_PROGRESS"].includes(b.status)).length,
     disputed: bookings.filter(b => b.status === "customer_disputed").length,
-    completed: bookings.filter(b => ["completed", "paid", "COMPLETED", "PAID"].includes(b.status)).length,
+    completed: bookings.filter(b => ["completed", "paid", "COMPLETED", "PAID"].includes(b.status) && !b.cancellationOffer).length,
+    cancel_pending: bookings.filter(b => ["cancellation_requested", "cancellation_approved"].includes(b.status)).length,
+    direct_cancel: bookings.filter(b => ["cancelled", "CANCELLED", "admin_rejected", "technician_declined"].includes(b.status) && !b.cancellationOffer).length,
+    fee_cancel: bookings.filter(b => (["cancelled", "CANCELLED", "paid", "PAID"].includes(b.status) && !!b.cancellationOffer)).length,
   }), [bookings]);
+
+  const totalCancellationFees = useMemo(() => {
+    return bookings
+      .filter(b => (["paid", "PAID", "completed", "COMPLETED", "cancelled", "CANCELLED"].includes(b.status) && !!b.cancellationOffer))
+      .reduce((sum, b) => sum + Number(b.cancellationOffer || 0), 0);
+  }, [bookings]);
 
   const filtered = useMemo(() => {
     let list = bookings;
     if (activeTab === "requested") list = list.filter(b => ["requested", "REQUESTED", "technician_declined"].includes(b.status));
     else if (activeTab === "active") list = list.filter(b => ["assigned", "technician_accepted", "in_progress", "work_completed", "payment_pending", "ACCEPTED", "IN_PROGRESS"].includes(b.status));
     else if (activeTab === "disputed") list = list.filter(b => b.status === "customer_disputed");
-    else if (activeTab === "completed") list = list.filter(b => ["completed", "paid", "COMPLETED", "PAID"].includes(b.status));
+    else if (activeTab === "completed") list = list.filter(b => ["completed", "paid", "COMPLETED", "PAID"].includes(b.status) && !b.cancellationOffer);
+    else if (activeTab === "cancel_pending") list = list.filter(b => ["cancellation_requested", "cancellation_approved"].includes(b.status));
+    else if (activeTab === "direct_cancel") list = list.filter(b => ["cancelled", "CANCELLED", "admin_rejected", "technician_declined"].includes(b.status) && !b.cancellationOffer);
+    else if (activeTab === "fee_cancel") list = list.filter(b => (["cancelled", "CANCELLED", "paid", "PAID"].includes(b.status) && !!b.cancellationOffer));
 
     if (search) {
       const q = search.toLowerCase();
@@ -488,7 +509,20 @@ export default function AdminBookingsPage() {
         <Tab label="Active" count={counts.active} active={activeTab === "active"} onClick={() => setActiveTab("active")} />
         <Tab label="Disputed" count={counts.disputed} active={activeTab === "disputed"} onClick={() => setActiveTab("disputed")} />
         <Tab label="Completed" count={counts.completed} active={activeTab === "completed"} onClick={() => setActiveTab("completed")} />
+        <Tab label="Cancel Pending" count={counts.cancel_pending} active={activeTab === "cancel_pending"} onClick={() => setActiveTab("cancel_pending")} />
+        <Tab label="Direct Cancelled" count={counts.direct_cancel} active={activeTab === "direct_cancel"} onClick={() => setActiveTab("direct_cancel")} />
+        <Tab label="Fee Cancelled" count={counts.fee_cancel} active={activeTab === "fee_cancel"} onClick={() => setActiveTab("fee_cancel")} />
       </div>
+
+      {activeTab === "fee_cancel" && (
+        <div className="flex items-center justify-between rounded-xl border border-orange-200 bg-orange-50 p-4 dark:border-orange-500/30 dark:bg-orange-500/10">
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-orange-700 dark:text-orange-400">Total Cancellation Fees Collected</span>
+            <span className="text-xs text-orange-600 dark:text-orange-300">Revenue generated from finalized cancellations</span>
+          </div>
+          <span className="text-xl font-bold text-orange-700 dark:text-orange-400">${totalCancellationFees.toFixed(2)}</span>
+        </div>
+      )}
 
       {/* ── Table ── */}
       <div className="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden">

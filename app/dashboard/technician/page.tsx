@@ -21,7 +21,8 @@ const STATUS_CONFIG: Record<string, { label: string; badge: string; dot: string 
   completed:            { label: "Completed",           badge: "bg-gray-100 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400",        dot: "bg-gray-400" },
   customer_disputed:    { label: "Customer Disputed",   badge: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400",        dot: "bg-rose-500" },
   technician_declined:  { label: "You Declined",        badge: "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400", dot: "bg-orange-500" },
-  admin_rejected:       { label: "Rejected",            badge: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400",           dot: "bg-red-500" },
+  cancellation_requested: { label: "Cancel Requested",   badge: "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400", dot: "bg-orange-500 animate-pulse" },
+  cancellation_approved:  { label: "Cancel Approved",    badge: "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400", dot: "bg-orange-500" },
   // Legacy
   REQUESTED:  { label: "Requested",    badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",    dot: "bg-amber-500" },
   ACCEPTED:   { label: "Accepted",     badge: "bg-teal-100 text-teal-700 dark:bg-teal-500/15 dark:text-teal-400",        dot: "bg-teal-500" },
@@ -45,6 +46,7 @@ interface Booking {
   price?: number;
   totalAmount?: number;
   cancellationOffer?: number;
+  cancellationReason?: string;
   customer?: { user?: { name: string; email?: string } };
   service?: { name: string; basePrice?: number };
 }
@@ -108,24 +110,31 @@ function BookingActions({ booking, onAction, isLoading }: {
 
   if (["cancellation_requested"].includes(status)) {
     return (
-      <div className="flex gap-2 flex-wrap items-center">
-        <span className="mr-2 text-xs font-semibold text-orange-600 dark:text-orange-400">Offer: ${booking.cancellationOffer || 0}</span>
-        <button
-          onClick={() => onAction(id, `bookings/${id}/cancellation-response`, { action: "accept" })}
-          disabled={isLoading}
-          className="flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
-        >
-          {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiCheckCircle className="h-3.5 w-3.5" />}
-          Accept
-        </button>
-        <button
-          onClick={() => onAction(id, `bookings/${id}/cancellation-response`, { action: "reject" })}
-          disabled={isLoading}
-          className="flex items-center gap-1.5 rounded-xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
-        >
-          <FiXCircle className="h-3.5 w-3.5" />
-          Reject
-        </button>
+      <div className="flex flex-col gap-2">
+        {booking.cancellationReason && (
+          <div className="rounded-xl bg-orange-50 px-3 py-2 text-xs text-orange-800 dark:bg-orange-500/10 dark:text-orange-300 border border-orange-100 dark:border-orange-500/20 italic">
+            <span className="font-semibold not-italic">Note:</span> {booking.cancellationReason}
+          </div>
+        )}
+        <div className="flex gap-2 flex-wrap items-center">
+          <span className="mr-2 text-xs font-semibold text-orange-600 dark:text-orange-400">Offer: ${booking.cancellationOffer || 0}</span>
+          <button
+            onClick={() => onAction(id, `bookings/${id}/cancellation-response`, { action: "accept" })}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
+          >
+            {isLoading ? <FiLoader className="animate-spin h-3.5 w-3.5" /> : <FiCheckCircle className="h-3.5 w-3.5" />}
+            Accept
+          </button>
+          <button
+            onClick={() => onAction(id, `bookings/${id}/cancellation-response`, { action: "reject" })}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 rounded-xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-600 disabled:opacity-60 transition-all active:scale-95 cursor-pointer shadow-sm"
+          >
+            <FiXCircle className="h-3.5 w-3.5" />
+            Reject
+          </button>
+        </div>
       </div>
     );
   }
@@ -255,7 +264,7 @@ export default function TechnicianDashboard() {
   const stats = useMemo(() => {
     let pendingRequests = 0, activeJobs = 0, totalEarnings = 0;
     bookings.forEach(b => {
-      if (["assigned", "REQUESTED"].includes(b.status)) pendingRequests++;
+      if (["assigned", "REQUESTED", "cancellation_requested"].includes(b.status)) pendingRequests++;
       if (["technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS"].includes(b.status)) activeJobs++;
       if (["paid", "completed", "PAID", "COMPLETED"].includes(b.status)) totalEarnings += Number(b.totalAmount ?? b.price ?? b.service?.basePrice ?? 0);
     });
@@ -270,9 +279,9 @@ export default function TechnicianDashboard() {
         b.id.toLowerCase().includes(search.toLowerCase());
       
       if (statusFilter === "all") return matchesSearch && b.status !== "technician_declined";
-      if (statusFilter === "new") return matchesSearch && ["assigned", "REQUESTED"].includes(b.status);
+      if (statusFilter === "new") return matchesSearch && ["assigned", "REQUESTED", "cancellation_requested"].includes(b.status);
       if (statusFilter === "active") return matchesSearch && ["technician_accepted", "in_progress", "ACCEPTED", "IN_PROGRESS"].includes(b.status);
-      if (statusFilter === "completed") return matchesSearch && ["work_completed", "payment_pending", "paid", "completed", "PAID", "COMPLETED"].includes(b.status);
+      if (statusFilter === "completed") return matchesSearch && ["work_completed", "payment_pending", "paid", "completed", "PAID", "COMPLETED", "cancellation_approved", "cancelled"].includes(b.status);
       if (statusFilter === "declined") return matchesSearch && ["technician_declined"].includes(b.status);
       
       return matchesSearch;
@@ -390,9 +399,9 @@ export default function TechnicianDashboard() {
         <div className="space-y-6">
           {/* Grouped view for "All" tab */}
           {(() => {
-            const newRequests = filtered.filter(b => ["assigned", "REQUESTED"].includes(b.status));
+            const newRequests = filtered.filter(b => ["assigned", "REQUESTED", "cancellation_requested"].includes(b.status));
             const activeJobs = filtered.filter(b => ["technician_accepted", "in_progress", "work_completed", "ACCEPTED", "IN_PROGRESS"].includes(b.status));
-            const closedJobs = filtered.filter(b => ["paid", "completed", "PAID", "COMPLETED", "customer_disputed", "payment_pending"].includes(b.status));
+            const closedJobs = filtered.filter(b => ["paid", "completed", "PAID", "COMPLETED", "customer_disputed", "payment_pending", "cancellation_approved", "cancelled"].includes(b.status));
 
             return (
               <>

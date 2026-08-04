@@ -20,13 +20,12 @@ function SuccessContent() {
       if (!bookingId) return setUpdating(false);
       try {
         const token = getCookie("accessToken");
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingId}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${bookingId}/pay`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify({ status: "PAID" })
         });
         
         if (res.ok) {
