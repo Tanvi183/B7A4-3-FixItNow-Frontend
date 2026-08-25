@@ -87,13 +87,13 @@ function NavItem({
   /* Icon wrapper classes */
   const iconCls = `flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all duration-200 text-base
     ${itemActive
-      ? "bg-white/15 text-white shadow-sm"
-      : "text-white/50 group-hover:bg-white/10 group-hover:text-white"}`;
+      ? "bg-[#3C50E0]/40 text-white shadow-sm"
+      : "text-white/65 group-hover:bg-white/10 group-hover:text-white"}`;
 
   const base = `group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200
     ${itemActive
-      ? "bg-white/15 shadow-sm"
-      : "hover:bg-white/8"}`;
+      ? "bg-[#3C50E0]/20 shadow-sm ring-1 ring-[#3C50E0]/30"
+      : "hover:bg-white/[0.07]"}`;
 
   if (hasChildren) {
     return (
@@ -105,13 +105,13 @@ function NavItem({
           <div className="flex items-center gap-3 min-w-0">
             <span className={iconCls}>{item.icon}</span>
             {expanded && (
-              <span className={`truncate text-sm font-medium ${itemActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
+              <span className={`truncate text-sm font-medium ${itemActive ? "text-white" : "text-white/90 group-hover:text-white"}`}>
                 {item.label}
               </span>
             )}
           </div>
           {expanded && (
-            <FiChevronDown className={`w-4 h-4 shrink-0 text-white/40 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+            <FiChevronDown className={`w-4 h-4 shrink-0 text-white/50 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
           )}
         </button>
         {expanded && open && (
@@ -133,13 +133,13 @@ function NavItem({
                     className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[11px] uppercase tracking-wider font-semibold transition-all duration-200
                       ${ca 
                         ? "bg-white/10 text-white shadow-sm" 
-                        : "text-white/40 hover:bg-white/[0.04] hover:text-white/80"}`}
+                        : "text-white/65 hover:bg-white/[0.06] hover:text-white/90"}`}
                   >
                     {/* Status dot */}
                     <div className={`h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300
                       ${ca 
                         ? "bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" 
-                        : "bg-white/20 group-hover:bg-white/40"}`} 
+                        : "bg-white/35 group-hover:bg-white/60"}`} 
                     />
                     {child.label}
                   </Link>
@@ -160,7 +160,7 @@ function NavItem({
       >
         <span className={iconCls}>{item.icon}</span>
         {expanded && (
-          <span className={`flex-1 truncate text-sm font-medium ${itemActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
+          <span className={`flex-1 truncate text-sm font-medium ${itemActive ? "text-white" : "text-white/90 group-hover:text-white"}`}>
             {item.label}
           </span>
         )}

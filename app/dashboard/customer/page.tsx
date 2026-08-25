@@ -62,13 +62,13 @@ interface Booking {
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ label, value, icon, from, to }: { label: string; value: number; icon: React.ReactNode; from: string; to: string }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-stroke bg-white p-5 shadow-sm dark:border-strokedark dark:bg-boxdark">
+    <div className="flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-white/[0.08] dark:bg-[#1e2646] hover:shadow-md dark:hover:bg-[#232c52] transition-all duration-200">
       <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${from} ${to} text-white shadow-sm`}>
         {icon}
       </div>
       <div>
         <p className="text-2xl font-bold text-black dark:text-white">{value}</p>
-        <p className="text-sm text-body dark:text-bodydark2">{label}</p>
+        <p className="text-sm text-gray-500 dark:text-white/60">{label}</p>
       </div>
     </div>
   );
@@ -92,10 +92,10 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
 
   return (
     <div className={`group flex flex-col rounded-2xl border bg-white shadow-sm hover:shadow-md transition-all duration-200 ${
-      isDue ? "border-rose-300 dark:border-rose-500/50 shadow-rose-500/10 dark:bg-rose-950/10 ring-1 ring-rose-500/20" : "border-stroke dark:border-strokedark dark:bg-boxdark"
+      isDue ? "border-rose-300 dark:border-rose-500/40 shadow-rose-500/10 dark:bg-rose-950/20 ring-1 ring-rose-500/20" : "border-gray-200 dark:border-white/[0.08] dark:bg-[#1e2646]"
     }`}>
       {/* Card Header */}
-      <div className="flex items-center justify-between border-b border-stroke/50 px-6 py-4 dark:border-strokedark/50">
+      <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/[0.06]">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#3C50E0] to-[#6577F3] shadow-sm">
             <FiTool className="h-5 w-5 text-white" />
@@ -150,7 +150,7 @@ function BookingCard({ booking, onAction, actionLoading, onDelete }: {
         )}
 
         {/* ─── Contextual Actions ─── */}
-        <div className="mt-auto flex flex-wrap gap-2 pt-2 border-t border-stroke/50 dark:border-strokedark/50">
+        <div className="mt-auto flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-white/[0.06]">
           {/* work_completed: customer approves or disputes */}
           {(booking.status === "work_completed") && (
             <>
@@ -546,15 +546,15 @@ function CustomerDashboardContent() {
       </div>
 
       {/* ── Filters ── */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-white border border-stroke p-5 shadow-sm dark:bg-boxdark dark:border-strokedark">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-white border border-gray-200 p-5 shadow-sm dark:bg-[#1e2646] dark:border-white/[0.08]">
         <div className="relative flex-1 max-w-sm">
-          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 w-4 h-4" />
           <input
             type="text"
             placeholder="Search by service, technician or ID…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-stroke bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-[#3C50E0] focus:bg-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-[#3C50E0]"
+            className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-[#3C50E0] focus:bg-white dark:border-white/[0.08] dark:bg-[#252b4a] dark:text-white dark:placeholder-white/30 dark:focus:border-[#3C50E0] dark:focus:bg-[#1e2646]"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -570,7 +570,7 @@ function CustomerDashboardContent() {
               className={`rounded-xl px-4 py-2 text-sm font-medium transition-all cursor-pointer ${
                 statusFilter === tab.v
                   ? "bg-[#3C50E0] text-white shadow-sm"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-meta-4 dark:text-bodydark2 dark:hover:bg-meta-4/80"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-white/[0.07] dark:text-white/80 dark:hover:bg-white/[0.12] dark:hover:text-white"
               }`}
             >
               {tab.label}
@@ -585,10 +585,10 @@ function CustomerDashboardContent() {
           {[1, 2, 3, 4].map(i => <SkeletonCard key={i} />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-stroke bg-white py-16 shadow-sm dark:border-strokedark dark:bg-boxdark">
-          <FiInbox className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-4" />
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white py-16 shadow-sm dark:border-white/[0.08] dark:bg-[#1e2646]">
+          <FiInbox className="h-12 w-12 text-gray-300 dark:text-white/20 mb-4" />
           <h3 className="text-lg font-semibold text-black dark:text-white">No bookings found</h3>
-          <p className="mt-1 text-sm text-body dark:text-bodydark2">
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/50">
             {search ? "Try a different search term" : "Your bookings will appear here once you make one."}
           </p>
         </div>
