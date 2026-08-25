@@ -18,7 +18,13 @@ export default function proxy(request: NextRequest) {
       const payloadBase64 = accessToken.split('.')[1];
       // base64url decode
       // Replace '-' with '+' and '_' with '/' for standard base64 decoding
-      const standardizedBase64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+      let standardizedBase64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+      
+      // Add padding to prevent atob() from throwing a DOMException
+      while (standardizedBase64.length % 4 !== 0) {
+        standardizedBase64 += '=';
+      }
+      
       const decodedJson = atob(standardizedBase64);
       const payload = JSON.parse(decodedJson);
       const userRole = payload.role;
@@ -53,7 +59,12 @@ export default function proxy(request: NextRequest) {
     if (accessToken) {
       try {
         const payloadBase64 = accessToken.split('.')[1];
-        const standardizedBase64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+        let standardizedBase64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+        
+        while (standardizedBase64.length % 4 !== 0) {
+          standardizedBase64 += '=';
+        }
+        
         const decodedJson = atob(standardizedBase64);
         const payload = JSON.parse(decodedJson);
         return redirectToRoleDashboard(payload.role, request.url);
