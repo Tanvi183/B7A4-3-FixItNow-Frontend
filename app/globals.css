@@ -6,20 +6,21 @@
 @theme {
   --color-admin-primary: #3C50E0;
   --color-admin-secondary: #3C50E0;
-  --color-boxdark: #24303F;
-  --color-boxdark-2: #1A222C;
-  --color-bodydark: #AEB7C0;
-  --color-bodydark1: #DEE4EE;
-  --color-bodydark2: #8A99AF;
+  /* Premium dark palette aligned with sidebar (#1a1f35 family) */
+  --color-boxdark: #1e2340;      /* card bg - elevated dark blue */
+  --color-boxdark-2: #141828;    /* page bg - deep dark */
+  --color-bodydark: #C8D0DC;     /* bright body text */
+  --color-bodydark1: #E8EDF5;    /* brighter alt text */
+  --color-bodydark2: #8A96B0;    /* muted body text */
   --color-stroke: #E2E8F0;
-  --color-strokedark: #2E3A47;
-  --color-graydark: #333A48;
+  --color-strokedark: rgba(255,255,255,0.07); /* subtle border */
+  --color-graydark: #1a1f35;
   --color-whiten: #F1F5F9;
   --color-whiter: #F5F7FD;
   --color-meta-1: #DC3545;
   --color-meta-2: #EFF2F7;
   --color-meta-3: #10B981;
-  --color-meta-4: #313D4A;
+  --color-meta-4: #252b45;       /* input bg - slightly elevated */
   --color-meta-5: #259AE6;
   --color-meta-6: #FFBA00;
 }
@@ -205,6 +206,55 @@ body {
   background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, rgba(0,0,0,0) 70%);
   pointer-events: none;
   z-index: 0;
+}
+
+/* ─── PREMIUM DASHBOARD DARK MODE ──────────────────────────────────────────── */
+/* Page background wrapper */
+.dark .dark\:bg-boxdark-2 {
+  background-color: #141828 !important;
+}
+
+/* Dashboard main content area */
+.dark .dark\:bg-boxdark-2 > div > div.relative {
+  background-color: #141828;
+}
+
+/* Stat cards, booking cards - elevated glass look */
+.dark .dark\:bg-boxdark {
+  background-color: #1e2340 !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+/* Input backgrounds in dark mode */
+.dark .dark\:bg-meta-4 {
+  background-color: #252b45 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Border colors */
+.dark .dark\:border-strokedark {
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+/* Text colors */
+.dark .dark\:text-bodydark2 {
+  color: #8A96B0 !important;
+}
+.dark .dark\:text-bodydark {
+  color: #C8D0DC !important;
+}
+
+/* Dashboard stat card: add premium glass shimmer */
+.dark .dark\:bg-boxdark:hover {
+  background-color: #232949 !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Make the dashboard main scroll area match */
+.dark main {
+  background-color: #141828;
 }
 
 h1, h2, h3, h4, h5, h6 {
